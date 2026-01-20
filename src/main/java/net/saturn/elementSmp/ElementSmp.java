@@ -119,38 +119,108 @@ public final class ElementSmp extends JavaPlugin {
     private void registerCommands() {
         getLogger().info("Registering commands...");
 
-        CommandRegistrar.register(this)
-                .command("elements", new ElementInfoCommand(this))
-                .command("trust", new TrustCommand(this, trustManager))
-                .command("element", new ElementCommand(this))
-                .command("mana", new ManaCommand(manaManager, configManager))
-                .command("util", new UtilCommand(this))
-                .command("togglerecipe", new ToggleRecipeCommand(this));
+        // For Paper plugins, we need to use the Bukkit command map directly
+        // This is done after the server is fully loaded
+        Bukkit.getScheduler().runTask(this, () -> {
+            try {
+                var commandMap = Bukkit.getCommandMap();
 
-        getLogger().info("Commands registered");
-    }
+                // Create and register commands
+                var elementsCmd = new org.bukkit.command.defaults.BukkitCommand("elements") {
+                    private final ElementInfoCommand executor = new ElementInfoCommand(ElementSmp.this);
 
-    private static class CommandRegistrar {
-        private final ElementSmp plugin;
+                    @Override
+                    public boolean execute(org.bukkit.command.CommandSender sender, String label, String[] args) {
+                        return executor.onCommand(sender, this, label, args);
+                    }
 
-        private CommandRegistrar(ElementSmp plugin) {
-            this.plugin = plugin;
-        }
+                    @Override
+                    public java.util.List<String> tabComplete(org.bukkit.command.CommandSender sender, String alias, String[] args) {
+                        return executor.onTabComplete(sender, this, alias, args);
+                    }
+                };
+                elementsCmd.setDescription("View element info");
 
-        static CommandRegistrar register(ElementSmp plugin) {
-            return new CommandRegistrar(plugin);
-        }
+                var trustCmd = new org.bukkit.command.defaults.BukkitCommand("trust") {
+                    private final TrustCommand executor = new TrustCommand(ElementSmp.this, trustManager);
 
-        CommandRegistrar command(String name, org.bukkit.command.CommandExecutor executor) {
-            var cmd = plugin.getCommand(name);
-            if (cmd != null) {
-                cmd.setExecutor(executor);
-                if (executor instanceof org.bukkit.command.TabCompleter completer) {
-                    cmd.setTabCompleter(completer);
-                }
+                    @Override
+                    public boolean execute(org.bukkit.command.CommandSender sender, String label, String[] args) {
+                        return executor.onCommand(sender, this, label, args);
+                    }
+
+                    @Override
+                    public java.util.List<String> tabComplete(org.bukkit.command.CommandSender sender, String alias, String[] args) {
+                        return executor.onTabComplete(sender, this, alias, args);
+                    }
+                };
+                trustCmd.setDescription("Manage trust list");
+
+                var elementCmd = new org.bukkit.command.defaults.BukkitCommand("element") {
+                    private final ElementCommand executor = new ElementCommand(ElementSmp.this);
+
+                    @Override
+                    public boolean execute(org.bukkit.command.CommandSender sender, String label, String[] args) {
+                        return executor.onCommand(sender, this, label, args);
+                    }
+
+                    @Override
+                    public java.util.List<String> tabComplete(org.bukkit.command.CommandSender sender, String alias, String[] args) {
+                        return executor.onTabComplete(sender, this, alias, args);
+                    }
+                };
+                elementCmd.setDescription("Admin element commands");
+
+                var manaCmd = new org.bukkit.command.defaults.BukkitCommand("mana") {
+                    private final ManaCommand executor = new ManaCommand(manaManager, configManager);
+
+                    @Override
+                    public boolean execute(org.bukkit.command.CommandSender sender, String label, String[] args) {
+                        return executor.onCommand(sender, this, label, args);
+                    }
+                };
+                manaCmd.setDescription("Manage mana");
+
+                var utilCmd = new org.bukkit.command.defaults.BukkitCommand("util") {
+                    private final UtilCommand executor = new UtilCommand(ElementSmp.this);
+
+                    @Override
+                    public boolean execute(org.bukkit.command.CommandSender sender, String label, String[] args) {
+                        return executor.onCommand(sender, this, label, args);
+                    }
+                };
+                utilCmd.setDescription("Utility commands");
+
+                var toggleRecipeCmd = new org.bukkit.command.defaults.BukkitCommand("togglerecipe") {
+                    private final ToggleRecipeCommand executor = new ToggleRecipeCommand(ElementSmp.this);
+
+                    @Override
+                    public boolean execute(org.bukkit.command.CommandSender sender, String label, String[] args) {
+                        return executor.onCommand(sender, this, label, args);
+                    }
+
+                    @Override
+                    public java.util.List<String> tabComplete(org.bukkit.command.CommandSender sender, String alias, String[] args) {
+                        return executor.onTabComplete(sender, this, alias, args);
+                    }
+                };
+                toggleRecipeCmd.setDescription("Toggle recipes");
+
+                // Register all commands
+                commandMap.register("elementsmp", elementsCmd);
+                commandMap.register("elementsmp", trustCmd);
+                commandMap.register("elementsmp", elementCmd);
+                commandMap.register("elementsmp", manaCmd);
+                commandMap.register("elementsmp", utilCmd);
+                commandMap.register("elementsmp", toggleRecipeCmd);
+
+                getLogger().info("Commands registered successfully");
+            } catch (Exception e) {
+                getLogger().log(Level.SEVERE, "Failed to register commands", e);
             }
-            return this;
-        }
+        });
+
+        getLogger().info("Commands registration scheduled");
     }
 
     private void registerListeners() {
@@ -203,7 +273,6 @@ public final class ElementSmp extends JavaPlugin {
         pm.registerEvents(new FrostFrozenPunchListener(this, elementManager), this);
     }
 
-
     private void registerRecipes() {
         taskScheduler.runLaterSeconds(() -> {
             getLogger().info("Registering recipes...");
@@ -239,5 +308,4 @@ public final class ElementSmp extends JavaPlugin {
     public ValidationService getValidationService() { return validationService; }
     public TaskScheduler getTaskScheduler() { return taskScheduler; }
     public MetadataHelper getMetadataHelper() { return metadataHelper; }
-
 }

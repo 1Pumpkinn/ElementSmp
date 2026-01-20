@@ -20,8 +20,8 @@ public class MetalElement extends BaseElement {
     public MetalElement(ElementSmp plugin) {
         super(plugin);
         this.plugin = plugin;
-        this.ability1 = new MetalChainAbility(plugin);
-        this.ability2 = new MetalDashAbility(plugin);
+        this.ability1 = new MetalDashAbility(plugin);
+        this.ability2 = new MetalChainAbility(plugin);
     }
 
     @Override

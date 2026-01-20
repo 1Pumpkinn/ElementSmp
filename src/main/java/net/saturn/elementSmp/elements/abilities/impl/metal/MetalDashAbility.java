@@ -21,10 +21,9 @@ public class MetalDashAbility extends BaseAbility implements Listener {
     private final ElementSmp plugin;
     private final Set<UUID> stunnedPlayers = new HashSet<>();
     private final Set<UUID> dashingPlayers = new HashSet<>();
-    private final Map<UUID, Boolean> pendingStuns = new HashMap<>();
 
     public MetalDashAbility(ElementSmp plugin) {
-        super("metal_dash", 75, 15, 2);
+        super("metal_dash", 50, 10, 1);
         this.plugin = plugin;
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
@@ -33,9 +32,6 @@ public class MetalDashAbility extends BaseAbility implements Listener {
     public boolean execute(ElementContext context) {
         Player player = context.getPlayer();
         Vector direction = player.getLocation().getDirection().normalize();
-
-        // Store the initial dash direction
-        final Vector dashDirection = direction.clone();
 
         // Apply stronger initial velocity boost for longer dash
         Vector dashVelocity = direction.multiply(2.5);
@@ -51,75 +47,89 @@ public class MetalDashAbility extends BaseAbility implements Listener {
         setActive(player, true);
         dashingPlayers.add(player.getUniqueId());
 
-        // Dash for 20 blocks (40 ticks at 0.5 blocks per tick)
         new BukkitRunnable() {
             int ticks = 0;
-            final int maxTicks = 40;
-            boolean hitEntity = false;
+            final int maxMovementTicks = 40; // Dash movement phase
+            Integer landedAtTick = null;
+            final int graceTicks = 30; // 1.5 seconds grace after landing
 
             @Override
             public void run() {
-                if (!player.isOnline() || ticks >= maxTicks) {
-                    setActive(player, false);
-                    dashingPlayers.remove(player.getUniqueId());
-
-                    // Apply stun if no entity was hit
-                    if (!hitEntity) {
-                        // Check if player is on ground, if not, mark for pending stun
-                        if (player.isOnGround()) {
-                            applyStun(player);
-                        } else {
-                            pendingStuns.put(player.getUniqueId(), true);
-                        }
-                    }
-
+                if (!player.isOnline()) {
+                    cleanup();
                     cancel();
                     return;
                 }
 
                 Location loc = player.getLocation();
 
-                // Spawn metal particle trail
-                player.getWorld().spawnParticle(Particle.CRIT, loc, 10, 0.3, 0.3, 0.3, 0.1, null, true);
-                player.getWorld().spawnParticle(Particle.FIREWORK, loc, 5, 0.2, 0.2, 0.2, 0.05, null, true);
+                // 1. Particle effects
+                if (ticks < maxMovementTicks || landedAtTick != null) {
+                    player.getWorld().spawnParticle(Particle.CRIT, loc, 8, 0.3, 0.3, 0.3, 0.1, null, true);
+                }
 
-                // Check for nearby entities every 2 ticks
+                // 2. Check for nearby entities (always active until hit or stun)
                 if (ticks % 2 == 0) {
                     for (LivingEntity entity : loc.getNearbyLivingEntities(2.5)) {
                         if (entity.equals(player)) continue;
                         if (damagedEntities.contains(entity.getUniqueId())) continue;
-
-                        // Skip armor stands
                         if (entity instanceof org.bukkit.entity.ArmorStand) continue;
 
-                        // Check if valid target
                         if (entity instanceof Player targetPlayer) {
                             if (context.getTrustManager().isTrusted(player.getUniqueId(), targetPlayer.getUniqueId())) {
                                 continue;
                             }
                         }
 
-                        // Deal TRUE DAMAGE (ignore armor/resistance)
-                        double currentHealth = entity.getHealth();
-                        double newHealth = Math.max(0, currentHealth - 4.0);
-                        entity.setHealth(newHealth);
-
-
-                        // Mark as damaged
+                        // HIT SUCCESSFUL
                         damagedEntities.add(entity.getUniqueId());
-                        hitEntity = true;
 
-                        // Apply slight knockback
+                        // Deal TRUE DAMAGE
+                        entity.setHealth(Math.max(0, entity.getHealth() - 4.0));
+
+                        // Effects
                         Vector knockback = entity.getLocation().toVector().subtract(loc.toVector()).normalize();
                         knockback.setY(0.3);
                         entity.setVelocity(knockback.multiply(0.5));
-
-                        // Particle effect on hit
                         entity.getWorld().spawnParticle(Particle.CRIT, entity.getLocation(), 15, 0.5, 0.5, 0.5, 0.1, null, true);
                         entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_PLAYER_ATTACK_CRIT, 1.0f, 1.2f);
                     }
                 }
+
+                // 3. Landing detection
+                if (landedAtTick == null && player.isOnGround()) {
+                    landedAtTick = ticks;
+                }
+
+                // 4. Termination logic
+                if (landedAtTick != null) {
+                    // Player has landed, check grace period
+                    if (ticks - landedAtTick >= graceTicks) {
+                        // ONLY STUN IF NO ONE WAS HIT
+                        if (damagedEntities.isEmpty()) {
+                            applyStun(player);
+                        }
+                        cleanup();
+                        cancel();
+                        return;
+                    }
+                }
+
                 ticks++;
+
+                // Safety timeout (30 seconds)
+                if (ticks > 600) {
+                    if (damagedEntities.isEmpty()) {
+                        applyStun(player);
+                    }
+                    cleanup();
+                    cancel();
+                }
+            }
+
+            private void cleanup() {
+                dashingPlayers.remove(player.getUniqueId());
+                setActive(player, false);
             }
         }.runTaskTimer(plugin, 0L, 1L);
 
@@ -129,7 +139,6 @@ public class MetalDashAbility extends BaseAbility implements Listener {
     private void applyStun(Player player) {
         // Add player to stunned set
         stunnedPlayers.add(player.getUniqueId());
-        pendingStuns.remove(player.getUniqueId());
 
         // Visual and audio feedback for the stun
         player.getWorld().spawnParticle(Particle.SMOKE, player.getLocation().add(0, 1, 0), 30, 0.3, 0.5, 0.3, 0.05, null, true);
@@ -149,11 +158,6 @@ public class MetalDashAbility extends BaseAbility implements Listener {
     public void onPlayerMove(PlayerMoveEvent event) {
         Player player = event.getPlayer();
         UUID playerId = player.getUniqueId();
-
-        // Check for pending stun when player lands
-        if (pendingStuns.containsKey(playerId) && player.isOnGround()) {
-            applyStun(player);
-        }
 
         // Check if player is stunned
         if (stunnedPlayers.contains(playerId)) {
@@ -179,6 +183,6 @@ public class MetalDashAbility extends BaseAbility implements Listener {
 
     @Override
     public String getDescription() {
-        return "Dash forward 20 blocks, damaging enemies you pass through. Missing all enemies stuns you for 5 seconds. (75 mana)";
+        return "Dash forward, hitting all entities in your path. You have 1.5s after landing to hit at least one entity to avoid a 5s stun. (50 mana)";
     }
 }

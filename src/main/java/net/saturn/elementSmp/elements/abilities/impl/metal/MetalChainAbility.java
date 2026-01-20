@@ -21,7 +21,7 @@ public class MetalChainAbility extends BaseAbility {
     public static final String META_CHAINED_STUN = "metal_chain_stunned";
 
     public MetalChainAbility(ElementSmp plugin) {
-        super("metal_chain", 50, 10, 1);
+        super("metal_chain", 75, 15, 2);
         this.plugin = plugin;
     }
 
@@ -29,35 +29,23 @@ public class MetalChainAbility extends BaseAbility {
     public boolean execute(ElementContext context) {
         Player player = context.getPlayer();
 
-        // --- Target detection (cone-based with line-of-sight check) ---
-        LivingEntity target = null;
+        // --- Target detection (Precise Raycast) ---
         double range = 20;
-        double coneAngle = Math.toRadians(25);
-        Location eyeLoc = player.getEyeLocation();
-        Vector lookDir = eyeLoc.getDirection();
+        org.bukkit.entity.Entity raycastResult = player.getTargetEntity((int) range);
+        LivingEntity target = null;
 
-        for (LivingEntity entity : player.getWorld().getLivingEntities()) {
-            if (entity.equals(player)) continue;
-
-            // Skip armor stands
-            if (entity instanceof org.bukkit.entity.ArmorStand) continue;
-
-            if (eyeLoc.distanceSquared(entity.getLocation()) > range * range) continue;
-
-            Vector toEntity = entity.getLocation().toVector().subtract(eyeLoc.toVector());
-            double angle = lookDir.angle(toEntity);
-
-            if (angle < coneAngle) {
-                // Check line of sight - make sure there are no solid blocks between player and target
-                if (player.hasLineOfSight(entity)) {
-                    target = entity;
-                    break;
-                }
+        if (raycastResult instanceof LivingEntity living && !(raycastResult instanceof org.bukkit.entity.ArmorStand)) {
+            // Check for solid blocks in the way (ignoring grass, flowers, etc.)
+            if (player.hasLineOfSight(living)) {
+                target = living;
+            } else {
+                player.sendMessage(ChatColor.RED + "Your chain is blocked by a solid obstacle!");
+                return false;
             }
         }
 
         if (target == null) {
-            player.sendMessage(ChatColor.RED + "No target found!");
+            player.sendMessage(ChatColor.RED + "You must look directly at an entity to chain it!");
             return false;
         }
 
@@ -191,6 +179,6 @@ public class MetalChainAbility extends BaseAbility {
 
     @Override
     public String getDescription() {
-        return "Pull a targeted enemy towards you with a chain. (50 mana)";
+        return "Look at an enemy and pull them towards you with a chain. (75 mana)";
     }
 }
