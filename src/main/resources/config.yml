@@ -1,0 +1,50 @@
+# ElementSmp Configuration
+
+mana:
+  max: 100
+  regen_per_second: 1
+
+costs:
+  air:
+    ability1: 50
+    ability2: 75
+    item_use: 75
+    item_throw: 25
+  water:
+    ability1: 50
+    ability2: 75
+    item_use: 75
+    item_throw: 25
+  fire:
+    ability1: 50
+    ability2: 75
+    item_use: 75
+    item_throw: 25
+  earth:
+    ability1: 50
+    ability2: 75
+    item_use: 75
+    item_throw: 25
+  life:
+    ability1: 50
+    ability2: 75
+    item_use: 75
+    item_throw: 25
+  death:
+    ability1: 50
+    ability2: 75
+    item_use: 75
+    item_throw: 25
+  metal:
+    ability1: 50
+    ability2: 75
+    item_use: 75
+    item_throw: 25
+  frost:
+    ability1: 50
+    ability2: 75
+    item_use: 75
+    item_throw: 25
+
+recipes:
+  advanced_reroller_enabled: true

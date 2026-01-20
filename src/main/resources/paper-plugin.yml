@@ -1,0 +1,20 @@
+name: ElementSmp
+version: '1.0-SNAPSHOT'
+main: net.saturn.elementSmp.ElementSmp
+api-version: '1.21'
+load: STARTUP
+authors: [ ___Pumpkinn ]
+
+commands:
+  elements:
+    description: View element info
+  trust:
+    description: Manage trust list
+  element:
+    description: Admin element commands
+  mana:
+    description: Manage mana
+  util:
+    description: Utility commands
+  togglerecipe:
+    description: Toggle recipes
