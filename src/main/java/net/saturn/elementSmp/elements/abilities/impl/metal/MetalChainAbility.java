@@ -3,10 +3,7 @@ package net.saturn.elementSmp.elements.abilities.impl.metal;
 import net.saturn.elementSmp.ElementSmp;
 import net.saturn.elementSmp.elements.ElementContext;
 import net.saturn.elementSmp.elements.abilities.BaseAbility;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Particle;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Mob;
 import org.bukkit.entity.Player;
@@ -304,6 +301,7 @@ public class MetalChainAbility extends BaseAbility {
                 type == org.bukkit.Material.LADDER ||
                 type == org.bukkit.Material.SCAFFOLDING ||
                 type == org.bukkit.Material.SNOW ||
+                type == Material.POWDER_SNOW ||
                 type == org.bukkit.Material.WATER ||
                 type == org.bukkit.Material.LAVA ||
                 type == org.bukkit.Material.FIRE ||
