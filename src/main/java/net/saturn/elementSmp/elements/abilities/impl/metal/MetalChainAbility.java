@@ -29,23 +29,40 @@ public class MetalChainAbility extends BaseAbility {
     public boolean execute(ElementContext context) {
         Player player = context.getPlayer();
 
-        // --- Target detection (Precise Raycast) ---
+        // --- Target detection (Entity Raycast with Block Bypass) ---
         double range = 20;
-        org.bukkit.entity.Entity raycastResult = player.getTargetEntity((int) range);
+        
+        // Raytrace for entities specifically (with a small 0.5 buffer for easier targeting)
+        org.bukkit.util.RayTraceResult entityHit = player.getWorld().rayTraceEntities(
+                player.getEyeLocation(),
+                player.getEyeLocation().getDirection(),
+                range,
+                0.5, // Ray size buffer for easier targeting
+                entity -> (entity instanceof LivingEntity && !(entity instanceof org.bukkit.entity.ArmorStand) && !entity.equals(player))
+        );
+
         LivingEntity target = null;
 
-        if (raycastResult instanceof LivingEntity living && !(raycastResult instanceof org.bukkit.entity.ArmorStand)) {
-            // Check for solid blocks in the way (ignoring grass, flowers, etc.)
-            if (player.hasLineOfSight(living)) {
+        if (entityHit != null && entityHit.getHitEntity() instanceof LivingEntity living) {
+            // Check for SOLID blocks only
+            org.bukkit.util.RayTraceResult blockHit = player.getWorld().rayTraceBlocks(
+                    player.getEyeLocation(),
+                    player.getEyeLocation().getDirection(),
+                    player.getEyeLocation().distance(living.getEyeLocation()),
+                    org.bukkit.FluidCollisionMode.NEVER,
+                    true // true = IGNORE non-solid blocks (grass, flowers, etc.)
+            );
+
+            if (blockHit == null || blockHit.getHitBlock() == null) {
                 target = living;
             } else {
-                player.sendMessage(ChatColor.RED + "Your chain is blocked by a solid obstacle!");
+                player.sendMessage(ChatColor.RED + "Your chain is blocked by a wall!");
                 return false;
             }
         }
 
         if (target == null) {
-            player.sendMessage(ChatColor.RED + "You must look directly at an entity to chain it!");
+            player.sendMessage(ChatColor.RED + "You must look at an entity to chain it!");
             return false;
         }
 
@@ -180,5 +197,116 @@ public class MetalChainAbility extends BaseAbility {
     @Override
     public String getDescription() {
         return "Look at an enemy and pull them towards you with a chain. (75 mana)";
+    }
+
+    /**
+     * Check if there's a clear chain path between two locations
+     * Allows chain to pass through grass, flowers, vines, etc.
+     */
+    private boolean hasChainPath(Location from, Location to) {
+        org.bukkit.util.Vector direction = to.toVector().subtract(from.toVector());
+        double distance = direction.length();
+        direction.normalize();
+
+        // Check every 0.5 blocks along the path
+        for (double d = 0; d < distance; d += 0.5) {
+            Location checkLoc = from.clone().add(direction.clone().multiply(d));
+            org.bukkit.block.Block block = checkLoc.getBlock();
+
+            // If we hit a non-passable block, chain is blocked
+            if (!isPassableBlock(block)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Check if a block can be passed through by the chain
+     */
+    private boolean isPassableBlock(org.bukkit.block.Block block) {
+        if (block == null) return true;
+
+        org.bukkit.Material type = block.getType();
+
+        // Air is always passable
+        if (type == org.bukkit.Material.AIR ||
+                type == org.bukkit.Material.VOID_AIR ||
+                type == org.bukkit.Material.CAVE_AIR) {
+            return true;
+        }
+
+        // List of passable blocks that chains can go through
+        return type == org.bukkit.Material.SHORT_GRASS ||
+                type == org.bukkit.Material.TALL_GRASS ||
+                type == org.bukkit.Material.FERN ||
+                type == org.bukkit.Material.LARGE_FERN ||
+                type == org.bukkit.Material.DEAD_BUSH ||
+                type == org.bukkit.Material.DANDELION ||
+                type == org.bukkit.Material.POPPY ||
+                type == org.bukkit.Material.BLUE_ORCHID ||
+                type == org.bukkit.Material.ALLIUM ||
+                type == org.bukkit.Material.AZURE_BLUET ||
+                type == org.bukkit.Material.RED_TULIP ||
+                type == org.bukkit.Material.ORANGE_TULIP ||
+                type == org.bukkit.Material.WHITE_TULIP ||
+                type == org.bukkit.Material.PINK_TULIP ||
+                type == org.bukkit.Material.OXEYE_DAISY ||
+                type == org.bukkit.Material.CORNFLOWER ||
+                type == org.bukkit.Material.LILY_OF_THE_VALLEY ||
+                type == org.bukkit.Material.SUNFLOWER ||
+                type == org.bukkit.Material.LILAC ||
+                type == org.bukkit.Material.ROSE_BUSH ||
+                type == org.bukkit.Material.PEONY ||
+                type == org.bukkit.Material.SWEET_BERRY_BUSH ||
+                type == org.bukkit.Material.BAMBOO ||
+                type == org.bukkit.Material.SUGAR_CANE ||
+                type == org.bukkit.Material.KELP ||
+                type == org.bukkit.Material.SEAGRASS ||
+                type == org.bukkit.Material.TALL_SEAGRASS ||
+                type == org.bukkit.Material.WHEAT ||
+                type == org.bukkit.Material.CARROTS ||
+                type == org.bukkit.Material.POTATOES ||
+                type == org.bukkit.Material.BEETROOTS ||
+                type == org.bukkit.Material.MELON_STEM ||
+                type == org.bukkit.Material.PUMPKIN_STEM ||
+                type == org.bukkit.Material.VINE ||
+                type == org.bukkit.Material.WEEPING_VINES ||
+                type == org.bukkit.Material.WEEPING_VINES_PLANT ||
+                type == org.bukkit.Material.TWISTING_VINES ||
+                type == org.bukkit.Material.TWISTING_VINES_PLANT ||
+                type == org.bukkit.Material.CAVE_VINES ||
+                type == org.bukkit.Material.CAVE_VINES_PLANT ||
+                type == org.bukkit.Material.GLOW_BERRIES ||
+                type == org.bukkit.Material.TORCH ||
+                type == org.bukkit.Material.REDSTONE_TORCH ||
+                type == org.bukkit.Material.SOUL_TORCH ||
+                type == org.bukkit.Material.REDSTONE_WIRE ||
+                type == org.bukkit.Material.TRIPWIRE ||
+                type == org.bukkit.Material.TRIPWIRE_HOOK ||
+                type == org.bukkit.Material.LEVER ||
+                type == org.bukkit.Material.STONE_BUTTON ||
+                type == org.bukkit.Material.OAK_BUTTON ||
+                type == org.bukkit.Material.SPRUCE_BUTTON ||
+                type == org.bukkit.Material.BIRCH_BUTTON ||
+                type == org.bukkit.Material.JUNGLE_BUTTON ||
+                type == org.bukkit.Material.ACACIA_BUTTON ||
+                type == org.bukkit.Material.DARK_OAK_BUTTON ||
+                type == org.bukkit.Material.CRIMSON_BUTTON ||
+                type == org.bukkit.Material.WARPED_BUTTON ||
+                type == org.bukkit.Material.POLISHED_BLACKSTONE_BUTTON ||
+                type == org.bukkit.Material.RAIL ||
+                type == org.bukkit.Material.POWERED_RAIL ||
+                type == org.bukkit.Material.DETECTOR_RAIL ||
+                type == org.bukkit.Material.ACTIVATOR_RAIL ||
+                type == org.bukkit.Material.COBWEB ||
+                type == org.bukkit.Material.LADDER ||
+                type == org.bukkit.Material.SCAFFOLDING ||
+                type == org.bukkit.Material.SNOW ||
+                type == org.bukkit.Material.WATER ||
+                type == org.bukkit.Material.LAVA ||
+                type == org.bukkit.Material.FIRE ||
+                type == org.bukkit.Material.SOUL_FIRE;
     }
 }
