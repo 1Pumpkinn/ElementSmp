@@ -43,55 +43,74 @@ public class WaterGeyserAbility extends BaseAbility {
             // Use force=true to ensure particles are visible at longer distances
             targetLoc.getWorld().spawnParticle(Particle.SPLASH, groundLoc, 30, 0.5, 0.1, 0.5, 0.3, null, true);
 
-            new BukkitRunnable() {
-                int ticks = 0;
-                double geyserHeight = 0;
-                double lastGeyserHeight = 0;
+            // Enable flight for players to prevent "kick for flying"
+                final boolean wasAllowFlight = (target instanceof Player p) ? p.getAllowFlight() : false;
+                if (target instanceof Player p) {
+                    p.setAllowFlight(true);
+                }
 
-                @Override
-                public void run() {
-                    if (target.isDead() || !target.isValid()) { cancel(); return; }
-                    Location loc = target.getLocation();
-                    // Limit height to 20 blocks maximum
-                    double currentHeight = target.getLocation().getY() - startY;
-                    if (currentHeight < 20) {
-                        target.setVelocity(new Vector(0, 0.8, 0));
-                    } else {
-                        target.setVelocity(new Vector(0, 0, 0)); // Stop upward movement at 20 blocks
-                    }
+                new BukkitRunnable() {
+                    int ticks = 0;
+                    double lastGeyserHeight = 0;
+                    double geyserHeight = 0;
 
-                    // Force particles to be visible
-                    target.getWorld().spawnParticle(Particle.BUBBLE_COLUMN_UP, loc.getX(), loc.getY() - 0.01, loc.getZ(), 5, 0.2, 0.0, 0.2, 0.01, null, true);
+                    @Override
+                    public void run() {
+                        if (target.isDead() || !target.isValid()) {
+                            if (target instanceof Player p) {
+                                if (!wasAllowFlight && p.getGameMode() != org.bukkit.GameMode.CREATIVE && p.getGameMode() != org.bukkit.GameMode.SPECTATOR) {
+                                    p.setAllowFlight(false);
+                                }
+                            }
+                            cancel();
+                            return;
+                        }
+                        Location loc = target.getLocation();
+                        // Limit height to 20 blocks maximum
+                        double currentHeight = target.getLocation().getY() - startY;
+                        if (currentHeight < 20) {
+                            target.setVelocity(new Vector(0, 0.8, 0));
+                        } else {
+                            target.setVelocity(new Vector(0, 0, 0)); // Stop upward movement at 20 blocks
+                        }
 
-                    Location groundLoc = new Location(loc.getWorld(), loc.getX(), startY, loc.getZ());
+                        // Force particles to be visible
+                        target.getWorld().spawnParticle(Particle.BUBBLE_COLUMN_UP, loc.getX(), loc.getY() - 0.01, loc.getZ(), 5, 0.2, 0.0, 0.2, 0.01, null, true);
 
-                    // Smooth height transition logic - launch to 20 blocks
-                    double targetHeight = Math.min(loc.getY() - startY, 20);
-                    double heightDiff = targetHeight - lastGeyserHeight;
-                    geyserHeight = lastGeyserHeight + Math.min(heightDiff, 0.5);
-                    lastGeyserHeight = geyserHeight;
+                        Location groundLoc = new Location(loc.getWorld(), loc.getX(), startY, loc.getZ());
 
-                    // Create particles along the geyser column with force=true
-                    for (double y = 0; y <= geyserHeight; y += 0.25) {
-                        if (y % 0.5 != 0 && y > 1) continue;
+                        // Smooth height transition logic - launch to 20 blocks
+                        double targetHeight = Math.min(loc.getY() - startY, 20);
+                        double heightDiff = targetHeight - lastGeyserHeight;
+                        geyserHeight = lastGeyserHeight + Math.min(heightDiff, 0.5);
+                        lastGeyserHeight = geyserHeight;
 
-                        Location particleLoc = groundLoc.clone().add(0, y, 0);
-                        // Wider spread at bottom, narrower at top
-                        double spread = 0.15 * (1 - (y / Math.max(geyserHeight, 1)));
+                        // Create particles along the geyser column with force=true
+                        for (double y = 0; y <= geyserHeight; y += 0.25) {
+                            if (y % 0.5 != 0 && y > 1) continue;
 
-                        target.getWorld().spawnParticle(Particle.BUBBLE_COLUMN_UP, particleLoc, 1, spread, 0.05, spread, 0.01, null, true);
+                            Location particleLoc = groundLoc.clone().add(0, y, 0);
+                            // Wider spread at bottom, narrower at top
+                            double spread = 0.15 * (1 - (y / Math.max(geyserHeight, 1)));
 
-                        if (y % 1.5 < 0.25 && y > 0.5) {
-                            target.getWorld().spawnParticle(Particle.UNDERWATER, particleLoc, 1, spread, 0.05, spread, 0.01, null, true);
+                            target.getWorld().spawnParticle(Particle.BUBBLE_COLUMN_UP, particleLoc, 1, spread, 0.05, spread, 0.01, null, true);
+
+                            if (y % 1.5 < 0.25 && y > 0.5) {
+                                target.getWorld().spawnParticle(Particle.UNDERWATER, particleLoc, 1, spread, 0.05, spread, 0.01, null, true);
+                            }
+                        }
+
+                        ticks++;
+                        if (ticks >= 40) {
+                            if (target instanceof Player p) {
+                                if (!wasAllowFlight && p.getGameMode() != org.bukkit.GameMode.CREATIVE && p.getGameMode() != org.bukkit.GameMode.SPECTATOR) {
+                                    p.setAllowFlight(false);
+                                }
+                            }
+                            cancel();
                         }
                     }
-
-                    ticks++;
-                    if (ticks >= 40) {
-                        cancel();
-                    }
-                }
-            }.runTaskTimer(context.getPlugin(), 0L, 1L);
+                }.runTaskTimer(context.getPlugin(), 0L, 1L);
         }
 
         if (!foundTargets) {

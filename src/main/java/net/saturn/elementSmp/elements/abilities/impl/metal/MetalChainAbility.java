@@ -111,6 +111,12 @@ public class MetalChainAbility extends BaseAbility {
                     long stunUntil = System.currentTimeMillis() + stunDuration;
                     finalTarget.setMetadata(META_CHAINED_STUN, new FixedMetadataValue(plugin, stunUntil));
 
+                    // Enable flight for players to prevent "kick for flying"
+                    final boolean wasAllowFlight = (finalTarget instanceof Player p) ? p.getAllowFlight() : false;
+                    if (finalTarget instanceof Player p) {
+                        p.setAllowFlight(true);
+                    }
+
                     // Schedule metadata removal and re-enable AI after stun expires
                     new BukkitRunnable() {
                         @Override
@@ -119,6 +125,11 @@ public class MetalChainAbility extends BaseAbility {
                                 finalTarget.removeMetadata(META_CHAINED_STUN, plugin);
                                 if (finalTarget instanceof Mob mob) {
                                     mob.setAware(true);
+                                }
+                                if (finalTarget instanceof Player p) {
+                                    if (!wasAllowFlight && p.getGameMode() != org.bukkit.GameMode.CREATIVE && p.getGameMode() != org.bukkit.GameMode.SPECTATOR) {
+                                        p.setAllowFlight(false);
+                                    }
                                 }
                             }
                         }

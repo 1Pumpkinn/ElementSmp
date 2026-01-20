@@ -86,7 +86,7 @@ public class MetalDashAbility extends BaseAbility implements Listener {
                             }
                         }
 
-                        // HIT SUCCESSFUL
+                        // HIT SUCCESSFUL - RESTORED FEATURE: End dash on hit
                         damagedEntities.add(entity.getUniqueId());
 
                         // Deal TRUE DAMAGE
@@ -98,6 +98,11 @@ public class MetalDashAbility extends BaseAbility implements Listener {
                         entity.setVelocity(knockback.multiply(0.5));
                         entity.getWorld().spawnParticle(Particle.CRIT, entity.getLocation(), 15, 0.5, 0.5, 0.5, 0.1, null, true);
                         entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_PLAYER_ATTACK_CRIT, 1.0f, 1.2f);
+
+                        // Success! End the dash immediately
+                        cleanup();
+                        cancel();
+                        return;
                     }
                 }
 
@@ -110,10 +115,9 @@ public class MetalDashAbility extends BaseAbility implements Listener {
                 if (landedAtTick != null) {
                     // Player has landed, check grace period
                     if (ticks - landedAtTick >= graceTicks) {
-                        // ONLY STUN IF NO ONE WAS HIT
-                        if (damagedEntities.isEmpty()) {
-                            applyStun(player);
-                        }
+                        // If we are here, it means we landed and 1.5s passed without hitting anyone
+                        // (otherwise the 'HIT SUCCESSFUL' block would have returned already)
+                        applyStun(player);
                         cleanup();
                         cancel();
                         return;
@@ -145,16 +149,27 @@ public class MetalDashAbility extends BaseAbility implements Listener {
         // Add player to stunned set
         stunnedPlayers.add(player.getUniqueId());
 
+        // Enable flight to prevent "kick for flying" while suspended in air
+        boolean wasAllowFlight = player.getAllowFlight();
+        player.setAllowFlight(true);
+
         // Visual and audio feedback for the stun
         player.getWorld().spawnParticle(Particle.SMOKE, player.getLocation().add(0, 1, 0), 30, 0.3, 0.5, 0.3, 0.05, null, true);
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_IRON_GOLEM_DAMAGE, 1.0f, 0.8f);
-
 
         // Remove from stunned set after 5 seconds
         new BukkitRunnable() {
             @Override
             public void run() {
                 stunnedPlayers.remove(player.getUniqueId());
+                
+                // Restore flight state if player is still online
+                if (player.isOnline()) {
+                    // Only disable if they weren't allowed to fly before and aren't in creative/spectator
+                    if (!wasAllowFlight && player.getGameMode() != org.bukkit.GameMode.CREATIVE && player.getGameMode() != org.bukkit.GameMode.SPECTATOR) {
+                        player.setAllowFlight(false);
+                    }
+                }
             }
         }.runTaskLater(plugin, 100L);
     }
@@ -188,6 +203,6 @@ public class MetalDashAbility extends BaseAbility implements Listener {
 
     @Override
     public String getDescription() {
-        return "Dash forward, hitting all entities in your path. You have 1.5s after landing to hit at least one entity to avoid a 5s stun. (50 mana)";
+        return "Dash forward. You must hit an entity within 1.5s of landing to avoid a 5s stun. (50 mana)";
     }
 }

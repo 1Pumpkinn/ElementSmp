@@ -86,6 +86,12 @@ public class FrostFrozenPunchListener implements Listener {
         entity.setFreezeTicks(entity.getMaxFreezeTicks());
         entity.setVelocity(new Vector(0, 0, 0));
 
+        // Enable flight for players to prevent "kick for flying"
+        final boolean wasAllowFlight = (entity instanceof Player p) ? p.getAllowFlight() : false;
+        if (entity instanceof Player p) {
+            p.setAllowFlight(true);
+        }
+
         if (entity instanceof Mob mob) {
             mob.setAware(true);
             new BukkitRunnable() {
@@ -103,16 +109,31 @@ public class FrostFrozenPunchListener implements Listener {
             public void run() {
                 if (!entity.isValid() || ticks >= 100) {
                     entity.removeMetadata(META_FROZEN, plugin);
+                    if (entity instanceof Player p) {
+                        if (!wasAllowFlight && p.getGameMode() != org.bukkit.GameMode.CREATIVE && p.getGameMode() != org.bukkit.GameMode.SPECTATOR) {
+                            p.setAllowFlight(false);
+                        }
+                    }
                     cancel();
                     return;
                 }
                 if (!entity.hasMetadata(META_FROZEN)) {
+                    if (entity instanceof Player p) {
+                        if (!wasAllowFlight && p.getGameMode() != org.bukkit.GameMode.CREATIVE && p.getGameMode() != org.bukkit.GameMode.SPECTATOR) {
+                            p.setAllowFlight(false);
+                        }
+                    }
                     cancel();
                     return;
                 }
                 long until = entity.getMetadata(META_FROZEN).get(0).asLong();
                 if (System.currentTimeMillis() > until) {
                     entity.removeMetadata(META_FROZEN, plugin);
+                    if (entity instanceof Player p) {
+                        if (!wasAllowFlight && p.getGameMode() != org.bukkit.GameMode.CREATIVE && p.getGameMode() != org.bukkit.GameMode.SPECTATOR) {
+                            p.setAllowFlight(false);
+                        }
+                    }
                     cancel();
                     return;
                 }
