@@ -33,9 +33,14 @@ public class MetalDashAbility extends BaseAbility implements Listener {
         Player player = context.getPlayer();
         Vector direction = player.getLocation().getDirection().normalize();
 
-        // Apply stronger initial velocity boost for longer dash
+        // Apply velocity boost - allow downward dashing if looking down
         Vector dashVelocity = direction.multiply(2.5);
-        dashVelocity.setY(Math.max(dashVelocity.getY(), 0.4)); // Prevent downward dashing
+        
+        // Only force an upward boost if the player is NOT looking down
+        if (direction.getY() > -0.2) {
+            dashVelocity.setY(Math.max(dashVelocity.getY(), 0.4));
+        }
+        
         player.setVelocity(dashVelocity);
 
         // Track damaged entities to prevent multiple hits

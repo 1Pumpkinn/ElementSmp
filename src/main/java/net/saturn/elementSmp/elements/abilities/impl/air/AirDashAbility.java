@@ -23,7 +23,12 @@ public class AirDashAbility extends BaseAbility {
     public boolean execute(ElementContext context) {
         Player player = context.getPlayer();
         Vector direction = player.getLocation().getDirection();
-        direction.setY(Math.max(direction.getY(), 0.5));
+        
+        // Allow downward dashing if looking down
+        if (direction.getY() > -0.2) {
+            direction.setY(Math.max(direction.getY(), 0.5));
+        }
+        
         player.setVelocity(direction.multiply(2.5));
 
         new BukkitRunnable() {
