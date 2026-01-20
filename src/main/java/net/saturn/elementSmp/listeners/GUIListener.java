@@ -85,10 +85,13 @@ public class GUIListener implements Listener {
         String elementTypeString = item.getItemMeta().getPersistentDataContainer()
                 .get(ItemKeys.elementType(plugin), PersistentDataType.STRING);
 
-            if (elementTypeString == null) {
+        if (elementTypeString == null) {
+            // Only send error if it's actually marked as an element item but missing its type
+            if (item.getItemMeta().getPersistentDataContainer().has(ItemKeys.elementItem(plugin), PersistentDataType.BYTE)) {
                 player.sendMessage(net.kyori.adventure.text.Component.text("Invalid element item!").color(net.kyori.adventure.text.format.NamedTextColor.RED));
-                return;
             }
+            return;
+        }
 
             try {
                 net.saturn.elementSmp.elements.ElementType elementType =
