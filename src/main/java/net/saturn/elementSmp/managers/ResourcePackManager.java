@@ -3,7 +3,6 @@ package net.saturn.elementSmp.managers;
 import com.sun.net.httpserver.HttpServer;
 import net.saturn.elementSmp.ElementSmp;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -72,35 +71,43 @@ public class ResourcePackManager implements Listener {
         if (!folder.exists()) {
             folder.mkdirs();
         }
-        // This is a simplified extraction. In a real scenario, you'd iterate the JAR resources.
-        // For now, we'll assume the user might have manually placed it or we use saveResource.
-        // saveResource only works for single files, not directories.
-        // Let's at least copy pack.mcmeta to show it's working.
-        plugin.saveResource("resourcepack/pack.mcmeta", true);
-        
-        // Since we can't easily extract directories via saveResource, 
-        // we'll instruct the user that the folder should exist in the JAR 
-        // and we'll try to copy the files we know about.
+
         String[] resources = {
-            "resourcepack/assets/minecraft/models/item/heart_of_the_sea.json",
-            "resourcepack/assets/minecraft/models/item/recovery_compass.json",
-            "resourcepack/assets/minecraft/models/item/amethyst_shard.json",
-            "resourcepack/assets/minecraft/models/item/echo_shard.json",
-            "resourcepack/assets/minecraft/models/item/custom/reroller.json",
-            "resourcepack/assets/minecraft/models/item/custom/advanced_reroller.json",
-            "resourcepack/assets/minecraft/models/item/custom/upgrader_1.json",
-            "resourcepack/assets/minecraft/models/item/custom/upgrader_2.json",
-            "resourcepack/assets/minecraft/textures/item/custom/reroller.png",
-            "resourcepack/assets/minecraft/textures/item/custom/advanced_reroller.png",
-            "resourcepack/assets/minecraft/textures/item/custom/upgrader_1.png",
-            "resourcepack/assets/minecraft/textures/item/custom/upgrader_2.png",
-            "resourcepack/pack.png"
+                "resourcepack/pack.mcmeta",
+                "resourcepack/assets/minecraft/items/custom/upgrader_1.json",
+                "resourcepack/assets/minecraft/items/custom/upgrader_2.json",
+                "resourcepack/assets/minecraft/items/custom/reroller.json",
+                "resourcepack/assets/minecraft/items/custom/advanced_reroller.json",
+                "resourcepack/assets/minecraft/models/item/custom/reroller.json",
+                "resourcepack/assets/minecraft/models/item/custom/advanced_reroller.json",
+                "resourcepack/assets/minecraft/models/item/custom/upgrader_1.json",
+                "resourcepack/assets/minecraft/models/item/custom/upgrader_2.json",
+                "resourcepack/assets/minecraft/textures/item/custom/reroller.png",
+                "resourcepack/assets/minecraft/textures/item/custom/advanced_reroller.png",
+                "resourcepack/assets/minecraft/textures/item/custom/upgrader_1.png",
+                "resourcepack/assets/minecraft/textures/item/custom/upgrader_2.png",
+                "resourcepack/pack.png"
         };
 
         for (String res : resources) {
             try {
-                plugin.saveResource(res, true);
-            } catch (Exception ignored) {}
+                // Get the resource from JAR
+                InputStream in = plugin.getResource(res);
+                if (in == null) {
+                    plugin.getLogger().warning("Could not find resource: " + res);
+                    continue;
+                }
+
+                // Create parent directories
+                File outFile = new File(plugin.getDataFolder(), res);
+                outFile.getParentFile().mkdirs();
+
+                // Copy the file
+                Files.copy(in, outFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                in.close();
+            } catch (Exception e) {
+                plugin.getLogger().warning("Failed to extract resource: " + res + " - " + e.getMessage());
+            }
         }
     }
 
@@ -135,10 +142,9 @@ public class ResourcePackManager implements Listener {
     private void startServer(File zipFile) throws IOException {
         int port = plugin.getConfig().getInt("resource_pack.port", 8080);
         String host = plugin.getConfig().getString("resource_pack.host", "");
-        
+
         if (host.isEmpty()) {
             try {
-                // Better way to get local IP that isn't 127.0.0.1
                 java.net.DatagramSocket socket = new java.net.DatagramSocket();
                 socket.connect(java.net.InetAddress.getByName("8.8.8.8"), 10002);
                 host = socket.getLocalAddress().getHostAddress();
@@ -150,10 +156,11 @@ public class ResourcePackManager implements Listener {
         }
 
         this.packUrl = "http://" + host + ":" + port + "/resourcepack.zip";
-        
+
         server = HttpServer.create(new InetSocketAddress(port), 0);
         server.createContext("/resourcepack.zip", exchange -> {
             byte[] response = Files.readAllBytes(zipFile.toPath());
+            exchange.getResponseHeaders().add("Content-Type", "application/zip");
             exchange.sendResponseHeaders(200, response.length);
             try (OutputStream os = exchange.getResponseBody()) {
                 os.write(response);
@@ -161,6 +168,8 @@ public class ResourcePackManager implements Listener {
         });
         server.setExecutor(null);
         server.start();
+
+        plugin.getLogger().info("Resource pack URL: " + packUrl);
     }
 
     public void stopServer() {
@@ -176,6 +185,6 @@ public class ResourcePackManager implements Listener {
         Player player = event.getPlayer();
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
             player.setResourcePack(packUrl, packHash, promptMessage, required);
-        }, 20L); // Delay 1 second to ensure player is fully loaded
+        }, 20L);
     }
 }

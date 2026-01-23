@@ -1,6 +1,9 @@
 package net.saturn.elementSmp.items;
 
 import net.saturn.elementSmp.ElementSmp;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
@@ -19,9 +22,18 @@ public final class  Upgrader2Item {
     public static ItemStack make(ElementSmp plugin) {
         ItemStack item = new ItemStack(Material.ECHO_SHARD);
         ItemMeta meta = item.getItemMeta();
-        meta.setDisplayName("§bUpgrader II");
+        
+        meta.displayName(Component.text("Upgrader II")
+                .color(NamedTextColor.AQUA)
+                .decoration(TextDecoration.ITALIC, false));
+        
         meta.setCustomModelData(10004);
-        meta.setLore(List.of("Use by crafting to unlock", "Ability 2 + Upside 2 for your element"));
+        meta.setItemModel(NamespacedKey.minecraft("custom/upgrader_2"));
+        
+        meta.lore(List.of(
+                Component.text("Use by crafting to unlock").color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false),
+                Component.text("Ability 2 + Upside 2 for your element").color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false)
+        ));
         PersistentDataContainer pdc = meta.getPersistentDataContainer();
         pdc.set(ItemKeys.upgraderLevel(plugin), PersistentDataType.INTEGER, 2);
         item.setItemMeta(meta);

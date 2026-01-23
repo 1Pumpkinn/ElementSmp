@@ -1,7 +1,9 @@
 package net.saturn.elementSmp.items;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import net.saturn.elementSmp.ElementSmp;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
@@ -20,11 +22,17 @@ public final class RerollerItem {
     public static ItemStack make(ElementSmp plugin) {
         ItemStack item = new ItemStack(Material.HEART_OF_THE_SEA);
         ItemMeta meta = item.getItemMeta();
-        meta.setDisplayName(ChatColor.LIGHT_PURPLE + "Element Reroller");
+        
+        meta.displayName(Component.text("Element Reroller")
+                .color(NamedTextColor.LIGHT_PURPLE)
+                .decoration(TextDecoration.ITALIC, false));
+        
         meta.setCustomModelData(10001);
-        meta.setLore(List.of(
-            ChatColor.GRAY + "Allows you to change your element",
-            ChatColor.YELLOW + "Right-click to randomly reroll your element"
+        meta.setItemModel(NamespacedKey.minecraft("custom/reroller"));
+        
+        meta.lore(List.of(
+                Component.text("Allows you to change your element").color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false),
+                Component.text("Right-click to randomly reroll your element").color(NamedTextColor.YELLOW).decoration(TextDecoration.ITALIC, false)
         ));
         PersistentDataContainer pdc = meta.getPersistentDataContainer();
         pdc.set(ItemKeys.reroller(plugin), PersistentDataType.BYTE, (byte)1);

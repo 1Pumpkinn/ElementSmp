@@ -1,7 +1,9 @@
 package net.saturn.elementSmp.items;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import net.saturn.elementSmp.ElementSmp;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
@@ -20,11 +22,17 @@ public final class AdvancedRerollerItem {
     public static ItemStack make(ElementSmp plugin) {
         ItemStack item = new ItemStack(Material.RECOVERY_COMPASS);
         ItemMeta meta = item.getItemMeta();
-        meta.setDisplayName(ChatColor.DARK_PURPLE + "Advanced Reroller");
+        
+        meta.displayName(Component.text("Advanced Reroller")
+                .color(NamedTextColor.DARK_PURPLE)
+                .decoration(TextDecoration.ITALIC, false));
+        
         meta.setCustomModelData(10002);
-        meta.setLore(List.of(
-                ChatColor.GRAY + "Unlocks advanced elements",
-                ChatColor.YELLOW + "Right-click to reroll"
+        meta.setItemModel(NamespacedKey.minecraft("custom/advanced_reroller"));
+        
+        meta.lore(List.of(
+                Component.text("Unlocks advanced elements").color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false),
+                Component.text("Right-click to randomly reroll your element").color(NamedTextColor.YELLOW).decoration(TextDecoration.ITALIC, false)
         ));
         PersistentDataContainer pdc = meta.getPersistentDataContainer();
         pdc.set(ItemKeys.namespaced(plugin, KEY), PersistentDataType.BYTE, (byte)1);
