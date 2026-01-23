@@ -43,6 +43,7 @@ public final class ElementSmp extends JavaPlugin {
     private ValidationService validationService;
     private TaskScheduler taskScheduler;
     private MetadataHelper metadataHelper;
+    private ResourcePackManager resourcePackManager;
 
     @Override
     public void onEnable() {
@@ -65,6 +66,9 @@ public final class ElementSmp extends JavaPlugin {
     @Override
     public void onDisable() {
         try {
+            if (resourcePackManager != null) {
+                resourcePackManager.stopServer();
+            }
             stopBackgroundTasks();
             saveAllData();
             getLogger().info("ElementSmp disabled successfully!");
@@ -87,6 +91,7 @@ public final class ElementSmp extends JavaPlugin {
         this.manaManager = new ManaManager(this, dataStore, configManager);
         this.elementManager = new ElementManager(this, dataStore, manaManager, trustManager, configManager);
         this.itemManager = new ItemManager(this, manaManager, configManager);
+        this.resourcePackManager = new ResourcePackManager(this);
 
         getLogger().info("Managers initialized");
     }
@@ -259,7 +264,6 @@ public final class ElementSmp extends JavaPlugin {
         pm.registerEvents(new FireImmunityListener(elementManager), this);
         pm.registerEvents(new FireCombatListener(elementManager, trustManager), this);
         pm.registerEvents(new FireballProtectionListener(), this);
-        pm.registerEvents(new EarthCharmListener(elementManager, this), this);
         pm.registerEvents(new EarthFriendlyMobListener(this, trustManager), this);
         pm.registerEvents(new EarthOreDropListener(elementManager), this);
         pm.registerEvents(new LifeRegenListener(elementManager), this);
@@ -267,6 +271,7 @@ public final class ElementSmp extends JavaPlugin {
         pm.registerEvents(new DeathRawFoodListener(elementManager), this);
         pm.registerEvents(new DeathFriendlyMobListener(this, trustManager), this);
         pm.registerEvents(new DeathElementCraftListener(this, elementManager), this);
+        pm.registerEvents(new DeathPassiveListener(this, elementManager), this);
         pm.registerEvents(new MetalArrowImmunityListener(elementManager), this);
         pm.registerEvents(new MetalChainStunListener(), this);
         pm.registerEvents(new FrostPassiveListener(this, elementManager), this);

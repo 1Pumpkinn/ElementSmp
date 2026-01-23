@@ -20,6 +20,7 @@ public final class Upgrader1Item {
         ItemStack item = new ItemStack(Material.AMETHYST_SHARD);
         ItemMeta meta = item.getItemMeta();
         meta.setDisplayName("§aUpgrader I");
+        meta.setCustomModelData(10003);
         meta.setLore(List.of("Use by crafting to unlock", "Ability 1 for your element"));
         PersistentDataContainer pdc = meta.getPersistentDataContainer();
         pdc.set(ItemKeys.upgraderLevel(plugin), PersistentDataType.INTEGER, 1);

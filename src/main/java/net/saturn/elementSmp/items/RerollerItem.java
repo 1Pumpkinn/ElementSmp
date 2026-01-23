@@ -21,6 +21,7 @@ public final class RerollerItem {
         ItemStack item = new ItemStack(Material.HEART_OF_THE_SEA);
         ItemMeta meta = item.getItemMeta();
         meta.setDisplayName(ChatColor.LIGHT_PURPLE + "Element Reroller");
+        meta.setCustomModelData(10001);
         meta.setLore(List.of(
             ChatColor.GRAY + "Allows you to change your element",
             ChatColor.YELLOW + "Right-click to randomly reroll your element"

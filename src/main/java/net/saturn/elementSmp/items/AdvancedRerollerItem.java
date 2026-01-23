@@ -21,6 +21,7 @@ public final class AdvancedRerollerItem {
         ItemStack item = new ItemStack(Material.RECOVERY_COMPASS);
         ItemMeta meta = item.getItemMeta();
         meta.setDisplayName(ChatColor.DARK_PURPLE + "Advanced Reroller");
+        meta.setCustomModelData(10002);
         meta.setLore(List.of(
                 ChatColor.GRAY + "Unlocks advanced elements",
                 ChatColor.YELLOW + "Right-click to reroll"

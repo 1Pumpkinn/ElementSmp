@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
@@ -86,7 +87,7 @@ public class MetalDashAbility extends BaseAbility implements Listener {
                             }
                         }
 
-                        // HIT SUCCESSFUL - RESTORED FEATURE: End dash on hit
+                        // HIT SUCCESSFUL - Now allows hitting multiple entities
                         damagedEntities.add(entity.getUniqueId());
 
                         // Deal TRUE DAMAGE
@@ -98,16 +99,12 @@ public class MetalDashAbility extends BaseAbility implements Listener {
                         entity.setVelocity(knockback.multiply(0.5));
                         entity.getWorld().spawnParticle(Particle.CRIT, entity.getLocation(), 15, 0.5, 0.5, 0.5, 0.1, null, true);
                         entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_PLAYER_ATTACK_CRIT, 1.0f, 1.2f);
-
-                        // Success! End the dash immediately
-                        cleanup();
-                        cancel();
-                        return;
                     }
                 }
 
                 // 3. Landing detection
-                if (landedAtTick == null && player.isOnGround()) {
+                // Ignore the first 5 ticks to allow the player to leave the ground if they started there
+                if (landedAtTick == null && ticks > 5 && player.isOnGround()) {
                     landedAtTick = ticks;
                 }
 
@@ -115,9 +112,10 @@ public class MetalDashAbility extends BaseAbility implements Listener {
                 if (landedAtTick != null) {
                     // Player has landed, check grace period
                     if (ticks - landedAtTick >= graceTicks) {
-                        // If we are here, it means we landed and 1.5s passed without hitting anyone
-                        // (otherwise the 'HIT SUCCESSFUL' block would have returned already)
-                        applyStun(player);
+                        // Only stun if NO entities were hit throughout the dash
+                        if (damagedEntities.isEmpty()) {
+                            applyStun(player);
+                        }
                         cleanup();
                         cancel();
                         return;
@@ -126,11 +124,8 @@ public class MetalDashAbility extends BaseAbility implements Listener {
 
                 ticks++;
 
-                // Safety timeout (30 seconds)
+                // Safety timeout (30 seconds) - No stun if still in air
                 if (ticks > 600) {
-                    if (damagedEntities.isEmpty()) {
-                        applyStun(player);
-                    }
                     cleanup();
                     cancel();
                 }
@@ -148,6 +143,10 @@ public class MetalDashAbility extends BaseAbility implements Listener {
     private void applyStun(Player player) {
         // Add player to stunned set
         stunnedPlayers.add(player.getUniqueId());
+
+        // Apply potion effects for visual/mechanical feedback
+        player.addPotionEffect(new org.bukkit.potion.PotionEffect(PotionEffectType.SLOWNESS, 100, 4, true, false, true));
+        player.addPotionEffect(new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.WEAKNESS, 100, 4, true, false, true));
 
         // Enable flight to prevent "kick for flying" while suspended in air
         boolean wasAllowFlight = player.getAllowFlight();
@@ -203,6 +202,6 @@ public class MetalDashAbility extends BaseAbility implements Listener {
 
     @Override
     public String getDescription() {
-        return "Dash forward. You must hit an entity within 1.5s of landing to avoid a 5s stun. (50 mana)";
+        return "Dash forward, hitting all enemies in your path. You cannot be stunned in the air; once you land, you have 1.5s to hit at least one entity to avoid a 5s stun. (50 mana)";
     }
 }

@@ -48,3 +48,13 @@ costs:
 
 recipes:
   advanced_reroller_enabled: true
+
+resource_pack:
+  enabled: true
+  port: 8080
+  # Leave host empty to try and auto-detect or use the server's IP
+  host: ""
+  # The message shown to players when they are prompted to download the pack
+  prompt_message: "Please download the ElementSmp Resource Pack for custom item textures!"
+  # Whether to force the pack (kick player if they decline - use with caution)
+  required: false

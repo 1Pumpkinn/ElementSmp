@@ -20,6 +20,7 @@ public final class  Upgrader2Item {
         ItemStack item = new ItemStack(Material.ECHO_SHARD);
         ItemMeta meta = item.getItemMeta();
         meta.setDisplayName("§bUpgrader II");
+        meta.setCustomModelData(10004);
         meta.setLore(List.of("Use by crafting to unlock", "Ability 2 + Upside 2 for your element"));
         PersistentDataContainer pdc = meta.getPersistentDataContainer();
         pdc.set(ItemKeys.upgraderLevel(plugin), PersistentDataType.INTEGER, 2);

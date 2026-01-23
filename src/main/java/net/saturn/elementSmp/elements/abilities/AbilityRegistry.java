@@ -3,8 +3,10 @@ package net.saturn.elementSmp.elements.abilities;
 import net.saturn.elementSmp.ElementSmp;
 import net.saturn.elementSmp.elements.ElementType;
 import net.saturn.elementSmp.elements.abilities.impl.air.*;
-import net.saturn.elementSmp.elements.abilities.impl.death.*;
-import net.saturn.elementSmp.elements.abilities.impl.earth.*;
+import net.saturn.elementSmp.elements.abilities.impl.death.DeathSummonUndeadAbility;
+import net.saturn.elementSmp.elements.abilities.impl.death.ShadowStepAbility;
+import net.saturn.elementSmp.elements.abilities.impl.earth.EarthTunnelAbility;
+import net.saturn.elementSmp.elements.abilities.impl.earth.EarthquakeAbility;
 import net.saturn.elementSmp.elements.abilities.impl.fire.*;
 import net.saturn.elementSmp.elements.abilities.impl.frost.*;
 import net.saturn.elementSmp.elements.abilities.impl.life.*;
@@ -61,7 +63,7 @@ public final class AbilityRegistry {
         // Earth
         register(ElementType.EARTH,
                 new EarthTunnelAbility(plugin),
-                new EarthCharmAbility(plugin)
+                new EarthquakeAbility(plugin)
         );
 
         // Life
@@ -72,8 +74,8 @@ public final class AbilityRegistry {
 
         // Death
         register(ElementType.DEATH,
-                new DeathWitherSkullAbility(plugin),
-                new DeathSummonUndeadAbility(plugin)
+                new DeathSummonUndeadAbility(plugin),
+                new ShadowStepAbility(plugin)
         );
 
         // Metal

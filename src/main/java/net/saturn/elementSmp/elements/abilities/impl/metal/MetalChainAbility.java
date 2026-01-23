@@ -53,7 +53,6 @@ public class MetalChainAbility extends BaseAbility {
             if (blockHit == null || blockHit.getHitBlock() == null) {
                 target = living;
             } else {
-                player.sendMessage(ChatColor.RED + "Your chain is blocked by a wall!");
                 return false;
             }
         }

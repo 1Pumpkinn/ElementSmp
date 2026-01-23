@@ -1,114 +1,75 @@
 package net.saturn.elementSmp.elements.abilities.impl.death;
 
-import net.saturn.elementSmp.ElementSmp;
 import net.saturn.elementSmp.elements.ElementContext;
 import net.saturn.elementSmp.elements.abilities.BaseAbility;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.Particle;
 import org.bukkit.Sound;
-import org.bukkit.attribute.Attribute;
-import org.bukkit.entity.*;
-import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.scheduler.BukkitRunnable;
-
-import java.util.List;
-import java.util.Random;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.WitherSkeleton;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 public class DeathSummonUndeadAbility extends BaseAbility {
-    private final ElementSmp plugin;
-    private static final List<Class<? extends LivingEntity>> UNDEAD_TYPES = List.of(
-            Zombie.class, Skeleton.class, Husk.class, Stray.class
-    );
-    public static final String META_FRIENDLY_UNDEAD_OWNER = "death_summoned_owner";
-    public static final String META_FRIENDLY_UNDEAD_UNTIL = "death_summoned_until";
-    private final Random random = new Random();
 
-    public DeathSummonUndeadAbility(ElementSmp plugin) {
-        super("death_summon_undead", 50, 30, 1);
-        this.plugin = plugin;
+    public DeathSummonUndeadAbility(net.saturn.elementSmp.ElementSmp plugin) {
+        super("death_summon_undead", 100, 45, 1);
     }
 
     @Override
     public boolean execute(ElementContext context) {
         Player player = context.getPlayer();
-        Location spawnLoc = player.getLocation().add(player.getLocation().getDirection().multiply(2));
-        spawnLoc.setY(player.getLocation().getY());
-
-        // Pick a random undead type
-        Class<? extends LivingEntity> mobClass = UNDEAD_TYPES.get(random.nextInt(UNDEAD_TYPES.size()));
-        LivingEntity entity = (LivingEntity) player.getWorld().spawn(spawnLoc, mobClass);
-
-        // Configure the mob
-        entity.setCustomName(ChatColor.DARK_PURPLE + player.getName() + "'s Undead");
-        entity.setCustomNameVisible(true);
-        entity.getAttribute(Attribute.MAX_HEALTH).setBaseValue(40.0);
-        entity.setHealth(40.0);
-        entity.setRemoveWhenFarAway(false);
-
-        // CRITICAL: Set metadata with correct keys that match the listener
-        long expirationTime = System.currentTimeMillis() + 30_000L; // 30 seconds
-        entity.setMetadata(META_FRIENDLY_UNDEAD_OWNER, new FixedMetadataValue(plugin, player.getUniqueId().toString()));
-        entity.setMetadata(META_FRIENDLY_UNDEAD_UNTIL, new FixedMetadataValue(plugin, expirationTime));
-
-        // Ensure AI is enabled and mob can attack
-        if (entity instanceof Mob mob) {
-            mob.setAware(true);
-            mob.setCanPickupItems(false);
-
-            // Find nearest enemy to attack immediately
-            Player nearestEnemy = null;
-            double bestDistance = Double.MAX_VALUE;
-            for (Player p : player.getWorld().getPlayers()) {
-                if (p.getUniqueId().equals(player.getUniqueId())) continue;
-                if (context.getTrustManager().isTrusted(player.getUniqueId(), p.getUniqueId())) continue;
-
-                double dist = p.getLocation().distanceSquared(entity.getLocation());
-                if (dist < bestDistance && dist < 20*20) {
-                    bestDistance = dist;
-                    nearestEnemy = p;
-                }
-            }
-
-            // Set initial target if enemy found
-            if (nearestEnemy != null) {
-                mob.setTarget(nearestEnemy);
-            }
-        }
-
-        player.getWorld().playSound(spawnLoc, Sound.ENTITY_ZOMBIE_AMBIENT, 1f, 0.7f);
-        player.sendMessage(ChatColor.DARK_PURPLE + "Summoned an undead ally for 30 seconds!");
-
-        // Schedule removal after 30 seconds
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                if (entity.isValid() && !entity.isDead()) {
-                    entity.remove();
-                    if (player.isOnline()) {
-                        player.sendMessage(ChatColor.DARK_PURPLE + "Your undead ally has despawned.");
-                    }
-                }
-            }
-        }.runTaskLater(plugin, 600L); // 30 seconds = 600 ticks
-
+        
+        WitherSkeleton skeleton = (WitherSkeleton) player.getWorld().spawnEntity(player.getLocation(), EntityType.WITHER_SKELETON);
+        
+        // Armor
+        skeleton.getEquipment().setHelmet(createEnchantedItem(Material.IRON_HELMET, Enchantment.PROTECTION, 2));
+        skeleton.getEquipment().setChestplate(createEnchantedItem(Material.IRON_CHESTPLATE, Enchantment.PROTECTION, 2));
+        skeleton.getEquipment().setLeggings(createEnchantedItem(Material.IRON_LEGGINGS, Enchantment.PROTECTION, 2));
+        skeleton.getEquipment().setBoots(createEnchantedItem(Material.IRON_BOOTS, Enchantment.PROTECTION, 2));
+        
+        // Weapon
+        skeleton.getEquipment().setItemInMainHand(createEnchantedItem(Material.IRON_SWORD, Enchantment.SHARPNESS, 1));
+        
+        // Set drop chances to 0 so players can't farm the gear
+        skeleton.getEquipment().setHelmetDropChance(0);
+        skeleton.getEquipment().setChestplateDropChance(0);
+        skeleton.getEquipment().setLeggingsDropChance(0);
+        skeleton.getEquipment().setBootsDropChance(0);
+        skeleton.getEquipment().setItemInMainHandDropChance(0);
+        
+        skeleton.setCustomName(ChatColor.DARK_GRAY + player.getName() + "'s Undead Servant");
+        skeleton.setCustomNameVisible(true);
+        
+        // Make it not attack the owner (handled by DeathFriendlyMobListener already in the project)
+        
+        player.getWorld().spawnParticle(Particle.SQUID_INK, skeleton.getLocation().add(0, 1, 0), 50, 0.5, 0.5, 0.5, 0.1);
+        player.getWorld().playSound(skeleton.getLocation(), Sound.ENTITY_WITHER_SKELETON_AMBIENT, 1.0f, 0.5f);
+        player.sendMessage(ChatColor.DARK_PURPLE + "Summoned an Undead Servant!");
+        
         return true;
+    }
+
+    private ItemStack createEnchantedItem(Material material, Enchantment enchantment, int level) {
+        ItemStack item = new ItemStack(material);
+        ItemMeta meta = item.getItemMeta();
+        if (meta != null) {
+            meta.addEnchant(enchantment, level, true);
+            item.setItemMeta(meta);
+        }
+        return item;
     }
 
     @Override
     public String getName() {
-        return ChatColor.DARK_PURPLE + "Summon Undead";
+        return ChatColor.DARK_PURPLE + "Undead Servant";
     }
 
     @Override
     public String getDescription() {
-        return ChatColor.GRAY + "Summon a random undead ally with 20 hearts for 30 seconds. (75 mana)";
-    }
-
-    public static String getMetaFriendlyUndeadOwner() {
-        return META_FRIENDLY_UNDEAD_OWNER;
-    }
-
-    public static String getMetaFriendlyUndeadUntil() {
-        return META_FRIENDLY_UNDEAD_UNTIL;
+        return "Summon a Wither Skeleton with Protection 2 Iron Armor and a Sharpness Iron Sword.";
     }
 }

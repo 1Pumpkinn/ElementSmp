@@ -29,7 +29,7 @@ ELEMENT: DEATH
 - Passives: Raw/Undead foods act as Golden Apples, Hunger Aura (Upgrade II).
 
 ELEMENT: METAL
-- Ability 1: Metal Dash - Dash through enemies, damaging and stunning them.
+- Ability 1: Metal Dash - Dash through enemies. You cannot be stunned in the air; once you land, you have 1.5s to hit an entity to avoid a 5s stun.
 - Ability 2: Metal Chain - Throw a chain that pulls enemies toward you.
 - Passives: Permanent Haste I, Immunity to arrows.
 

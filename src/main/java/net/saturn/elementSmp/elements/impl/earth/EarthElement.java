@@ -5,7 +5,7 @@ import net.saturn.elementSmp.elements.BaseElement;
 import net.saturn.elementSmp.elements.ElementContext;
 import net.saturn.elementSmp.elements.ElementType;
 import net.saturn.elementSmp.elements.abilities.Ability;
-import net.saturn.elementSmp.elements.abilities.impl.earth.EarthCharmAbility;
+import net.saturn.elementSmp.elements.abilities.impl.earth.EarthquakeAbility;
 import net.saturn.elementSmp.elements.abilities.impl.earth.EarthTunnelAbility;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -25,7 +25,7 @@ public class EarthElement extends BaseElement {
         super(plugin);
         this.plugin = plugin;
         this.ability1 = new EarthTunnelAbility(plugin);
-        this.ability2 = new EarthCharmAbility(plugin);
+        this.ability2 = new EarthquakeAbility(plugin);
     }
 
     @Override
@@ -75,7 +75,7 @@ public class EarthElement extends BaseElement {
 
     @Override
     public String getDescription() {
-        return "Masters of stone and earth. Earth users can tunnel through blocks and charm mobs.";
+        return "Masters of stone and earth. Earth users can tunnel through blocks and cause earthquakes.";
     }
 
     @Override
