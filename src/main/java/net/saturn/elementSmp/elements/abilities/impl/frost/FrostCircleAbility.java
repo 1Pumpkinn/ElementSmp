@@ -15,13 +15,15 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
 public class FrostCircleAbility extends BaseAbility {
     private final ElementSmp plugin;
-    private final Set<UUID> activeCircles = new HashSet<>();
+    private final Map<UUID, Integer> activeCircleCounts = new HashMap<>();
 
     public static final String META_CIRCLE_FROZEN = "frost_freezing_circle";
 
@@ -34,14 +36,8 @@ public class FrostCircleAbility extends BaseAbility {
     public boolean execute(ElementContext context) {
         Player player = context.getPlayer();
 
-        // Check if already active
-        if (activeCircles.contains(player.getUniqueId())) {
-            player.sendMessage(ChatColor.RED + "Freezing Circle is already active!");
-            return false;
-        }
-
         setActive(player, true);
-        activeCircles.add(player.getUniqueId());
+        activeCircleCounts.put(player.getUniqueId(), activeCircleCounts.getOrDefault(player.getUniqueId(), 0) + 1);
 
         // Play activation sound
         player.getWorld().playSound(player.getLocation(), Sound.BLOCK_GLASS_BREAK, 1.0f, 0.5f);
@@ -62,14 +58,17 @@ public class FrostCircleAbility extends BaseAbility {
                             entity.removeMetadata(META_CIRCLE_FROZEN, plugin);
                             // Remove slowness effect
                             entity.removePotionEffect(PotionEffectType.SLOWNESS);
-                            if (entity instanceof Mob mob) {
-                                mob.setAware(true);
-                            }
                         }
                     }
 
-                    setActive(player, false);
-                    activeCircles.remove(player.getUniqueId());
+                    int newCount = activeCircleCounts.getOrDefault(player.getUniqueId(), 1) - 1;
+                    if (newCount <= 0) {
+                        activeCircleCounts.remove(player.getUniqueId());
+                        setActive(player, false);
+                    } else {
+                        activeCircleCounts.put(player.getUniqueId(), newCount);
+                    }
+                    
                     cancel();
                     return;
                 }
@@ -103,21 +102,24 @@ public class FrostCircleAbility extends BaseAbility {
                         if (context.getTrustManager().isTrusted(player.getUniqueId(), targetPlayer.getUniqueId())) continue;
                     }
 
-                    // Apply freezing effect (same as powder snow)
-                    entity.setFreezeTicks(entity.getMaxFreezeTicks());
+                    // Apply freezing effect gradually (about 3 seconds to reach max)
+                    int currentFreeze = entity.getFreezeTicks();
+                    int maxFreeze = entity.getMaxFreezeTicks();
+                    if (currentFreeze < maxFreeze) {
+                        entity.setFreezeTicks(Math.min(maxFreeze, currentFreeze + 15));
+                    }
+                    
+                    if (ticks % 30 == 0) {
+                        entity.damage(1.0, player); // 1 damage (half heart) every 1.5 seconds
+                    }
 
                     // Mark entity as frozen (for slow movement instead of complete freeze)
                     if (!entity.hasMetadata(META_CIRCLE_FROZEN)) {
                         entity.setMetadata(META_CIRCLE_FROZEN, new FixedMetadataValue(plugin, true));
                     }
 
-                    // Apply Slowness 4 (very slow movement instead of no movement)
-                    entity.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, 40, 3, false, false, false));
-
-                    // For mobs, disable AI while in circle
-                    if (entity instanceof Mob mob) {
-                        mob.setAware(true);
-                    }
+                    // Apply Slowness 2
+                    entity.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, 40, 1, false, false, false));
 
                     // Visual feedback every 10 ticks to reduce particle spam
                     if (ticks % 10 == 0) {
@@ -125,16 +127,13 @@ public class FrostCircleAbility extends BaseAbility {
                     }
                 }
 
-                // Re-enable AI for mobs that left the circle and remove effects
+                // Remove effects for entities that left the circle
                 for (LivingEntity entity : player.getWorld().getNearbyLivingEntities(centerLocation, radius + 2)) {
                     if (entity.hasMetadata(META_CIRCLE_FROZEN)) {
                         double distance = entity.getLocation().distance(centerLocation);
                         if (distance > radius) {
                             entity.removeMetadata(META_CIRCLE_FROZEN, plugin);
                             entity.removePotionEffect(PotionEffectType.SLOWNESS);
-                            if (entity instanceof Mob mob) {
-                                mob.setAware(true);
-                            }
                         }
                     }
                 }
@@ -147,12 +146,20 @@ public class FrostCircleAbility extends BaseAbility {
     }
 
     @Override
+    public void setActive(Player player, boolean active) {
+        super.setActive(player, active);
+        if (!active) {
+            activeCircleCounts.remove(player.getUniqueId());
+        }
+    }
+
+    @Override
     public String getName() {
         return ChatColor.AQUA + "Freezing Circle";
     }
 
     @Override
     public String getDescription() {
-        return "Create a circle around you that severely slows enemies who step inside for 10 seconds.";
+        return "Create a circle around you that slows and freezes enemies who step inside for 10 seconds.";
     }
 }

@@ -10,12 +10,12 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
 
-public class FrostPunchAbility extends BaseAbility {
+public class IcicleDropAbility extends BaseAbility {
     private final ElementSmp plugin;
-    public static final String META_FROZEN_PUNCH_READY = "frost_frozen_punch_ready";
+    public static final String META_ICICLE_DROP_READY = "frost_icicle_drop_ready";
 
-    public FrostPunchAbility(ElementSmp plugin) {
-        super("frost_frozen_punch", 75, 10, 2);
+    public IcicleDropAbility(ElementSmp plugin) {
+        super("frost_icicle_drop", 75, 10, 2);
         this.plugin = plugin;
     }
 
@@ -23,9 +23,9 @@ public class FrostPunchAbility extends BaseAbility {
     public boolean execute(ElementContext context) {
         Player player = context.getPlayer();
 
-        // Set metadata indicating the next punch will freeze
+        // Set metadata indicating the next punch will drop an icicle
         long until = System.currentTimeMillis() + 10_000L; // 10 seconds to use it
-        player.setMetadata(META_FROZEN_PUNCH_READY, new FixedMetadataValue(plugin, until));
+        player.setMetadata(META_ICICLE_DROP_READY, new FixedMetadataValue(plugin, until));
 
         // Visual and audio feedback
         player.playSound(player.getLocation(), Sound.BLOCK_GLASS_BREAK, 1.0f, 1.5f);
@@ -39,11 +39,11 @@ public class FrostPunchAbility extends BaseAbility {
 
     @Override
     public String getName() {
-        return ChatColor.AQUA + "Frozen Punch";
+        return ChatColor.AQUA + "Icicle Drop";
     }
 
     @Override
     public String getDescription() {
-        return "Your next punch freezes an enemy in place for 5 seconds, preventing all movement.";
+        return "Your next hit on an entity spawns a dripstone 10 blocks above them.";
     }
 }

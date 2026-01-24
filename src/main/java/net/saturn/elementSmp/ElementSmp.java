@@ -275,7 +275,7 @@ public final class ElementSmp extends JavaPlugin {
         pm.registerEvents(new MetalArrowImmunityListener(elementManager), this);
         pm.registerEvents(new MetalChainStunListener(), this);
         pm.registerEvents(new FrostPassiveListener(this, elementManager), this);
-        pm.registerEvents(new FrostFrozenPunchListener(this, elementManager, trustManager), this);
+        pm.registerEvents(new IcicleDropListener(this, elementManager, trustManager), this);
     }
 
     private void registerRecipes() {

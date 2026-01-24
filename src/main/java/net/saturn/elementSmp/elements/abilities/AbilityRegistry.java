@@ -87,7 +87,7 @@ public final class AbilityRegistry {
         // Frost
         register(ElementType.FROST,
                 new FrostCircleAbility(plugin),
-                new FrostPunchAbility(plugin)
+                new IcicleDropAbility(plugin)
         );
 
         plugin.getLogger().info("Registered " + abilities.size() + " element ability sets");

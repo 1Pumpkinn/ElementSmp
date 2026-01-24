@@ -6,12 +6,12 @@ import net.saturn.elementSmp.elements.ElementContext;
 import net.saturn.elementSmp.elements.ElementType;
 import net.saturn.elementSmp.elements.abilities.Ability;
 import net.saturn.elementSmp.elements.abilities.impl.frost.FrostCircleAbility;
-import net.saturn.elementSmp.elements.abilities.impl.frost.FrostPunchAbility;
+import net.saturn.elementSmp.elements.abilities.impl.frost.IcicleDropAbility;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 public class FrostElement extends BaseElement {
-    public static final String META_FROZEN_PUNCH_READY = "frost_frozen_punch_ready";
+    public static final String META_ICICLE_DROP_READY = "frost_icicle_drop_ready";
 
     private final ElementSmp plugin;
     private final Ability ability1;
@@ -21,7 +21,7 @@ public class FrostElement extends BaseElement {
         super(plugin);
         this.plugin = plugin;
         this.ability1 = new FrostCircleAbility(plugin);
-        this.ability2 = new FrostPunchAbility(plugin);
+        this.ability2 = new IcicleDropAbility(plugin);
     }
 
     @Override
@@ -48,7 +48,7 @@ public class FrostElement extends BaseElement {
 
     @Override
     public void clearEffects(Player player) {
-        player.removeMetadata(META_FROZEN_PUNCH_READY, plugin);
+        player.removeMetadata(META_ICICLE_DROP_READY, plugin);
         ability1.setActive(player, false);
         ability2.setActive(player, false);
     }
