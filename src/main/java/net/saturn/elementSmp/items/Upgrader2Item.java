@@ -14,7 +14,7 @@ import org.bukkit.persistence.PersistentDataType;
 
 import java.util.List;
 
-public final class  Upgrader2Item {
+public final class Upgrader2Item {
     private Upgrader2Item() {}
 
     public static final String KEY = "upgrader_2";
@@ -27,8 +27,7 @@ public final class  Upgrader2Item {
                 .color(NamedTextColor.AQUA)
                 .decoration(TextDecoration.ITALIC, false));
         
-        meta.setCustomModelData(10004);
-        meta.setItemModel(NamespacedKey.minecraft("custom/upgrader_2"));
+        meta.setCustomModelData(2);
         
         meta.lore(List.of(
                 Component.text("Use by crafting to unlock").color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false),

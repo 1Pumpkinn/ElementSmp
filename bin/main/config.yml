@@ -1,0 +1,60 @@
+# ElementSmp Configuration
+
+mana:
+  max: 100
+  regen_per_second: 1
+
+costs:
+  air:
+    ability1: 50
+    ability2: 75
+    item_use: 75
+    item_throw: 25
+  water:
+    ability1: 50
+    ability2: 75
+    item_use: 75
+    item_throw: 25
+  fire:
+    ability1: 50
+    ability2: 75
+    item_use: 75
+    item_throw: 25
+  earth:
+    ability1: 50
+    ability2: 75
+    item_use: 75
+    item_throw: 25
+  life:
+    ability1: 50
+    ability2: 75
+    item_use: 75
+    item_throw: 25
+  death:
+    ability1: 50
+    ability2: 75
+    item_use: 75
+    item_throw: 25
+  metal:
+    ability1: 50
+    ability2: 75
+    item_use: 75
+    item_throw: 25
+  frost:
+    ability1: 50
+    ability2: 75
+    item_use: 75
+    item_throw: 25
+
+recipes:
+  advanced_reroller_enabled: true
+
+resource_pack:
+  enabled: true
+  port: 8080
+  # Leave host empty to try and auto-detect or use the server's IP
+  host: ""
+  # The message shown to players when they are prompted to download the pack
+  prompt_message: "Please download the ElementSmp Resource Pack for custom item textures!"
+  # Whether to force the pack (kick player if they decline - use with caution)
+  required: false

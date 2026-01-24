@@ -27,8 +27,7 @@ public final class Upgrader1Item {
                 .color(NamedTextColor.GREEN)
                 .decoration(TextDecoration.ITALIC, false));
         
-        meta.setCustomModelData(10003);
-        meta.setItemModel(NamespacedKey.minecraft("custom/upgrader_1"));
+        meta.setCustomModelData(1);
         
         meta.lore(List.of(
                 Component.text("Use by crafting to unlock").color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false),

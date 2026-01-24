@@ -27,8 +27,7 @@ public final class AdvancedRerollerItem {
                 .color(NamedTextColor.DARK_PURPLE)
                 .decoration(TextDecoration.ITALIC, false));
         
-        meta.setCustomModelData(10002);
-        meta.setItemModel(NamespacedKey.minecraft("custom/advanced_reroller"));
+        meta.setCustomModelData(4);
         
         meta.lore(List.of(
                 Component.text("Unlocks advanced elements").color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false),

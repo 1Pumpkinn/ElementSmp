@@ -27,8 +27,7 @@ public final class RerollerItem {
                 .color(NamedTextColor.LIGHT_PURPLE)
                 .decoration(TextDecoration.ITALIC, false));
         
-        meta.setCustomModelData(10001);
-        meta.setItemModel(NamespacedKey.minecraft("custom/reroller"));
+        meta.setCustomModelData(3);
         
         meta.lore(List.of(
                 Component.text("Allows you to change your element").color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false),
