@@ -3,7 +3,9 @@ package net.saturn.elementSmp.listeners.item;
 import net.saturn.elementSmp.ElementSmp;
 import net.saturn.elementSmp.data.PlayerData;
 import net.saturn.elementSmp.elements.ElementType;
+import net.saturn.elementSmp.gui.ElementSelectionGUI;
 import net.saturn.elementSmp.items.ItemKeys;
+import net.saturn.elementSmp.managers.ElementManager;
 import org.bukkit.ChatColor;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
@@ -47,81 +49,11 @@ public class AdvancedRerollerListener implements Listener {
             return;
         }
 
-        PlayerData pd = elementManager.data(player.getUniqueId());
-        ElementType current = pd.getCurrentElement();
-        ElementType newElement = determineNewElement(current);
-
         item.setAmount(item.getAmount() - 1);
         if (item.getAmount() <= 0) player.getInventory().removeItem(item);
 
-        performAdvancedRoll(player, newElement);
-    }
-
-    private ElementType determineNewElement(ElementType current) {
-        return switch (current) {
-            case METAL -> ElementType.FROST;
-            case FROST -> ElementType.METAL;
-            default -> random.nextBoolean() ? ElementType.METAL : ElementType.FROST;
-        };
-    }
-
-    private void performAdvancedRoll(Player player, ElementType targetElement) {
-        plugin.getElementManager().data(player.getUniqueId());
-        player.playSound(player.getLocation(), org.bukkit.Sound.UI_TOAST_IN, 1f, 1.2f);
-
-        String[] names = {"METAL", "FROST"};
-        int steps = 20;
-        long interval = 3L;
-
-        new BukkitRunnable() {
-            int tick = 0;
-
-            @Override
-            public void run() {
-                if (tick >= steps) {
-                    assignAdvancedElement(player, targetElement);
-                    cancel();
-                    return;
-                }
-
-                String name = names[tick % 2];
-                player.sendTitle(
-                        ChatColor.GOLD + "Rolling...",
-                        ChatColor.AQUA + name,
-                        0, 10, 0
-                );
-                tick++;
-            }
-        }.runTaskTimer(plugin, 0L, interval);
-    }
-
-    private void assignAdvancedElement(Player player, ElementType element) {
-        PlayerData pd = plugin.getElementManager().data(player.getUniqueId());
-
-        clearOldElementEffects(player, pd);
-
-        int currentUpgradeLevel = pd.getCurrentElementUpgradeLevel();
-        pd.setCurrentElementWithoutReset(element);
-        pd.setCurrentElementUpgradeLevel(currentUpgradeLevel);
-        plugin.getDataStore().save(pd);
-
-        var title = net.kyori.adventure.title.Title.title(
-                net.kyori.adventure.text.Component.text("Element Chosen!")
-                        .color(net.kyori.adventure.text.format.NamedTextColor.GOLD),
-                net.kyori.adventure.text.Component.text(element.name())
-                        .color(net.kyori.adventure.text.format.NamedTextColor.AQUA),
-                net.kyori.adventure.title.Title.Times.times(
-                        java.time.Duration.ofMillis(500),
-                        java.time.Duration.ofMillis(2000),
-                        java.time.Duration.ofMillis(500)
-                )
-        );
-
-        player.showTitle(title);
-        plugin.getElementManager().applyUpsides(player);
-        player.getWorld().playSound(player.getLocation(), org.bukkit.Sound.UI_TOAST_CHALLENGE_COMPLETE, 1f, 1f);
-
-        player.sendMessage(ChatColor.GREEN + "Your element has been rerolled");
+        ElementType[] pool = {ElementType.METAL, ElementType.FROST};
+        new ElementSelectionGUI(plugin, player, true, pool).open();
     }
 
     private void clearOldElementEffects(Player player, PlayerData pd) {

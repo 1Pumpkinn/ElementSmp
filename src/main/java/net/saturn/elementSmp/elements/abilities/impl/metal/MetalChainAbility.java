@@ -273,92 +273,35 @@ public class MetalChainAbility extends BaseAbility {
         return true;
     }
 
+    private static final java.util.Set<Material> PASSABLE_BLOCKS = java.util.EnumSet.of(
+            Material.SHORT_GRASS, Material.TALL_GRASS, Material.FERN, Material.LARGE_FERN,
+            Material.DEAD_BUSH, Material.DANDELION, Material.POPPY, Material.BLUE_ORCHID,
+            Material.ALLIUM, Material.AZURE_BLUET, Material.RED_TULIP, Material.ORANGE_TULIP,
+            Material.WHITE_TULIP, Material.PINK_TULIP, Material.OXEYE_DAISY, Material.CORNFLOWER,
+            Material.LILY_OF_THE_VALLEY, Material.WITHER_ROSE, Material.SUNFLOWER, Material.LILAC,
+            Material.ROSE_BUSH, Material.PEONY, Material.SUGAR_CANE, Material.BAMBOO,
+            Material.BAMBOO_SAPLING, Material.WHEAT, Material.CARROTS, Material.POTATOES,
+            Material.BEETROOTS, Material.MELON_STEM, Material.PUMPKIN_STEM, Material.ATTACHED_MELON_STEM,
+            Material.ATTACHED_PUMPKIN_STEM, Material.SWEET_BERRY_BUSH, Material.CAVE_VINES,
+            Material.CAVE_VINES_PLANT, Material.GLOW_BERRIES, Material.VINE, Material.GLOW_LICHEN,
+            Material.HANGING_ROOTS, Material.SPORE_BLOSSOM, Material.MOSS_CARPET, Material.PALE_MOSS_CARPET,
+            Material.TORCH, Material.SOUL_TORCH, Material.REDSTONE_TORCH, Material.WALL_TORCH,
+            Material.SOUL_WALL_TORCH, Material.REDSTONE_WALL_TORCH, Material.LANTERN, Material.SOUL_LANTERN,
+            Material.TRIPWIRE, Material.TRIPWIRE_HOOK, Material.STRING, Material.LEVER,
+            Material.STONE_BUTTON, Material.OAK_BUTTON, Material.SPRUCE_BUTTON, Material.BIRCH_BUTTON,
+            Material.JUNGLE_BUTTON, Material.ACACIA_BUTTON, Material.DARK_OAK_BUTTON, Material.CRIMSON_BUTTON,
+            Material.WARPED_BUTTON, Material.POLISHED_BLACKSTONE_BUTTON, Material.RAIL, Material.POWERED_RAIL,
+            Material.DETECTOR_RAIL, Material.ACTIVATOR_RAIL, Material.COBWEB, Material.LADDER,
+            Material.SCAFFOLDING, Material.SNOW, Material.POWDER_SNOW, Material.WATER,
+            Material.LAVA, Material.FIRE, Material.SOUL_FIRE
+    );
+
     /**
      * Check if a block can be passed through by the chain
      */
     private boolean isPassableBlock(org.bukkit.block.Block block) {
         if (block == null) return true;
-
-        org.bukkit.Material type = block.getType();
-
-        // Air is always passable
-        if (type == org.bukkit.Material.AIR ||
-                type == org.bukkit.Material.VOID_AIR ||
-                type == org.bukkit.Material.CAVE_AIR) {
-            return true;
-        }
-
-        // List of passable blocks that chains can go through
-        return type == org.bukkit.Material.SHORT_GRASS ||
-                type == org.bukkit.Material.TALL_GRASS ||
-                type == org.bukkit.Material.FERN ||
-                type == org.bukkit.Material.LARGE_FERN ||
-                type == org.bukkit.Material.DEAD_BUSH ||
-                type == org.bukkit.Material.DANDELION ||
-                type == org.bukkit.Material.POPPY ||
-                type == org.bukkit.Material.BLUE_ORCHID ||
-                type == org.bukkit.Material.ALLIUM ||
-                type == org.bukkit.Material.AZURE_BLUET ||
-                type == org.bukkit.Material.RED_TULIP ||
-                type == org.bukkit.Material.ORANGE_TULIP ||
-                type == org.bukkit.Material.WHITE_TULIP ||
-                type == org.bukkit.Material.PINK_TULIP ||
-                type == org.bukkit.Material.OXEYE_DAISY ||
-                type == org.bukkit.Material.CORNFLOWER ||
-                type == org.bukkit.Material.LILY_OF_THE_VALLEY ||
-                type == org.bukkit.Material.SUNFLOWER ||
-                type == org.bukkit.Material.LILAC ||
-                type == org.bukkit.Material.ROSE_BUSH ||
-                type == org.bukkit.Material.PEONY ||
-                type == org.bukkit.Material.SWEET_BERRY_BUSH ||
-                type == org.bukkit.Material.BAMBOO ||
-                type == org.bukkit.Material.SUGAR_CANE ||
-                type == org.bukkit.Material.KELP ||
-                type == org.bukkit.Material.SEAGRASS ||
-                type == org.bukkit.Material.TALL_SEAGRASS ||
-                type == org.bukkit.Material.WHEAT ||
-                type == org.bukkit.Material.CARROTS ||
-                type == org.bukkit.Material.POTATOES ||
-                type == org.bukkit.Material.BEETROOTS ||
-                type == org.bukkit.Material.MELON_STEM ||
-                type == org.bukkit.Material.PUMPKIN_STEM ||
-                type == org.bukkit.Material.VINE ||
-                type == org.bukkit.Material.WEEPING_VINES ||
-                type == org.bukkit.Material.WEEPING_VINES_PLANT ||
-                type == org.bukkit.Material.TWISTING_VINES ||
-                type == org.bukkit.Material.TWISTING_VINES_PLANT ||
-                type == org.bukkit.Material.CAVE_VINES ||
-                type == org.bukkit.Material.CAVE_VINES_PLANT ||
-                type == org.bukkit.Material.GLOW_BERRIES ||
-                type == org.bukkit.Material.TORCH ||
-                type == org.bukkit.Material.REDSTONE_TORCH ||
-                type == org.bukkit.Material.SOUL_TORCH ||
-                type == org.bukkit.Material.REDSTONE_WIRE ||
-                type == org.bukkit.Material.TRIPWIRE ||
-                type == org.bukkit.Material.TRIPWIRE_HOOK ||
-                type == org.bukkit.Material.LEVER ||
-                type == org.bukkit.Material.STONE_BUTTON ||
-                type == org.bukkit.Material.OAK_BUTTON ||
-                type == org.bukkit.Material.SPRUCE_BUTTON ||
-                type == org.bukkit.Material.BIRCH_BUTTON ||
-                type == org.bukkit.Material.JUNGLE_BUTTON ||
-                type == org.bukkit.Material.ACACIA_BUTTON ||
-                type == org.bukkit.Material.DARK_OAK_BUTTON ||
-                type == org.bukkit.Material.CRIMSON_BUTTON ||
-                type == org.bukkit.Material.WARPED_BUTTON ||
-                type == org.bukkit.Material.POLISHED_BLACKSTONE_BUTTON ||
-                type == org.bukkit.Material.RAIL ||
-                type == org.bukkit.Material.POWERED_RAIL ||
-                type == org.bukkit.Material.DETECTOR_RAIL ||
-                type == org.bukkit.Material.ACTIVATOR_RAIL ||
-                type == org.bukkit.Material.COBWEB ||
-                type == org.bukkit.Material.LADDER ||
-                type == org.bukkit.Material.SCAFFOLDING ||
-                type == org.bukkit.Material.SNOW ||
-                type == Material.POWDER_SNOW ||
-                type == org.bukkit.Material.WATER ||
-                type == org.bukkit.Material.LAVA ||
-                type == org.bukkit.Material.FIRE ||
-                type == org.bukkit.Material.SOUL_FIRE;
+        Material type = block.getType();
+        return type.isAir() || PASSABLE_BLOCKS.contains(type);
     }
 }

@@ -11,16 +11,12 @@ import java.util.*;
 public final class PlayerData {
     private final UUID uuid;
     private ElementType currentElement;
-    private final EnumSet<ElementType> ownedItems;
     private int mana;
     private int currentElementUpgradeLevel;
     private final Set<UUID> trustedPlayers;
 
-    // CONSTRUCTORS
-
     public PlayerData(UUID uuid) {
         this.uuid = Objects.requireNonNull(uuid, "UUID cannot be null");
-        this.ownedItems = EnumSet.noneOf(ElementType.class);
         this.mana = 100;
         this.currentElementUpgradeLevel = 0;
         this.trustedPlayers = new HashSet<>();
@@ -50,19 +46,6 @@ public final class PlayerData {
         // Load upgrade level
         this.currentElementUpgradeLevel = section.getInt("currentUpgradeLevel", 0);
 
-        // Load owned items
-        List<String> items = section.getStringList("items");
-        if (items != null) {
-            for (String name : items) {
-                try {
-                    ElementType type = ElementType.valueOf(name);
-                    this.ownedItems.add(type);
-                } catch (IllegalArgumentException ignored) {
-                    // Skip invalid items
-                }
-            }
-        }
-
         // Load trust list
         ConfigurationSection trustSection = section.getConfigurationSection("trust");
         if (trustSection != null) {
@@ -75,8 +58,6 @@ public final class PlayerData {
             }
         }
     }
-
-    // GETTERS
 
     public UUID getUuid() {
         return uuid;
@@ -98,15 +79,9 @@ public final class PlayerData {
         return mana;
     }
 
-    public Set<ElementType> getOwnedItems() {
-        return EnumSet.copyOf(ownedItems);
-    }
-
     public Set<UUID> getTrustedPlayers() {
         return new HashSet<>(trustedPlayers);
     }
-
-    // SETTERS (with validation)
 
     public void setCurrentElement(ElementType element) {
         this.currentElement = element;
@@ -131,8 +106,6 @@ public final class PlayerData {
         setMana(this.mana + delta);
     }
 
-    // ELEMENT-SPECIFIC METHODS
-
     public int getUpgradeLevel(ElementType type) {
         if (type != null && type.equals(currentElement)) {
             return currentElementUpgradeLevel;
@@ -153,22 +126,6 @@ public final class PlayerData {
         }
         return Collections.unmodifiableMap(map);
     }
-
-    // OWNED ITEMS
-
-    public boolean hasElementItem(ElementType type) {
-        return ownedItems.contains(type);
-    }
-
-    public void addElementItem(ElementType type) {
-        ownedItems.add(type);
-    }
-
-    public void removeElementItem(ElementType type) {
-        ownedItems.remove(type);
-    }
-
-    // TRUST MANAGEMENT
 
     public boolean isTrusted(UUID uuid) {
         return trustedPlayers.contains(uuid);

@@ -13,6 +13,7 @@ import net.saturn.elementSmp.elements.impl.frost.FrostElement;
 import net.saturn.elementSmp.elements.impl.life.LifeElement;
 import net.saturn.elementSmp.elements.impl.metal.MetalElement;
 import net.saturn.elementSmp.elements.impl.water.WaterElement;
+import net.saturn.elementSmp.gui.ElementSelectionGUI;
 import net.saturn.elementSmp.services.EffectService;
 import net.saturn.elementSmp.util.scheduling.TaskScheduler;
 import org.bukkit.ChatColor;
@@ -23,10 +24,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.util.*;
 
 public class ElementManager {
-    private static final ElementType[] BASIC_ELEMENTS = {
-            ElementType.AIR, ElementType.WATER, ElementType.FIRE, ElementType.EARTH
-    };
-
     private final ElementSmp plugin;
     private final DataStore store;
     private final ManaManager manaManager;
@@ -35,7 +32,6 @@ public class ElementManager {
     private final EffectService effectService;
     private final TaskScheduler scheduler;
     private final Map<ElementType, Element> registry = new EnumMap<>(ElementType.class);
-    private final Set<UUID> currentlyRolling = new HashSet<>();
     private final Random random = new Random();
 
     public ElementManager(ElementSmp plugin, DataStore store, ManaManager manaManager,
@@ -77,60 +73,19 @@ public class ElementManager {
     }
 
     public boolean isCurrentlyRolling(Player player) {
-        return currentlyRolling.contains(player.getUniqueId());
+        return ElementSelectionGUI.getGUI(player.getUniqueId()) != null;
     }
 
     public void cancelRolling(Player player) {
-        currentlyRolling.remove(player.getUniqueId());
-    }
-
-    public void rollAndAssign(Player player) {
-        if (!beginRoll(player)) return;
-
-        player.playSound(player.getLocation(), Sound.UI_TOAST_IN, 1f, 1.2f);
-
-        new RollingAnimation(player, BASIC_ELEMENTS)
-                .start(() -> {
-                    assignRandomElement(player);
-                    endRoll(player);
-                });
-    }
-
-    private void assignRandomElement(Player player) {
-        ElementType randomType = BASIC_ELEMENTS[random.nextInt(BASIC_ELEMENTS.length)];
-        assignElementInternal(player, randomType, "Element Assigned!");
-    }
-
-    public void assignRandomDifferentElement(Player player) {
-        ElementType current = getPlayerElement(player);
-        List<ElementType> available = Arrays.stream(BASIC_ELEMENTS)
-                .filter(type -> type != current)
-                .toList();
-
-        ElementType newType = available.isEmpty() ?
-                BASIC_ELEMENTS[random.nextInt(BASIC_ELEMENTS.length)] :
-                available.get(random.nextInt(available.size()));
-
-        assignElementInternal(player, newType, "Element Rerolled!");
-    }
-
-    public void assignElement(Player player, ElementType type) {
-        assignElementInternal(player, type, "Element Chosen!", true);
+        ElementSelectionGUI.removeGUI(player.getUniqueId());
     }
 
     public void setElement(Player player, ElementType type) {
-        PlayerData pd = data(player.getUniqueId());
-        ElementType old = pd.getCurrentElement();
+        assignElementInternal(player, type, "Element Changed!");
+    }
 
-        if (old != null && old != type) {
-            handleElementSwitch(player, old);
-        }
-
-        pd.setCurrentElement(type);
-        store.save(pd);
-
-        player.sendMessage(ChatColor.GOLD + "Your element is now " + ChatColor.AQUA + type.name());
-        applyUpsides(player);
+    public void assignElement(Player player, ElementType type) {
+        assignElementInternal(player, type, "Element Assigned!");
     }
 
     private void assignElementInternal(Player player, ElementType type, String titleText) {
@@ -156,7 +111,6 @@ public class ElementManager {
         store.save(pd);
         showElementTitle(player, type, titleText);
         applyUpsides(player);
-        player.getWorld().playSound(player.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1f, 1f);
     }
 
     private void handleElementSwitch(Player player, ElementType oldElement) {
@@ -195,13 +149,6 @@ public class ElementManager {
         return number == 1 ? element.ability1(ctx) : element.ability2(ctx);
     }
 
-    public void giveElementItem(Player player, ElementType type) {
-        var item = net.saturn.elementSmp.items.ElementCoreItem.createCore(plugin, type);
-        if (item != null) {
-            player.getInventory().addItem(item);
-        }
-    }
-
     private void showElementTitle(Player player, ElementType type, String title) {
         var titleObj = net.kyori.adventure.title.Title.title(
                 net.kyori.adventure.text.Component.text(title).color(net.kyori.adventure.text.format.NamedTextColor.GOLD),
@@ -213,56 +160,31 @@ public class ElementManager {
                 )
         );
         player.showTitle(titleObj);
+        playSelectionJingle(player);
     }
 
-    private boolean beginRoll(Player player) {
-        if (isCurrentlyRolling(player)) {
-            player.sendMessage(ChatColor.RED + "You are already rerolling!");
-            return false;
-        }
-        currentlyRolling.add(player.getUniqueId());
-        return true;
-    }
-
-    private void endRoll(Player player) {
-        currentlyRolling.remove(player.getUniqueId());
-    }
-
-    /**
-     * Reusable rolling animation
-     */
-    private class RollingAnimation {
-        private final Player player;
-        private final ElementType[] elements;
-
-        RollingAnimation(Player player, ElementType[] elements) {
-            this.player = player;
-            this.elements = elements;
-        }
-
-        void start(Runnable onComplete) {
-            new BukkitRunnable() {
-                int tick = 0;
-
-                @Override
-                public void run() {
-                    if (!player.isOnline() || !isCurrentlyRolling(player)) {
-                        endRoll(player);
-                        cancel();
-                        return;
-                    }
-
-                    if (tick >= Constants.Animation.ROLL_STEPS) {
-                        if (onComplete != null) onComplete.run();
-                        cancel();
-                        return;
-                    }
-
-                    String name = elements[random.nextInt(elements.length)].name();
-                    player.sendTitle(ChatColor.GOLD + "Rolling...", ChatColor.AQUA + name, 0, 10, 0);
-                    tick++;
+    private void playSelectionJingle(Player player) {
+        new BukkitRunnable() {
+            int step = 0;
+            @Override
+            public void run() {
+                if (!player.isOnline()) {
+                    cancel();
+                    return;
                 }
-            }.runTaskTimer(plugin, 0L, Constants.Animation.ROLL_DELAY_TICKS);
-        }
+
+                switch (step) {
+                    case 0 -> player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 0.8f);
+                    case 1 -> player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 1.0f);
+                    case 2 -> player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 1.2f);
+                    case 3 -> {
+                        player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 1.5f);
+                        player.playSound(player.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 0.5f, 1.5f);
+                        cancel();
+                    }
+                }
+                step++;
+            }
+        }.runTaskTimer(plugin, 0L, 2L);
     }
 }

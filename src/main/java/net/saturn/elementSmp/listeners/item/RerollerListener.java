@@ -1,6 +1,7 @@
 package net.saturn.elementSmp.listeners.item;
 
 import net.saturn.elementSmp.ElementSmp;
+import net.saturn.elementSmp.gui.ElementSelectionGUI;
 import net.saturn.elementSmp.data.PlayerData;
 import net.saturn.elementSmp.elements.ElementType;
 import net.saturn.elementSmp.items.ItemKeys;
@@ -53,8 +54,7 @@ public class RerollerListener implements Listener {
                 player.getInventory().removeItem(item);
             }
 
-            plugin.getElementManager().rollAndAssign(player);
-            player.sendMessage(net.kyori.adventure.text.Component.text("Your element has been rerolled!").color(net.kyori.adventure.text.format.NamedTextColor.GREEN));
+            new ElementSelectionGUI(plugin, player, true).open();
         }
     }
 

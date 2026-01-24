@@ -2,30 +2,23 @@ package net.saturn.elementSmp.listeners.ability;
 
 import net.saturn.elementSmp.ElementSmp;
 import net.saturn.elementSmp.data.PlayerData;
-import net.saturn.elementSmp.elements.abilities.impl.life.EntanglingRootsAbility;
 import net.saturn.elementSmp.managers.ElementManager;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class AbilityListener implements Listener {
-    private static final long DOUBLE_TAP_THRESHOLD_MS = 250;
-    private static final long CHECK_DELAY_TICKS = 6;
-    private static final long CLEANUP_DELAY_TICKS = 2;
+    private static final long DEBOUNCE_MS = 150;
 
     private final ElementSmp plugin;
     private final ElementManager elements;
-    private final Map<UUID, TapTracker> tapTrackers = new ConcurrentHashMap<>();
+    private final Map<UUID, Long> lastActivation = new ConcurrentHashMap<>();
 
     public AbilityListener(ElementSmp plugin, ElementManager elements) {
         this.plugin = plugin;
@@ -35,104 +28,33 @@ public class AbilityListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onSwapHands(PlayerSwapHandItemsEvent event) {
         Player player = event.getPlayer();
-
         if (!hasElement(player)) return;
 
-        UUID playerId = player.getUniqueId();
-        TapTracker tracker = tapTrackers.computeIfAbsent(playerId, k -> new TapTracker());
+        event.setCancelled(true);
+        triggerAbility(player);
+    }
 
+
+    private void triggerAbility(Player player) {
         long currentTime = System.currentTimeMillis();
+        long lastTime = lastActivation.getOrDefault(player.getUniqueId(), 0L);
 
-        if (tracker.isDoubleTap(currentTime)) {
-            tracker.reset();
-            scheduleCleanup(playerId);
+        if (currentTime - lastTime < DEBOUNCE_MS) {
             return;
         }
 
-        event.setCancelled(true);
-        tracker.recordTap(currentTime, player.isSneaking());
+        lastActivation.put(player.getUniqueId(), currentTime);
 
-        scheduleAbilityActivation(player, playerId, currentTime);
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    public void onBlockBreak(BlockBreakEvent event) {
-        Player player = event.getPlayer();
-        if (EntanglingRootsAbility.isEntangled(player.getUniqueId())) {
-            event.setCancelled(true);
-            player.sendMessage(ChatColor.RED + "You cannot break blocks while entangled in roots!");
-        }
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    public void onBlockPlace(BlockPlaceEvent event) {
-        Player player = event.getPlayer();
-        if (EntanglingRootsAbility.isEntangled(player.getUniqueId())) {
-            event.setCancelled(true);
-            player.sendMessage(ChatColor.RED + "You cannot place blocks while entangled in roots!");
+        if (player.isSneaking()) {
+            elements.useAbility2(player);
+        } else {
+            elements.useAbility1(player);
         }
     }
 
     private boolean hasElement(Player player) {
         PlayerData pd = elements.data(player.getUniqueId());
         return pd.getCurrentElement() != null;
-    }
-
-    private void scheduleAbilityActivation(Player player, UUID playerId, long tapTime) {
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                if (!player.isOnline()) {
-                    tapTrackers.remove(playerId);
-                    return;
-                }
-
-                TapTracker tracker = tapTrackers.get(playerId);
-                if (tracker == null || !tracker.isValidTap(tapTime)) {
-                    return;
-                }
-
-                boolean success = tracker.wasShiftHeld ?
-                        elements.useAbility2(player) :
-                        elements.useAbility1(player);
-
-                if (success) {
-                    scheduleCleanup(playerId);
-                }
-            }
-        }.runTaskLater(plugin, CHECK_DELAY_TICKS);
-    }
-
-    private void scheduleCleanup(UUID playerId) {
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                tapTrackers.remove(playerId);
-            }
-        }.runTaskLater(plugin, CLEANUP_DELAY_TICKS);
-    }
-
-    private static class TapTracker {
-        private long lastTapTime = 0;
-        private boolean wasShiftHeld = false;
-
-        boolean isDoubleTap(long currentTime) {
-            return lastTapTime > 0 && (currentTime - lastTapTime) <= DOUBLE_TAP_THRESHOLD_MS;
-        }
-
-        void recordTap(long time, boolean shiftHeld) {
-            this.lastTapTime = time;
-            this.wasShiftHeld = shiftHeld;
-        }
-
-        boolean isValidTap(long originalTime) {
-            return lastTapTime == originalTime;
-        }
-
-        void reset() {
-            lastTapTime = 0;
-            wasShiftHeld = false;
-        }
     }
 }
 

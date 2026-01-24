@@ -44,7 +44,6 @@ public class ManaManager {
                         if (pd.getMana() > maxMana) {
                             pd.setMana(maxMana);
                         }
-                        store.save(pd);
                     }
                 }
 

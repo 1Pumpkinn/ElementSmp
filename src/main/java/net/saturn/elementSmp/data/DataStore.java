@@ -121,8 +121,6 @@ public class DataStore {
 
     public synchronized void save(PlayerData pd) {
         try {
-            playerCfg = YamlConfiguration.loadConfiguration(playerFile);
-
             // ALWAYS use "players.<uuid>" format for consistency
             String key = "players." + pd.getUuid().toString();
             ConfigurationSection sec = playerCfg.getConfigurationSection(key);
@@ -131,10 +129,6 @@ public class DataStore {
             sec.set("element", pd.getCurrentElement() == null ? null : pd.getCurrentElement().name());
             sec.set("mana", pd.getMana());
             sec.set("currentUpgradeLevel", pd.getCurrentElementUpgradeLevel());
-
-            List<String> items = new ArrayList<>();
-            for (ElementType t : pd.getOwnedItems()) items.add(t.name());
-            sec.set("items", items);
 
             // Save trust list
             sec.set("trust", null); // Clear existing
@@ -147,9 +141,6 @@ public class DataStore {
 
             // Update cache
             playerDataCache.put(pd.getUuid(), pd);
-
-            // Save to disk
-            flushPlayerData();
         } catch (Exception e) {
             plugin.getLogger().log(Level.SEVERE, "Failed to save player data for " + pd.getUuid(), e);
         }

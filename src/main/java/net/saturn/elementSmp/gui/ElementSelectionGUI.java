@@ -19,7 +19,7 @@ import java.util.*;
 public class ElementSelectionGUI {
     private static final String INVENTORY_TITLE = ChatColor.DARK_PURPLE + "Rolling Element...";
     private static final Map<UUID, ElementSelectionGUI> openGuis = new HashMap<>();
-    private static final ElementType[] BASIC_ELEMENTS = {
+    private static final ElementType[] DEFAULT_POOL = {
             ElementType.AIR, ElementType.WATER, ElementType.FIRE, ElementType.EARTH
     };
     
@@ -28,6 +28,7 @@ public class ElementSelectionGUI {
     private final Player player;
     private final Inventory inventory;
     private final boolean isReroll;
+    private final ElementType[] pool;
     private BukkitTask animationTask;
     private int currentIndex = 0;
     private int ticksElapsed = 0;
@@ -35,10 +36,15 @@ public class ElementSelectionGUI {
     private boolean isAnimating = false;
     
     public ElementSelectionGUI(ElementSmp plugin, Player player, boolean isReroll) {
+        this(plugin, player, isReroll, DEFAULT_POOL);
+    }
+
+    public ElementSelectionGUI(ElementSmp plugin, Player player, boolean isReroll, ElementType[] pool) {
         this.plugin = plugin;
         this.elementManager = plugin.getElementManager();
         this.player = player;
         this.isReroll = isReroll;
+        this.pool = pool;
         this.inventory = Bukkit.createInventory(null, 27, INVENTORY_TITLE);
         
         setupGUI();
@@ -47,7 +53,6 @@ public class ElementSelectionGUI {
 
     private void setupGUI() {
         fillWithGlass();
-        startAnimation();
     }
     
     private void fillWithGlass() {
@@ -96,6 +101,26 @@ public class ElementSelectionGUI {
                 color = ChatColor.WHITE;
                 name = "Air Element";
                 break;
+            case METAL:
+                material = Material.IRON_INGOT;
+                color = ChatColor.GRAY;
+                name = "Metal Element";
+                break;
+            case FROST:
+                material = Material.SNOWBALL;
+                color = ChatColor.AQUA;
+                name = "Frost Element";
+                break;
+            case LIFE:
+                material = Material.APPLE;
+                color = ChatColor.LIGHT_PURPLE;
+                name = "Life Element";
+                break;
+            case DEATH:
+                material = Material.WITHER_SKELETON_SKULL;
+                color = ChatColor.DARK_GRAY;
+                name = "Death Element";
+                break;
             default:
                 material = Material.BARRIER;
                 color = ChatColor.GRAY;
@@ -119,12 +144,10 @@ public class ElementSelectionGUI {
         
         isAnimating = true;
         Random random = new Random();
-        selectedElement = BASIC_ELEMENTS[random.nextInt(BASIC_ELEMENTS.length)];
+        selectedElement = pool[random.nextInt(pool.length)];
         
         int totalCycles = 20 + random.nextInt(10);
         int slowDownStart = totalCycles - 8;
-        
-        player.playSound(player.getLocation(), Sound.UI_TOAST_IN, 1f, 1.2f);
         
         animationTask = new BukkitRunnable() {
             @Override
@@ -152,7 +175,7 @@ public class ElementSelectionGUI {
                 }
                 
                 if (ticksElapsed % delay == 0) {
-                    currentIndex = (currentIndex + 1) % BASIC_ELEMENTS.length;
+                    currentIndex = (currentIndex + 1) % pool.length;
                     updateCenterSlot();
                     
                     if (ticksElapsed < slowDownStart) {
@@ -166,7 +189,7 @@ public class ElementSelectionGUI {
     }
     
     private void updateCenterSlot() {
-        ElementType currentElement = BASIC_ELEMENTS[currentIndex];
+        ElementType currentElement = pool[currentIndex];
         ItemStack item = createElementItem(currentElement);
         
         ItemMeta meta = item.getItemMeta();
@@ -198,9 +221,6 @@ public class ElementSelectionGUI {
         
         inventory.setItem(13, finalItem);
         
-        player.playSound(player.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1f, 1f);
-        player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.8f, 1.2f);
-        
         new BukkitRunnable() {
             @Override
             public void run() {
@@ -227,6 +247,7 @@ public class ElementSelectionGUI {
     
     public void open() {
         player.openInventory(inventory);
+        startAnimation();
     }
     
     public void handleClick(int slot) {

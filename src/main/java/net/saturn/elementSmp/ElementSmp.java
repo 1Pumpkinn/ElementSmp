@@ -251,12 +251,8 @@ public final class ElementSmp extends JavaPlugin {
     }
 
     private void registerItemListeners(PluginManager pm) {
-        pm.registerEvents(new ElementItemUseListener(this, elementManager, itemManager), this);
         pm.registerEvents(new ElementItemCraftListener(this, elementManager), this);
         pm.registerEvents(new ElementItemDeathListener(this, elementManager), this);
-        pm.registerEvents(new ElementItemDropListener(this), this);
-        pm.registerEvents(new ElementItemPickupListener(this, elementManager), this);
-        pm.registerEvents(new ElementInventoryProtectionListener(this, elementManager), this);
         pm.registerEvents(new ElementCombatProjectileListener(itemManager), this);
         pm.registerEvents(new RerollerListener(this), this);
         pm.registerEvents(new AdvancedRerollerListener(this), this);
@@ -272,7 +268,7 @@ public final class ElementSmp extends JavaPlugin {
         pm.registerEvents(new FireballProtectionListener(), this);
         pm.registerEvents(new EarthFriendlyMobListener(this, trustManager), this);
         pm.registerEvents(new EarthOreDropListener(elementManager), this);
-        pm.registerEvents(new LifeRegenListener(elementManager), this);
+        pm.registerEvents(new LifeListener(elementManager), this);
         pm.registerEvents(new DeathRawFoodListener(elementManager), this);
         pm.registerEvents(new DeathFriendlyMobListener(this, trustManager, elementManager), this);
         pm.registerEvents(new DeathPassiveListener(this, elementManager), this);
@@ -292,6 +288,9 @@ public final class ElementSmp extends JavaPlugin {
 
     private void startBackgroundTasks() {
         manaManager.start();
+        
+        // Auto-save task every 5 minutes
+        Bukkit.getScheduler().runTaskTimerAsynchronously(this, this::saveAllData, 6000L, 6000L);
     }
 
     private void stopBackgroundTasks() {

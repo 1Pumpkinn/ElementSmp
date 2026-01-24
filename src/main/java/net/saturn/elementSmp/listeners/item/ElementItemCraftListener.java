@@ -38,21 +38,6 @@ public class ElementItemCraftListener implements Listener {
             handleUpgraderCrafting(e, p, level);
             return;
         }
-
-        Byte isElem = meta.getPersistentDataContainer().get(ItemKeys.elementItem(plugin), PersistentDataType.BYTE);
-        if (isElem != null && isElem == (byte)1) {
-            String t = meta.getPersistentDataContainer().get(ItemKeys.elementType(plugin), PersistentDataType.STRING);
-            ElementType type;
-            try { 
-                type = ElementType.valueOf(t); 
-            } catch (Exception ex) { 
-                return; 
-            }
-            
-            if (type == ElementType.AIR || type == ElementType.WATER || type == ElementType.FIRE || type == ElementType.EARTH) {
-                handleBasicElementCrafting(e, p, type);
-            }
-        }
     }
 
     private void handleUpgraderCrafting(CraftItemEvent e, org.bukkit.entity.Player p, Integer level) {
@@ -138,72 +123,6 @@ public class ElementItemCraftListener implements Listener {
         }
     }
 
-    private void handleBasicElementCrafting(CraftItemEvent e, org.bukkit.entity.Player p, ElementType type) {
-        PlayerData pd = elements.data(p.getUniqueId());
-        
-        if (pd.hasElementItem(type)) {
-            e.setCancelled(true);
-            p.sendMessage(ChatColor.RED + "You can only craft this item once.");
-            return;
-        }
-
-        CraftingInventory craftingInv = e.getInventory();
-        ItemStack[] matrix = craftingInv.getMatrix();
-        
-        org.bukkit.inventory.Recipe recipe = e.getRecipe();
-        if (recipe instanceof org.bukkit.inventory.ShapedRecipe shapedRecipe) {
-            String[] shape = shapedRecipe.getShape();
-            java.util.Map<Character, org.bukkit.inventory.RecipeChoice> ingredients = shapedRecipe.getChoiceMap();
-            
-            for (int i = 0; i < matrix.length; i++) {
-                ItemStack item = matrix[i];
-                if (item == null || item.getType() == Material.AIR) continue;
-                
-                int row = i / 3;
-                int col = i % 3;
-                
-                boolean isPartOfRecipe = false;
-                if (row < shape.length && col < shape[row].length()) {
-                    char ingredientChar = shape[row].charAt(col);
-                    isPartOfRecipe = ingredients.containsKey(ingredientChar);
-                }
-                
-                if (isPartOfRecipe) {
-                    if (item.getAmount() > 1) {
-                        item.setAmount(item.getAmount() - 1);
-                        matrix[i] = item;
-                    } else {
-                        matrix[i] = null;
-                    }
-                }
-            }
-            
-            craftingInv.setMatrix(matrix);
-        } else {
-            for (int i = 0; i < matrix.length; i++) {
-                if (matrix[i] != null && matrix[i].getType() != Material.AIR) {
-                    if (matrix[i].getAmount() > 1) {
-                        matrix[i].setAmount(matrix[i].getAmount() - 1);
-                    } else {
-                        matrix[i] = null;
-                    }
-                }
-            }
-            craftingInv.setMatrix(matrix);
-        }
-        
-        e.setCancelled(true);
-        
-        p.getInventory().addItem(e.getRecipe().getResult());
-        
-        pd.addElementItem(type);
-        pd.setCurrentElementUpgradeLevel(0);
-        
-        plugin.getDataStore().save(pd);
-        p.playSound(p.getLocation(), Sound.UI_TOAST_IN, 1f, 1.2f);
-        p.sendMessage(ChatColor.GREEN + "Crafted element item for " + ChatColor.AQUA + type.name());
-        p.sendMessage(ChatColor.YELLOW + "All upgrades reset to None");
-    }
 }
 
 
