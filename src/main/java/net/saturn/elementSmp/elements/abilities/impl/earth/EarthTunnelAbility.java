@@ -18,7 +18,7 @@ public class EarthTunnelAbility extends BaseAbility {
             Material.STONE, Material.DEEPSLATE, Material.DIRT, Material.GRASS_BLOCK,
             Material.COBBLESTONE, Material.ANDESITE, Material.DIORITE, Material.GRANITE,
 
-            Material.GRAVEL, Material.SAND, Material.RED_SAND, Material.CLAY, Material.SANDSTONE,
+            Material.GRAVEL, Material.SAND, Material.RED_SAND, Material.CLAY, Material.MOSS_BLOCK, Material.SANDSTONE,
             Material.TUFF, Material.CALCITE, Material.DRIPSTONE_BLOCK,
 
             // Nether Blocks
