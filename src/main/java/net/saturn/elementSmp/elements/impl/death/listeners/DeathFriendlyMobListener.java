@@ -46,11 +46,24 @@ public class DeathFriendlyMobListener implements Listener {
                             Player owner = Bukkit.getPlayer(ownerId);
 
                             if (owner != null && owner.isOnline()) {
+                                // NEW: Make the mob swim if it's in water
+                                if (mob.getLocation().getBlock().isLiquid()) {
+                                    mob.setVelocity(mob.getVelocity().add(new org.bukkit.util.Vector(0, 0.1, 0)));
+                                }
+
+                                // Handle cross-world following
+                                if (!mob.getWorld().equals(owner.getWorld())) {
+                                    mob.teleport(owner.getLocation());
+                                    continue;
+                                }
+
                                 double distance = mob.getLocation().distance(owner.getLocation());
 
-                                // If too far, teleport closer
+                                // If too far, teleport closer (but ONLY if owner is on ground)
                                 if (distance > 30) {
-                                    mob.teleport(owner.getLocation());
+                                    if (owner.isOnGround()) {
+                                        mob.teleport(owner.getLocation());
+                                    }
                                     continue;
                                 }
 
@@ -152,7 +165,21 @@ public class DeathFriendlyMobListener implements Listener {
                     }
 
                     // Don't damage trusted players
-                    if (trustManager.isTrusted(ownerId, target.getUniqueId())) {
+                    if (target.getUniqueId().equals(ownerId) || trustManager.isTrusted(ownerId, target.getUniqueId())) {
+                        e.setCancelled(true);
+                        return;
+                    }
+                } catch (Exception ignored) {}
+            }
+        }
+
+        // Prevent summoned mobs from attacking each other if they have the same owner
+        if (e.getDamager() instanceof Mob damager && e.getEntity() instanceof Mob victim) {
+            if (damager.hasMetadata("death_summoned_owner") && victim.hasMetadata("death_summoned_owner")) {
+                try {
+                    String damagerOwner = damager.getMetadata("death_summoned_owner").get(0).asString();
+                    String victimOwner = victim.getMetadata("death_summoned_owner").get(0).asString();
+                    if (damagerOwner.equals(victimOwner)) {
                         e.setCancelled(true);
                         return;
                     }
