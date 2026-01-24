@@ -8,6 +8,9 @@ authors: [ ___Pumpkinn ]
 commands:
   elements:
     description: View element info
+  elementinfo:
+    description: View detailed information about an element
+    usage: /elementinfo <element>
   trust:
     description: Manage trust list
   element:

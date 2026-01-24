@@ -21,14 +21,7 @@ public class AirBlastAbility extends BaseAbility {
     @Override
     public boolean execute(ElementContext context) {
         Player player = context.getPlayer();
-        ManaManager mana = context.getManaManager();
-        TrustManager trust = context.getTrustManager();
-        int cost = 20;
         
-        if (!mana.hasMana(player, cost)) {
-            player.sendMessage(ChatColor.RED + "Not enough mana (" + cost + ")");
-            return false;
-        }
         // Launch all nearby players away, with particles
 
         double radius = 6.0;
@@ -36,11 +29,11 @@ public class AirBlastAbility extends BaseAbility {
         Location center = player.getLocation();
 
         // Particle ring
-		for (int i = 0; i < 360; i += 10) {
+        for (int i = 0; i < 360; i += 10) {
             double rad = Math.toRadians(i);
             double x = Math.cos(rad) * 1.5;
             double z = Math.sin(rad) * 1.5;
-			w.spawnParticle(Particle.CLOUD, center.clone().add(x, 0.2, z), 2, 0.0, 0.0, 0.0, 0.0, null, true);
+            w.spawnParticle(Particle.CLOUD, center.clone().add(x, 0.2, z), 2, 0.0, 0.0, 0.0, 0.0, null, true);
         }
         // Animated particle ring that shoots outward
         new BukkitRunnable() {
@@ -60,19 +53,21 @@ public class AirBlastAbility extends BaseAbility {
                     double z = Math.sin(rad) * currentRadius;
 
                     // Particles shrink as they move outward
-					int count = Math.max(1, 3 - tick/2);
-					w.spawnParticle(Particle.CLOUD, center.clone().add(x, 0.2, z), count, 0.0, 0.0, 0.0, 0.0, null, true);
+                    int count = Math.max(1, 3 - tick/2);
+                    w.spawnParticle(Particle.CLOUD, center.clone().add(x, 0.2, z), count, 0.0, 0.0, 0.0, 0.0, null, true);
                 }
                 tick++;
             }
-        }.runTaskTimer(net.saturn.elementSmp.ElementSmp.getPlugin(net.saturn.elementSmp.ElementSmp.class), 0L, 1L);
+        }.runTaskTimer(plugin, 0L, 1L);
 
         // Launch nearby entities
         for (LivingEntity e : player.getLocation().getNearbyLivingEntities(radius)) {
-            if (e instanceof Player other) {
-                if (other.equals(player)) continue;
-                if (trust.isTrusted(player.getUniqueId(), other.getUniqueId())) continue; // don't affect trusted
+            if (e.equals(player)) continue;
+
+            if (e instanceof Player targetPlayer) {
+                if (context.getTrustManager().isTrusted(player.getUniqueId(), targetPlayer.getUniqueId())) continue;
             }
+
             Vector push = e.getLocation().toVector().subtract(center.toVector()).normalize().multiply(2.25).setY(1.5);
             e.setVelocity(push);
         }

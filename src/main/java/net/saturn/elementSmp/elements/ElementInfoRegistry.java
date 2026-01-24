@@ -19,20 +19,18 @@ public final class ElementInfoRegistry {
         INFO.put(ElementType.AIR, new ElementInfo(
                 "Air",
                 ChatColor.WHITE,
-                "Masters of the sky and wind",
                 List.of(
                         "No fall damage",
                         "5% chance to apply Slow Falling to enemies (Upgrade II)"
                 ),
                 new ElementInfo.AbilityInfo("Air Blast", "Push enemies away with a gust of wind", 50, 1),
-                new ElementInfo.AbilityInfo("Air Dash", "Dash forward swiftly, pushing enemies aside", 75, 1)
+                new ElementInfo.AbilityInfo("Air Dash", "Dash forward swiftly, pushing enemies aside", 75, 2)
         ));
 
         // Fire
         INFO.put(ElementType.FIRE, new ElementInfo(
                 "Fire",
                 ChatColor.RED,
-                "Wielders of flame and destruction",
                 List.of(
                         "Immune to fire/lava damage",
                         "Apply Fire Aspect to all attacks (Upgrade II)"
@@ -45,10 +43,10 @@ public final class ElementInfoRegistry {
         INFO.put(ElementType.WATER, new ElementInfo(
                 "Water",
                 ChatColor.BLUE,
-                "Controllers of water and ocean currents",
                 List.of(
                         "Infinite Water Breathing",
-                        "Conduit Power permanently"
+                        "Permanent Conduit Power",
+                        "Dolphin's Grace V (Upgrade II)"
                 ),
                 new ElementInfo.AbilityInfo("Water Geyser", "Launch enemies upward with water pressure", 75, 1),
                 new ElementInfo.AbilityInfo("Water Beam", "Fire a damaging water beam", 50, 2)
@@ -58,82 +56,70 @@ public final class ElementInfoRegistry {
         INFO.put(ElementType.EARTH, new ElementInfo(
                 "Earth",
                 ChatColor.YELLOW,
-                "Masters of stone and terrain",
                 List.of(
-                        "Hero of The Village",
+                        "Hero of The Village permanently",
                         "Double ore drops (Upgrade II)"
                 ),
                 new ElementInfo.AbilityInfo("Earth Tunnel", "Dig tunnels through stone and dirt", 50, 1),
-                new ElementInfo.AbilityInfo("Mob Charm", "Charm mobs to follow you", 75, 1)
+                new ElementInfo.AbilityInfo("Earthquake", "Stomp the ground to damage and slow nearby enemies", 75, 2)
         ));
 
         // Life
         INFO.put(ElementType.LIFE, new ElementInfo(
                 "Life",
                 ChatColor.GREEN,
-                "Healers with power over vitality",
                 List.of(
-                        "15 hearts total",
-                        "Regeneration I",
-                        "Crops grow faster (Upgrade II)"
+                        "15 Hearts (30 HP) max health",
+                        "50% faster natural health regeneration",
+                        "Crop growth aura around you (Upgrade II)"
                 ),
-                new ElementInfo.AbilityInfo("Regeneration Aura", "Heals you and allies around you", 50, 1),
-                new ElementInfo.AbilityInfo("Healing Beam", "Heal an ally directly", 75, 1)
+                new ElementInfo.AbilityInfo("Nature's Eye", "Reveal nearby living entities through walls", 40, 1),
+                new ElementInfo.AbilityInfo("Entangling Roots", "Pull enemies into the ground and suffocate them", 80, 2)
         ));
 
         // Death
         INFO.put(ElementType.DEATH, new ElementInfo(
                 "Death",
                 ChatColor.DARK_PURPLE,
-                "Masters of decay and darkness",
                 List.of(
-                        "Permanent Night Vision",
-                        "Raw/undead foods heal you"
+                        "Soul Harvest: Restore 2 hearts on player kill",
+                        "Void's Pull: Pull enemies toward you on hit with sword/axe",
+                        "Low health invisibility (Upgrade II)"
                 ),
-                new ElementInfo.AbilityInfo("Summon Undead", "Summon undead ally for 30s", 50, 1),
-                new ElementInfo.AbilityInfo("Wither Skull", "Fire an explosive wither skull", 75, 2)
+                new ElementInfo.AbilityInfo("Summon Undead", "Summon a powerful undead ally", 50, 1),
+                new ElementInfo.AbilityInfo("Shadow Step", "Teleport behind your target", 75, 2)
         ));
 
         // Metal
         INFO.put(ElementType.METAL, new ElementInfo(
                 "Metal",
                 ChatColor.GRAY,
-                "Warriors of steel and chains",
                 List.of(
-                        "Haste I",
-                        "Arrow immunity (Upgrade II)"
+                        "Haste I permanently",
+                        "Immunity to all arrows (Upgrade II)"
                 ),
-                new ElementInfo.AbilityInfo("Chain Reel", "Pull an enemy toward you", 50, 1),
-                new ElementInfo.AbilityInfo("Metal Dash", "Dash forward, damaging enemies", 75, 2)
+                new ElementInfo.AbilityInfo("Metal Dash", "Swiftly dash through enemies, damaging them", 50, 1),
+                new ElementInfo.AbilityInfo("Metal Chain", "Launch a chain to pull enemies toward you", 75, 2)
         ));
 
         // Frost
         INFO.put(ElementType.FROST, new ElementInfo(
                 "Frost",
                 ChatColor.AQUA,
-                "Controllers of ice and cold",
                 List.of(
-                        "Speed II on snow",
-                        "Speed III on ice (Upgrade II)"
+                        "Speed II on snow, Speed III on ice",
+                        "Freeze water walking (Upgrade II)"
                 ),
-                new ElementInfo.AbilityInfo("Freezing Circle", "Slow enemies around you", 50, 1),
-                new ElementInfo.AbilityInfo("Frozen Punch", "Freeze an enemy for 5s", 75, 2)
+                new ElementInfo.AbilityInfo("Freezing Circle", "Create a circle that slows and damages enemies", 50, 1),
+                new ElementInfo.AbilityInfo("Frozen Punch", "Punch an enemy to freeze them solid", 75, 2)
         ));
     }
 
-    /**
-     * Get element info
-     */
-    public static Optional<ElementInfo> get(ElementType type) {
+    public static Optional<ElementInfo> getInfo(ElementType type) {
         return Optional.ofNullable(INFO.get(type));
     }
 
-    /**
-     * Check if element has info registered
-     */
-    public static boolean hasInfo(ElementType type) {
-        return INFO.containsKey(type);
+    public static Map<ElementType, ElementInfo> getAllInfo() {
+        return Map.copyOf(INFO);
     }
-
-    private ElementInfoRegistry() {} // Prevent instantiation
 }

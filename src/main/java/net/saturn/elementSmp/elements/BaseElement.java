@@ -15,12 +15,6 @@ public abstract class BaseElement implements Element {
 
     // Abstract methods that must be implemented by subclasses
     public abstract void clearEffects(Player player);
-    public abstract String getDisplayName();
-    public abstract String getDescription();
-    public abstract String getAbility1Name();
-    public abstract String getAbility1Description();
-    public abstract String getAbility2Name();
-    public abstract String getAbility2Description();
 
     public BaseElement(ElementSmp plugin) {
         this.plugin = plugin;
@@ -140,24 +134,6 @@ public abstract class BaseElement implements Element {
      */
     protected boolean canCancelAbility2(ElementContext context) {
         return false; // Default: no cancellation support
-    }
-
-    /**
-     * Helper method to check if target is valid (not player or not trusted)
-     */
-    protected boolean isValidTarget(Player player, org.bukkit.entity.LivingEntity target, net.saturn.elementSmp.managers.TrustManager trust) {
-        if (target.equals(player)) return false;
-        if (target instanceof Player other && trust.isTrusted(player.getUniqueId(), other.getUniqueId())) {
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * Helper method to check if target is valid using ElementContext
-     */
-    protected boolean isValidTarget(ElementContext context, org.bukkit.entity.LivingEntity target) {
-        return isValidTarget(context.getPlayer(), target, context.getTrustManager());
     }
 
     /**

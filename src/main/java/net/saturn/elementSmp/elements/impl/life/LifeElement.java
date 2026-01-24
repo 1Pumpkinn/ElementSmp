@@ -119,52 +119,17 @@ public class LifeElement extends BaseElement {
     // Clearing Effects
     @Override
     public void clearEffects(Player player) {
-
-        // Stop aura
         cancelPassiveTask(player);
 
-        // Reset health to normal
+        // Reset health
         var attr = player.getAttribute(Attribute.MAX_HEALTH);
         if (attr != null) {
             attr.setBaseValue(20.0);
-            if (player.getHealth() > 20.0) {
-                player.setHealth(20.0);
-            }
+            if (player.getHealth() > 20.0) player.setHealth(20.0);
         }
 
         ability1.setActive(player, false);
         ability2.setActive(player, false);
-    }
-
-    // Display
-    @Override
-    public String getDisplayName() {
-        return ChatColor.GREEN + "Life";
-    }
-
-    @Override
-    public String getDescription() {
-        return "Masters of healing and nature. Life users can reveal nearby life and entangle their enemies.";
-    }
-
-    @Override
-    public String getAbility1Name() {
-        return ability1.getName();
-    }
-
-    @Override
-    public String getAbility1Description() {
-        return ability1.getDescription();
-    }
-
-    @Override
-    public String getAbility2Name() {
-        return ability2.getName();
-    }
-
-    @Override
-    public String getAbility2Description() {
-        return ability2.getDescription();
     }
 }
 

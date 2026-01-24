@@ -53,38 +53,5 @@ public class MetalElement extends BaseElement {
         player.removePotionEffect(PotionEffectType.HASTE);
         ability1.setActive(player, false);
         ability2.setActive(player, false);
-
-
-    }
-
-
-    @Override
-    public String getDisplayName() {
-        return ChatColor.GRAY + "Metal";
-    }
-
-    @Override
-    public String getDescription() {
-        return "Masters of chains and iron. Metal users are swift and can dash through enemies.";
-    }
-
-    @Override
-    public String getAbility1Name() {
-        return ability1.getName();
-    }
-
-    @Override
-    public String getAbility1Description() {
-        return ability1.getDescription();
-    }
-
-    @Override
-    public String getAbility2Name() {
-        return ability2.getName();
-    }
-
-    @Override
-    public String getAbility2Description() {
-        return ability2.getDescription();
     }
 }

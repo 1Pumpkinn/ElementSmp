@@ -30,7 +30,10 @@ public class WaterGeyserAbility extends BaseAbility {
 
         for (LivingEntity entity : playerLoc.getNearbyLivingEntities(5.0)) {
             if (entity.equals(player)) continue;
-            if (!isValidTarget(context, entity)) continue;
+            
+            if (entity instanceof Player targetPlayer) {
+                if (context.getTrustManager().isTrusted(player.getUniqueId(), targetPlayer.getUniqueId())) continue;
+            }
 
             foundTargets = true;
             final LivingEntity target = entity;
@@ -129,17 +132,5 @@ public class WaterGeyserAbility extends BaseAbility {
     @Override
     public String getDescription() {
         return "Launches nearby enemies upward with a powerful geyser.";
-    }
-
-    @Override
-    protected boolean isValidTarget(ElementContext context, LivingEntity entity) {
-        // Check if entity is a valid target (not a friendly player, etc.)
-        if (entity instanceof Player targetPlayer) {
-            // Don't target trusted players
-            if (context.getPlugin().getTrustManager().isTrusted(context.getPlayer().getUniqueId(), targetPlayer.getUniqueId())) {
-                return false;
-            }
-        }
-        return true;
     }
 }

@@ -44,37 +44,6 @@ public record ElementItemDeathListener(ElementSmp plugin, ElementManager element
                 }.runTaskLater(plugin, 1L);
             }
         }
-
-        if (shouldDropCore(currentElement)) {
-            plugin.getLogger().info("Player " + e.getEntity().getName() + " died with " + currentElement + " element - dropping core");
-
-            ItemStack coreItem = net.saturn.elementSmp.items.ElementCoreItem.createCore(plugin, currentElement);
-            if (coreItem != null) {
-                e.getDrops().add(coreItem);
-                plugin.getLogger().info("Added " + currentElement + " core to death drops");
-            } else {
-                plugin.getLogger().warning("Failed to create " + currentElement + " core item");
-            }
-
-            pd.removeElementItem(currentElement);
-            plugin.getDataStore().save(pd);
-
-            new BukkitRunnable() {
-                @Override
-                public void run() {
-                    if (e.getEntity().isOnline()) {
-                        elements.assignRandomDifferentElement(e.getEntity());
-                        e.getEntity().sendMessage(ChatColor.YELLOW + "Your core dropped and you rolled a new element!");
-                    }
-                }
-            }.runTaskLater(plugin, 40L);
-        } else {
-            plugin.getLogger().info("Player " + e.getEntity().getName() + " died with " + currentElement + " element - no core drop");
-        }
-    }
-
-    private boolean shouldDropCore(ElementType t) {
-        return t == ElementType.LIFE || t == ElementType.DEATH;
     }
 }
 

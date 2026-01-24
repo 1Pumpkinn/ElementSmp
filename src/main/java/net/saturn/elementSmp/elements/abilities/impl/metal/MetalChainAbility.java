@@ -35,7 +35,14 @@ public class MetalChainAbility extends BaseAbility {
                 player.getEyeLocation().getDirection(),
                 range,
                 0.5, // Ray size buffer for easier targeting
-                entity -> (entity instanceof LivingEntity && !(entity instanceof org.bukkit.entity.ArmorStand) && !entity.equals(player))
+                entity -> {
+                    if (!(entity instanceof LivingEntity living)) return false;
+                    if (living.equals(player)) return false;
+                    if (living instanceof Player targetPlayer) {
+                        if (context.getTrustManager().isTrusted(player.getUniqueId(), targetPlayer.getUniqueId())) return false;
+                    }
+                    return true;
+                }
         );
 
         LivingEntity target = null;
@@ -58,16 +65,8 @@ public class MetalChainAbility extends BaseAbility {
         }
 
         if (target == null) {
-            player.sendMessage(ChatColor.RED + "You must look at an entity to chain it!");
+            player.sendMessage(ChatColor.RED + "You must look at a valid entity to chain it!");
             return false;
-        }
-
-        // Don't target trusted players
-        if (target instanceof Player targetPlayer) {
-            if (context.getTrustManager().isTrusted(player.getUniqueId(), targetPlayer.getUniqueId())) {
-                player.sendMessage(ChatColor.RED + "You cannot chain trusted players!");
-                return false;
-            }
         }
 
         // Play sounds
@@ -118,27 +117,47 @@ public class MetalChainAbility extends BaseAbility {
 
                     // Schedule metadata removal and re-enable AI after stun expires
                     new BukkitRunnable() {
+                        int stunTicks = 0;
                         @Override
                         public void run() {
-                            if (finalTarget.isValid()) {
-                                finalTarget.removeMetadata(META_CHAINED_STUN, plugin);
-                                if (finalTarget instanceof Mob mob) {
-                                    mob.setAware(true);
-                                }
-                                if (finalTarget instanceof Player p) {
-                                    if (!wasAllowFlight && p.getGameMode() != org.bukkit.GameMode.CREATIVE && p.getGameMode() != org.bukkit.GameMode.SPECTATOR) {
-                                        p.setAllowFlight(false);
+                            if (!finalTarget.isValid() || stunTicks >= 60) {
+                                if (finalTarget.isValid()) {
+                                    finalTarget.removeMetadata(META_CHAINED_STUN, plugin);
+                                    if (finalTarget instanceof Mob mob) {
+                                        mob.setAware(true);
+                                    }
+                                    if (finalTarget instanceof Player p) {
+                                        if (!wasAllowFlight && p.getGameMode() != org.bukkit.GameMode.CREATIVE && p.getGameMode() != org.bukkit.GameMode.SPECTATOR) {
+                                            p.setAllowFlight(false);
+                                        }
                                     }
                                 }
+                                cancel();
+                                return;
                             }
+
+                            // Keep wrapping during stun
+                            double radius = 0.6;
+                            for (int i = 0; i < 2; i++) {
+                                double angle = (stunTicks * 0.4 + (i * Math.PI)) % (2 * Math.PI);
+                                double x = Math.cos(angle) * radius;
+                                double z = Math.sin(angle) * radius;
+                                double y = (stunTicks * 0.08 + (i * 0.5)) % 2.0;
+                                
+                                Location wrapLoc = finalTarget.getLocation().add(x, y, z);
+                                finalTarget.getWorld().spawnParticle(Particle.BLOCK, wrapLoc, 1, 
+                                        0, 0, 0, 0, 
+                                        Material.MUD.createBlockData(), true);
+                            }
+                            stunTicks++;
                         }
-                    }.runTaskLater(plugin, 60L); // 3 seconds = 60 ticks
+                    }.runTaskTimer(plugin, 0L, 1L);
 
                     // Visual/audio feedback for stun
                     player.getWorld().playSound(targetLoc, Sound.BLOCK_ANVIL_LAND, 1.0f, 2.0f);
                     player.getWorld().spawnParticle(Particle.BLOCK, targetLoc, 30,
                             0.3, 0.5, 0.3, 0.1,
-                            org.bukkit.Material.IRON_BLOCK.createBlockData(), true);
+                            org.bukkit.Material.MUD.createBlockData(), true);
 
                     cancel();
                     return;
@@ -146,27 +165,52 @@ public class MetalChainAbility extends BaseAbility {
 
                 // Draw particle chain
                 Vector direction = targetLoc.toVector().subtract(currentPlayerLoc.toVector()).normalize();
-                double particleSpacing = 0.3;
+                double particleSpacing = 0.25; // Slightly wider for block particles
                 int numParticles = (int) (distance / particleSpacing);
 
                 for (int i = 0; i <= numParticles; i++) {
                     double t = i * particleSpacing;
                     Location particleLoc = currentPlayerLoc.clone().add(direction.clone().multiply(t));
 
-                    // Main chain particles (iron blocks/anvil look)
                     player.getWorld().spawnParticle(Particle.BLOCK, particleLoc, 1,
-                            0.05, 0.05, 0.05, 0.0,
-                            org.bukkit.Material.IRON_BLOCK.createBlockData(), true);
+                            0.02, 0.02, 0.02, 0.0,
+                            Material.MUD.createBlockData(), true);
+                }
 
-                    // Add some sparkles for effect
-                    if (i % 3 == 0) {
-                        player.getWorld().spawnParticle(Particle.CRIT, particleLoc, 1,
-                                0.02, 0.02, 0.02, 0.01, null, true);
-                    }
+                // Wrap around effect on the target
+                double radius = 0.6;
+                for (int i = 0; i < 2; i++) {
+                    double angle = (ticks * 0.5 + (i * Math.PI)) % (2 * Math.PI);
+                    double x = Math.cos(angle) * radius;
+                    double z = Math.sin(angle) * radius;
+                    double y = (ticks * 0.1 + (i * 0.5)) % 2.0; // Moves up the body
+                    
+                    Location wrapLoc = finalTarget.getLocation().add(x, y, z);
+                    player.getWorld().spawnParticle(Particle.BLOCK, wrapLoc, 1, 
+                            0, 0, 0, 0, 
+                            Material.MUD.createBlockData(), true);
                 }
 
                 // Apply gentle pull force to target
                 Vector pullDirection = currentPlayerLoc.toVector().subtract(targetLoc.toVector()).normalize();
+
+                // Auto-jump logic: detect if target is hitting a block while being pulled
+                Vector horizontalDir = pullDirection.clone().setY(0);
+                if (horizontalDir.lengthSquared() > 0.01) {
+                    horizontalDir.normalize();
+                    // Check slightly in front of the entity
+                    org.bukkit.block.Block frontFoot = finalTarget.getLocation().add(horizontalDir.clone().multiply(0.7)).getBlock();
+                    org.bukkit.block.Block frontHead = finalTarget.getEyeLocation().add(horizontalDir.clone().multiply(0.7)).getBlock();
+
+                    if (frontFoot.getType().isSolid() && !frontHead.getType().isSolid()) {
+                        // Room to jump over
+                        if (finalTarget.isOnGround() || finalTarget.getVelocity().getY() < 0.1) {
+                            Vector vel = finalTarget.getVelocity();
+                            vel.setY(0.42); // Enough to clear one block
+                            finalTarget.setVelocity(vel);
+                        }
+                    }
+                }
 
                 // Gentle upward component to prevent dragging on ground
                 pullDirection.setY(pullDirection.getY() + 0.1);

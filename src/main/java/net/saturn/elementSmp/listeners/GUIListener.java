@@ -69,19 +69,6 @@ public class GUIListener implements Listener {
 
         if (item == null || !item.hasItemMeta()) return;
 
-        // Check if this is a Life or Death core specifically
-        boolean isLifeCore = item.getItemMeta().getPersistentDataContainer()
-                .has(ItemKeys.lifeCore(plugin), PersistentDataType.BYTE);
-        boolean isDeathCore = item.getItemMeta().getPersistentDataContainer()
-                .has(ItemKeys.deathCore(plugin), PersistentDataType.BYTE);
-
-        if (isLifeCore || isDeathCore) {
-            if (event.getAction() != org.bukkit.event.block.Action.RIGHT_CLICK_AIR &&
-                    event.getAction() != org.bukkit.event.block.Action.RIGHT_CLICK_BLOCK) {
-                return;
-            }
-        }
-
         String elementTypeString = item.getItemMeta().getPersistentDataContainer()
                 .get(ItemKeys.elementType(plugin), PersistentDataType.STRING);
 

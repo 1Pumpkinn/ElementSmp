@@ -57,8 +57,8 @@ public class EarthFriendlyMobListener implements Listener {
                                     double bestDistance = Double.MAX_VALUE;
                                     
                                     for (Player player : mob.getWorld().getPlayers()) {
-                                        if (player.getUniqueId().equals(ownerId)) continue;
-                                        if (trustManager.isTrusted(ownerId, player.getUniqueId())) continue;
+                                        if (player.equals(owner)) continue;
+                                        if (trustManager.isTrusted(owner.getUniqueId(), player.getUniqueId())) continue;
                                         
                                         double playerDistance = mob.getLocation().distanceSquared(player.getLocation());
                                         if (playerDistance < bestDistance && playerDistance < 16*16) { // 16 block range
@@ -99,31 +99,8 @@ public class EarthFriendlyMobListener implements Listener {
                     Player owner = Bukkit.getPlayer(ownerId);
                     if (owner == null) return;
 
-                    // Don't target owner
-                    if (tgt.getUniqueId().equals(ownerId)) {
+                    if (tgt.equals(owner) || trustManager.isTrusted(ownerId, tgt.getUniqueId())) {
                         e.setCancelled(true);
-                        return;
-                    }
-
-                    // Don't target trusted players
-                    if (trustManager.isTrusted(ownerId, tgt.getUniqueId())) {
-                        // Find another player that isn't trusted
-                        Player nearest = null;
-                        double best = Double.MAX_VALUE;
-                        for (Player p : mob.getWorld().getPlayers()) {
-                            if (p.getUniqueId().equals(ownerId)) continue;
-                            if (trustManager.isTrusted(ownerId, p.getUniqueId())) continue;
-                            double d = p.getLocation().distanceSquared(mob.getLocation());
-                            if (d < best && d < 16*16) {
-                                best = d;
-                                nearest = p;
-                            }
-                        }
-                        if (nearest != null) {
-                            e.setTarget(nearest);
-                        } else {
-                            e.setCancelled(true);
-                        }
                     }
                 } catch (Exception ignored) {}
             }
@@ -132,30 +109,17 @@ public class EarthFriendlyMobListener implements Listener {
 
     @EventHandler
     public void onDamage(EntityDamageByEntityEvent e) {
-        // Prevent charmed mobs from damaging their owner or trusted players
-        if (e.getDamager() instanceof Mob mob && e.getEntity() instanceof Player target) {
-            if (mob.hasMetadata("earth_charmed_owner") && mob.hasMetadata("earth_charmed_until")) {
+        // Owner or trusted player shouldn't hurt the mob
+        if (e.getEntity() instanceof Mob mob && e.getDamager() instanceof Player damager) {
+            if (mob.hasMetadata("earth_charmed_owner")) {
                 try {
                     String ownerStr = mob.getMetadata("earth_charmed_owner").get(0).asString();
-                    long until = mob.getMetadata("earth_charmed_until").get(0).asLong();
                     UUID ownerId = UUID.fromString(ownerStr);
-
-                    if (System.currentTimeMillis() > until) return; // expired
-
-                    // Don't damage owner
-                    if (target.getUniqueId().equals(ownerId)) {
+                    if (damager.getUniqueId().equals(ownerId) || trustManager.isTrusted(ownerId, damager.getUniqueId())) {
                         e.setCancelled(true);
-                        return;
-                    }
-
-                    // Don't damage trusted players
-                    if (trustManager.isTrusted(ownerId, target.getUniqueId())) {
-                        e.setCancelled(true);
-                        return;
                     }
                 } catch (Exception ignored) {}
             }
         }
     }
 }
-

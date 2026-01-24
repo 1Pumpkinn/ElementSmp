@@ -8,11 +8,11 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 public class CombatListener implements Listener {
-    private final TrustManager trust;
+    private final TrustManager trustManager;
     private final ElementManager elements;
 
-    public CombatListener(TrustManager trust, ElementManager elements) {
-        this.trust = trust;
+    public CombatListener(TrustManager trustManager, ElementManager elements) {
+        this.trustManager = trustManager;
         this.elements = elements;
     }
 
@@ -26,7 +26,8 @@ public class CombatListener implements Listener {
             damager = p;
         }
         if (damager == null) return;
-        if (trust.isTrusted(victim.getUniqueId(), damager.getUniqueId()) || trust.isTrusted(damager.getUniqueId(), victim.getUniqueId())) {
+        
+        if (trustManager.isTrusted(damager.getUniqueId(), victim.getUniqueId())) {
             e.setCancelled(true);
         }
     }

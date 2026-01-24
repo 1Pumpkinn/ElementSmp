@@ -80,11 +80,8 @@ public class MetalDashAbility extends BaseAbility implements Listener {
                         if (entity.equals(player)) continue;
                         if (damagedEntities.contains(entity.getUniqueId())) continue;
                         if (entity instanceof org.bukkit.entity.ArmorStand) continue;
-
                         if (entity instanceof Player targetPlayer) {
-                            if (context.getTrustManager().isTrusted(player.getUniqueId(), targetPlayer.getUniqueId())) {
-                                continue;
-                            }
+                            if (context.getTrustManager().isTrusted(player.getUniqueId(), targetPlayer.getUniqueId())) continue;
                         }
 
                         // HIT SUCCESSFUL - Now allows hitting multiple entities

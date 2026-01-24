@@ -61,10 +61,16 @@ public class WaterBeamAbility extends BaseAbility {
                     
                     // Now trace entities but only up to the nearest block
                     RayTraceResult r = player.getWorld().rayTraceEntities(chestLoc, dir, maxDistance,
-                            entity -> entity instanceof LivingEntity && !entity.equals(player));
+                            entity -> {
+                                if (!(entity instanceof LivingEntity living)) return false;
+                                if (living.equals(player)) return false;
+                                if (living instanceof Player targetPlayer) {
+                                    if (context.getTrustManager().isTrusted(player.getUniqueId(), targetPlayer.getUniqueId())) return false;
+                                }
+                                return true;
+                            });
                     if (r != null && r.getHitEntity() instanceof LivingEntity le) {
-                        if (isValidTarget(context, le)) {
-                            // Apply knockback with slight upward component
+                        // Apply knockback with slight upward component
                             Vector knockback = le.getLocation().toVector().subtract(player.getLocation().toVector()).normalize();
                             knockback.setY(0.2);
                             knockback = knockback.multiply(0.8);
@@ -103,7 +109,6 @@ public class WaterBeamAbility extends BaseAbility {
                             }
                         }
                     }
-                }
 
                 Location eyeLoc = player.getEyeLocation();
                 Vector direction = eyeLoc.getDirection();
@@ -158,15 +163,10 @@ public class WaterBeamAbility extends BaseAbility {
      } 
      
      @Override
-     public String getDescription() { 
-         return ChatColor.GRAY + "Fire a continuous beam of water that damages and pushes back enemies. (40 mana)"; 
-     }
-    
-    @Override
-    protected boolean isValidTarget(ElementContext context, LivingEntity entity) {
-        return true;
+    public String getDescription() { 
+        return ChatColor.GRAY + "Fire a continuous beam of water that damages and pushes back enemies. (40 mana)"; 
     }
-    
+   
     private boolean isPassableBlock(Block block) {
         if (block == null) return true;
         

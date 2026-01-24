@@ -11,7 +11,6 @@ import net.saturn.elementSmp.listeners.item.*;
 import net.saturn.elementSmp.listeners.player.*;
 import net.saturn.elementSmp.managers.*;
 import net.saturn.elementSmp.services.EffectService;
-import net.saturn.elementSmp.services.ValidationService;
 import net.saturn.elementSmp.util.bukkit.MetadataHelper;
 import net.saturn.elementSmp.util.scheduling.TaskScheduler;
 import net.saturn.elementSmp.elements.impl.air.listeners.*;
@@ -22,8 +21,6 @@ import net.saturn.elementSmp.elements.impl.life.listeners.*;
 import net.saturn.elementSmp.elements.impl.death.listeners.*;
 import net.saturn.elementSmp.elements.impl.metal.listeners.*;
 import net.saturn.elementSmp.elements.impl.frost.listeners.*;
-import net.saturn.elementSmp.elements.impl.life.LifeElementCraftListener;
-import net.saturn.elementSmp.elements.impl.death.DeathElementCraftListener;
 import net.saturn.elementSmp.recipes.UtilRecipes;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
@@ -40,7 +37,6 @@ public final class ElementSmp extends JavaPlugin {
     private ItemManager itemManager;
     private AbilityRegistry abilityRegistry;
     private EffectService effectService;
-    private ValidationService validationService;
     private TaskScheduler taskScheduler;
     private MetadataHelper metadataHelper;
 
@@ -94,8 +90,7 @@ public final class ElementSmp extends JavaPlugin {
     private void initializeServices() {
         getLogger().info("Initializing services...");
 
-        this.effectService = new EffectService(this, elementManager);
-        this.validationService = new ValidationService(trustManager);
+        this.effectService = elementManager.getEffectService();
         this.abilityRegistry = new AbilityRegistry(this);
 
         getLogger().info("Services initialized");
@@ -140,6 +135,21 @@ public final class ElementSmp extends JavaPlugin {
                     }
                 };
                 elementsCmd.setDescription("View element info");
+
+                var elementInfoCmd = new org.bukkit.command.defaults.BukkitCommand("elementinfo") {
+                    private final ElementInfoCommand executor = new ElementInfoCommand(ElementSmp.this);
+
+                    @Override
+                    public boolean execute(org.bukkit.command.CommandSender sender, String label, String[] args) {
+                        return executor.onCommand(sender, this, label, args);
+                    }
+
+                    @Override
+                    public java.util.List<String> tabComplete(org.bukkit.command.CommandSender sender, String alias, String[] args) {
+                        return executor.onTabComplete(sender, this, alias, args);
+                    }
+                };
+                elementInfoCmd.setDescription("View detailed information about an element");
 
                 var trustCmd = new org.bukkit.command.defaults.BukkitCommand("trust") {
                     private final TrustCommand executor = new TrustCommand(ElementSmp.this, trustManager);
@@ -208,6 +218,7 @@ public final class ElementSmp extends JavaPlugin {
 
                 // Register all commands
                 commandMap.register("elementsmp", elementsCmd);
+                commandMap.register("elementsmp", elementInfoCmd);
                 commandMap.register("elementsmp", trustCmd);
                 commandMap.register("elementsmp", elementCmd);
                 commandMap.register("elementsmp", manaCmd);
@@ -262,15 +273,13 @@ public final class ElementSmp extends JavaPlugin {
         pm.registerEvents(new EarthFriendlyMobListener(this, trustManager), this);
         pm.registerEvents(new EarthOreDropListener(elementManager), this);
         pm.registerEvents(new LifeRegenListener(elementManager), this);
-        pm.registerEvents(new LifeElementCraftListener(this, elementManager), this);
         pm.registerEvents(new DeathRawFoodListener(elementManager), this);
-        pm.registerEvents(new DeathFriendlyMobListener(this, trustManager), this);
-        pm.registerEvents(new DeathElementCraftListener(this, elementManager), this);
+        pm.registerEvents(new DeathFriendlyMobListener(this, trustManager, elementManager), this);
         pm.registerEvents(new DeathPassiveListener(this, elementManager), this);
         pm.registerEvents(new MetalArrowImmunityListener(elementManager), this);
         pm.registerEvents(new MetalChainStunListener(), this);
         pm.registerEvents(new FrostPassiveListener(this, elementManager), this);
-        pm.registerEvents(new FrostFrozenPunchListener(this, elementManager), this);
+        pm.registerEvents(new FrostFrozenPunchListener(this, elementManager, trustManager), this);
     }
 
     private void registerRecipes() {
@@ -305,7 +314,6 @@ public final class ElementSmp extends JavaPlugin {
     public ItemManager getItemManager() { return itemManager; }
     public AbilityRegistry getAbilityRegistry() { return abilityRegistry; }
     public EffectService getEffectService() { return effectService; }
-    public ValidationService getValidationService() { return validationService; }
     public TaskScheduler getTaskScheduler() { return taskScheduler; }
     public MetadataHelper getMetadataHelper() { return metadataHelper; }
 }

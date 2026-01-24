@@ -51,35 +51,5 @@ public class DeathElement extends BaseElement {
         ability1.setActive(player, false);
         ability2.setActive(player, false);
     }
-
-    @Override
-    public String getDisplayName() {
-        return ChatColor.DARK_PURPLE + "Death";
-    }
-
-    @Override
-    public String getDescription() {
-        return ChatColor.GRAY + "Master of decay and the undead. Death users can summon undead servants and step through shadows.";
-    }
-
-    @Override
-    public String getAbility1Name() {
-        return ability1.getName();
-    }
-
-    @Override
-    public String getAbility1Description() {
-        return ability1.getDescription();
-    }
-
-    @Override
-    public String getAbility2Name() {
-        return ability2.getName();
-    }
-
-    @Override
-    public String getAbility2Description() {
-        return ability2.getDescription();
-    }
 }
 

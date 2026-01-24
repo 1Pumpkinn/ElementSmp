@@ -11,7 +11,6 @@ import java.util.List;
 public record ElementInfo(
         String displayName,
         ChatColor color,
-        String description,
         List<String> passiveBenefits,
         AbilityInfo ability1,
         AbilityInfo ability2

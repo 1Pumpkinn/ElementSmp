@@ -26,6 +26,7 @@ import java.util.Map;
  * Single source of truth for all effect-related operations.
  */
 public class EffectService implements Listener {
+    private static final int INFINITE_DURATION = 1000000; // Large enough to be considered infinite
     private final ElementSmp plugin;
     private final ElementManager elementManager;
 
@@ -41,7 +42,6 @@ public class EffectService implements Listener {
 
     private void initializeRequirements() {
         requiredEffects.put(ElementType.WATER, new EffectRequirement[] {
-                new EffectRequirement(PotionEffectType.WATER_BREATHING, 0, false),
                 new EffectRequirement(PotionEffectType.CONDUIT_POWER, 0, false)
         });
 
@@ -51,14 +51,6 @@ public class EffectService implements Listener {
 
         requiredEffects.put(ElementType.EARTH, new EffectRequirement[] {
                 new EffectRequirement(PotionEffectType.HERO_OF_THE_VILLAGE, 0, false)
-        });
-
-        requiredEffects.put(ElementType.LIFE, new EffectRequirement[] {
-                new EffectRequirement(PotionEffectType.REGENERATION, 0, false)
-        });
-
-        requiredEffects.put(ElementType.DEATH, new EffectRequirement[] {
-                new EffectRequirement(PotionEffectType.NIGHT_VISION, 0, false)
         });
 
         requiredEffects.put(ElementType.METAL, new EffectRequirement[] {
@@ -74,10 +66,14 @@ public class EffectService implements Listener {
         PlayerData pd = elementManager.data(player.getUniqueId());
         ElementType currentElement = pd.getCurrentElement();
 
-        // Clear effects from ALL elements
-        for (ElementType type : ElementType.values()) {
-            if (type == currentElement) continue;
+        // Hardcoded removal of element-granted effects
+        player.removePotionEffect(PotionEffectType.CONDUIT_POWER);
+        player.removePotionEffect(PotionEffectType.FIRE_RESISTANCE);
+        player.removePotionEffect(PotionEffectType.HERO_OF_THE_VILLAGE);
+        player.removePotionEffect(PotionEffectType.HASTE);
 
+        // Clear individual element state/tasks
+        for (ElementType type : ElementType.values()) {
             Element element = elementManager.get(type);
             if (element != null) {
                 element.clearEffects(player);
@@ -86,6 +82,11 @@ public class EffectService implements Listener {
 
         // Reset health if not Life element
         resetHealthIfNeeded(player, currentElement);
+    }
+
+    private boolean isElementEffect(PotionEffect effect) {
+        // Element effects are applied with a very long duration and specific flags
+        return effect.getDuration() > 100000 || (effect.isAmbient() && !effect.hasParticles());
     }
 
     /**
@@ -121,9 +122,9 @@ public class EffectService implements Listener {
         if (requirements != null) {
             for (EffectRequirement req : requirements) {
                 if (!req.upgradeRequired || upgradeLevel >= 2) {
-                    if (!hasValidEffect(player, req.type)) {
+                    if (!hasValidEffect(player, req.type, req.level)) {
                         player.addPotionEffect(new PotionEffect(
-                                req.type, Integer.MAX_VALUE, req.level, true, false
+                                req.type, INFINITE_DURATION, req.level, true, false
                         ));
                     }
                 }
@@ -132,9 +133,9 @@ public class EffectService implements Listener {
 
         // Special handling for Water upgrade 2
         if (currentElement == ElementType.WATER && upgradeLevel >= 2) {
-            if (!hasValidEffect(player, PotionEffectType.DOLPHINS_GRACE)) {
+            if (!hasValidEffect(player, PotionEffectType.DOLPHINS_GRACE, 4)) {
                 player.addPotionEffect(new PotionEffect(
-                        PotionEffectType.DOLPHINS_GRACE, Integer.MAX_VALUE, 4, true, false
+                        PotionEffectType.DOLPHINS_GRACE, INFINITE_DURATION, 4, true, false
                 ));
             }
         }
@@ -143,9 +144,18 @@ public class EffectService implements Listener {
         resetHealthIfNeeded(player, currentElement);
     }
 
-    private boolean hasValidEffect(Player player, PotionEffectType type) {
+    private boolean hasValidEffect(Player player, PotionEffectType type, int requiredLevel) {
         PotionEffect effect = player.getPotionEffect(type);
-        return effect != null && effect.getDuration() > 100;
+        if (effect == null) return false;
+        
+        // If it's an element effect, check if it's the right level
+        if (isElementEffect(effect)) {
+            return effect.getAmplifier() == requiredLevel;
+        }
+        
+        // If it's a normal potion, only consider it valid if it's at least the same level
+        // and has more than 5 seconds remaining
+        return effect.getAmplifier() >= requiredLevel && effect.getDuration() > 100;
     }
 
     private void resetHealthIfNeeded(Player player, ElementType currentElement) {

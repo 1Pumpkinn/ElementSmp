@@ -52,34 +52,4 @@ public class FireElement extends BaseElement {
         ability1.setActive(player, false);
         ability2.setActive(player, false);
     }
-
-    @Override
-    public String getDisplayName() {
-        return ChatColor.RED + "Fire";
-    }
-
-    @Override
-    public String getDescription() {
-        return ChatColor.GRAY + "Masters of flame and destruction. Fire users are immune to fire damage and can rain destruction from above.";
-    }
-
-    @Override
-    public String getAbility1Name() {
-        return ability1.getName();
-    }
-
-    @Override
-    public String getAbility1Description() {
-        return ability1.getDescription();
-    }
-
-    @Override
-    public String getAbility2Name() {
-        return ability2.getName();
-    }
-
-    @Override
-    public String getAbility2Description() {
-        return ability2.getDescription();
-    }
 }

@@ -71,10 +71,19 @@ public abstract class BaseAbility implements Ability {
     public abstract String getDescription();
 
     /**
-     * Helper method to check if a target is valid for an ability.
-     * Override in subclasses for more complex logic.
+     * Check if an entity is a valid target for an ability.
+     * Prevents hitting self or trusted players.
      */
     protected boolean isValidTarget(ElementContext context, org.bukkit.entity.LivingEntity target) {
-        return !target.equals(context.getPlayer());
+        if (target == null) return false;
+        Player player = context.getPlayer();
+        if (target.equals(player)) return false;
+
+        if (target instanceof Player targetPlayer) {
+            if (context.getTrustManager().isTrusted(player.getUniqueId(), targetPlayer.getUniqueId())) {
+                return false;
+            }
+        }
+        return true;
     }
 }

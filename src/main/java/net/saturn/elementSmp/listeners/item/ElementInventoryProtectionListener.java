@@ -25,37 +25,12 @@ public class ElementInventoryProtectionListener implements Listener {
 
     @EventHandler
     public void onClick(InventoryClickEvent event) {
-        if (!(event.getWhoClicked() instanceof Player player)) return;
-        ItemStack cursor = event.getCursor();
-        ItemStack current = event.getCurrentItem();
-        Inventory top = event.getView().getTopInventory();
-
-        if (top == null || top.getType() != InventoryType.ENDER_CHEST) return;
-
-        if ((cursor != null && isLifeOrDeathCore(cursor)) || (current != null && isLifeOrDeathCore(current))) {
-            event.setCancelled(true);
-            player.sendMessage(ChatColor.RED + "You cannot store Life or Death cores in an Ender Chest!");
-        }
+        // No longer restricting Life/Death cores as they are removed from crafting
     }
 
     @EventHandler
     public void onDrag(InventoryDragEvent event) {
-        if (!(event.getWhoClicked() instanceof Player player)) return;
-        ItemStack item = event.getOldCursor();
-        Inventory top = event.getView().getTopInventory();
-
-        if (top == null || top.getType() != InventoryType.ENDER_CHEST) return;
-
-        if (item != null && isLifeOrDeathCore(item)) {
-            event.setCancelled(true);
-            player.sendMessage(ChatColor.RED + "You cannot store Life or Death cores in an Ender Chest!");
-        }
-    }
-
-    private boolean isLifeOrDeathCore(ItemStack stack) {
-        if (!ItemUtil.isElementItem(plugin, stack)) return false;
-        ElementType type = ItemUtil.getElementType(plugin, stack);
-        return type == ElementType.LIFE || type == ElementType.DEATH;
+        // No longer restricting Life/Death cores as they are removed from crafting
     }
 }
 

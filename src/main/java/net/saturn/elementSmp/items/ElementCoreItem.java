@@ -24,18 +24,6 @@ public final class ElementCoreItem {
 
     private static ElementCoreProperties properties(ElementType type) {
         switch (type) {
-            case LIFE:
-                return new ElementCoreProperties(
-                        Material.REDSTONE_BLOCK,
-                        ChatColor.RED,
-                        "Life Element"
-                );
-            case DEATH:
-                return new ElementCoreProperties(
-                        Material.WITHER_SKELETON_SKULL,
-                        ChatColor.DARK_GRAY,
-                        "Death Element"
-                );
             // Add additional cases for future elements below, with or without lore
             default:
                 return null;
@@ -56,13 +44,6 @@ public final class ElementCoreItem {
             PersistentDataContainer pdc = meta.getPersistentDataContainer();
             pdc.set(ItemKeys.elementType(plugin), PersistentDataType.STRING, type.name());
             pdc.set(ItemKeys.elementItem(plugin), PersistentDataType.BYTE, (byte) 1);
-
-            // Add specific core identifier based on type
-            if (type == ElementType.LIFE) {
-                pdc.set(ItemKeys.lifeCore(plugin), PersistentDataType.BYTE, (byte) 1);
-            } else if (type == ElementType.DEATH) {
-                pdc.set(ItemKeys.deathCore(plugin), PersistentDataType.BYTE, (byte) 1);
-            }
 
             item.setItemMeta(meta);
         }

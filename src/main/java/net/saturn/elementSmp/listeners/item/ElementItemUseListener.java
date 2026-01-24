@@ -29,7 +29,6 @@ public class ElementItemUseListener implements Listener {
 	public void onInteract(PlayerInteractEvent event) {
 		ItemStack inHand = event.getItem();
 		if (inHand != null && isElementItem(inHand)) {
-			if (net.saturn.elementSmp.items.CoreConsumptionHandler.handleCoreConsume(event, plugin, elements)) return;
 			itemManager.handleUse(event);
 		}
 	}

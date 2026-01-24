@@ -4,6 +4,7 @@ import net.saturn.elementSmp.ElementSmp;
 import net.saturn.elementSmp.elements.ElementType;
 import net.saturn.elementSmp.elements.abilities.impl.frost.FrostPunchAbility;
 import net.saturn.elementSmp.managers.ElementManager;
+import net.saturn.elementSmp.managers.TrustManager;
 import io.papermc.paper.event.entity.EntityMoveEvent;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -24,12 +25,14 @@ public class FrostFrozenPunchListener implements Listener {
 
     private final ElementSmp plugin;
     private final ElementManager elementManager;
+    private final TrustManager trustManager;
 
     public static final String META_FROZEN = "frost_frozen";
 
-    public FrostFrozenPunchListener(ElementSmp plugin, ElementManager elementManager) {
+    public FrostFrozenPunchListener(ElementSmp plugin, ElementManager elementManager, TrustManager trustManager) {
         this.plugin = plugin;
         this.elementManager = elementManager;
+        this.trustManager = trustManager;
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
@@ -39,29 +42,23 @@ public class FrostFrozenPunchListener implements Listener {
 
 
         // Check if attacker has Frost element
-        ElementType type = elementManager.getPlayerElement(attacker);
-        if (type != ElementType.FROST) {
-
+        if (elementManager.getPlayerElement(attacker) != ElementType.FROST) {
             return;
         }
 
         // Check if frozen punch metadata exists
         if (!attacker.hasMetadata(FrostPunchAbility.META_FROZEN_PUNCH_READY)) {
-
             return;
         }
 
         long until = attacker.getMetadata(FrostPunchAbility.META_FROZEN_PUNCH_READY).get(0).asLong();
         if (System.currentTimeMillis() > until) {
             attacker.removeMetadata(FrostPunchAbility.META_FROZEN_PUNCH_READY, plugin);
-
             return;
         }
 
-        // Don't freeze trusted players
-        if (victim instanceof Player targetPlayer &&
-                plugin.getTrustManager().isTrusted(attacker.getUniqueId(), targetPlayer.getUniqueId())) {
-
+        // Don't freeze trusted players or self
+        if (attacker.equals(victim) || (victim instanceof Player targetPlayer && trustManager.isTrusted(attacker.getUniqueId(), targetPlayer.getUniqueId()))) {
             return;
         }
 
@@ -102,99 +99,58 @@ public class FrostFrozenPunchListener implements Listener {
             }.runTaskLater(plugin, 100L);
         }
 
-        // Visual freeze effect - continuously apply freeze and prevent movement
         new BukkitRunnable() {
-            int ticks = 0;
             @Override
             public void run() {
-                if (!entity.isValid() || ticks >= 100) {
-                    entity.removeMetadata(META_FROZEN, plugin);
-                    if (entity instanceof Player p) {
-                        if (!wasAllowFlight && p.getGameMode() != org.bukkit.GameMode.CREATIVE && p.getGameMode() != org.bukkit.GameMode.SPECTATOR) {
-                            p.setAllowFlight(false);
-                        }
-                    }
+                if (!entity.isValid() || entity.isDead()) {
                     cancel();
                     return;
                 }
+
                 if (!entity.hasMetadata(META_FROZEN)) {
+                    entity.setFreezeTicks(0);
                     if (entity instanceof Player p) {
-                        if (!wasAllowFlight && p.getGameMode() != org.bukkit.GameMode.CREATIVE && p.getGameMode() != org.bukkit.GameMode.SPECTATOR) {
-                            p.setAllowFlight(false);
-                        }
+                        p.setAllowFlight(wasAllowFlight);
                     }
                     cancel();
                     return;
                 }
+
                 long until = entity.getMetadata(META_FROZEN).get(0).asLong();
                 if (System.currentTimeMillis() > until) {
                     entity.removeMetadata(META_FROZEN, plugin);
+                    entity.setFreezeTicks(0);
                     if (entity instanceof Player p) {
-                        if (!wasAllowFlight && p.getGameMode() != org.bukkit.GameMode.CREATIVE && p.getGameMode() != org.bukkit.GameMode.SPECTATOR) {
-                            p.setAllowFlight(false);
-                        }
+                        p.setAllowFlight(wasAllowFlight);
                     }
                     cancel();
-                    return;
-                }
-
-                // Keep entity frozen and motionless
-                entity.setFreezeTicks(entity.getMaxFreezeTicks());
-                entity.setVelocity(new Vector(0, 0, 0));
-
-                if (ticks % 10 == 0) {
-                    Location loc = entity.getLocation().add(0, 1, 0);
-                    entity.getWorld().spawnParticle(Particle.SNOWFLAKE, loc, 5, 0.3, 0.3, 0.3, 0, null, true);
-                }
-                ticks++;
-            }
-        }.runTaskTimer(plugin, 0L, 1L);
-
-        // Metadata cleanup
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                if (entity.isValid()) {
-                    entity.removeMetadata(META_FROZEN, plugin);
+                } else {
+                    entity.setFreezeTicks(entity.getMaxFreezeTicks());
+                    // Keep them in place
+                    entity.setVelocity(new Vector(0, 0, 0));
+                    
+                    // Visual effect
+                    entity.getWorld().spawnParticle(Particle.SNOWFLAKE, entity.getLocation().add(0, 1, 0), 3, 0.3, 0.5, 0.3, 0.01, null, true);
                 }
             }
-        }.runTaskLater(plugin, 100L);
+        }.runTaskTimer(plugin, 0L, 2L);
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler
     public void onPlayerMove(PlayerMoveEvent event) {
-        Player player = event.getPlayer();
-        if (!player.hasMetadata(META_FROZEN)) return;
-
-        long until = player.getMetadata(META_FROZEN).get(0).asLong();
-        if (System.currentTimeMillis() > until) {
-            player.removeMetadata(META_FROZEN, plugin);
-            return;
-        }
-
-        Location from = event.getFrom();
-        Location to = event.getTo();
-
-        if (to != null && (from.getX() != to.getX() || from.getZ() != to.getZ())) {
-            event.setTo(from);
-            player.setVelocity(new Vector(0, player.getVelocity().getY(), 0));
+        if (event.getPlayer().hasMetadata(META_FROZEN)) {
+            Location from = event.getFrom();
+            Location to = event.getTo();
+            if (from.getX() != to.getX() || from.getZ() != to.getZ() || from.getY() != to.getY()) {
+                event.setTo(from);
+            }
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGH)
-    public void onMobMove(EntityMoveEvent event) {
-        LivingEntity entity = event.getEntity();
-        if (entity instanceof Player) return;
-
-        if (!entity.hasMetadata(META_FROZEN)) return;
-
-        long until = entity.getMetadata(META_FROZEN).get(0).asLong();
-        if (System.currentTimeMillis() > until) {
-            entity.removeMetadata(META_FROZEN, plugin);
-            return;
+    @EventHandler
+    public void onEntityMove(EntityMoveEvent event) {
+        if (event.getEntity().hasMetadata(META_FROZEN)) {
+            event.setCancelled(true);
         }
-
-        event.setCancelled(true);
     }
 }
-

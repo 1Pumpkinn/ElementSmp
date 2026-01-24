@@ -39,14 +39,12 @@ public class LifeHealingBeamAbility extends BaseAbility {
                 if (ticks % 20 == 0) {
                     RayTraceResult rt = player.rayTraceEntities(20);
                     if (rt != null && rt.getHitEntity() instanceof LivingEntity target) {
-                        if (target instanceof Player targetPlayer) {
-                            if (targetPlayer.equals(player) || context.getTrustManager().isTrusted(player.getUniqueId(), targetPlayer.getUniqueId())) {
-                                double newHealth = Math.min(targetPlayer.getMaxHealth(), targetPlayer.getHealth() + 2.0);
-                                targetPlayer.setHealth(newHealth);
-                                
-							Location hitLoc = rt.getHitPosition().toLocation(player.getWorld());
-							player.getWorld().spawnParticle(Particle.HEART, hitLoc, 3, 0.2, 0.2, 0.2, 0.0, null, true);
-                            }
+                        if (target.equals(player) || !isValidTarget(context, target)) {
+                            double newHealth = Math.min(target.getMaxHealth(), target.getHealth() + 2.0);
+                            target.setHealth(newHealth);
+                            
+                            Location hitLoc = rt.getHitPosition().toLocation(player.getWorld());
+                            player.getWorld().spawnParticle(Particle.HEART, hitLoc, 3, 0.2, 0.2, 0.2, 0.0, null, true);
                         }
                     }
                 }

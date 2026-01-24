@@ -46,7 +46,14 @@ public class EntanglingRootsAbility extends BaseAbility {
                 player.getEyeLocation().getDirection(),
                 maxCheckRange,
                 0.5,
-                entity -> (entity instanceof LivingEntity && !(entity instanceof org.bukkit.entity.ArmorStand) && !entity.equals(player))
+                entity -> {
+                    if (!(entity instanceof LivingEntity living)) return false;
+                    if (living.equals(player)) return false;
+                    if (living instanceof Player targetPlayer) {
+                        if (context.getTrustManager().isTrusted(player.getUniqueId(), targetPlayer.getUniqueId())) return false;
+                    }
+                    return true;
+                }
         );
 
         LivingEntity target = null;
@@ -74,15 +81,8 @@ public class EntanglingRootsAbility extends BaseAbility {
         }
 
         if (target == null) {
-            player.sendMessage(ChatColor.RED + "You must look at an entity to entangle it!");
+            player.sendMessage(ChatColor.RED + "You must look at a valid entity to entangle it!");
             return false;
-        }
-
-        if (target instanceof Player targetPlayer) {
-            if (context.getTrustManager().isTrusted(targetPlayer.getUniqueId(), player.getUniqueId())) {
-                player.sendMessage(ChatColor.RED + "You cannot entangle trusted allies!");
-                return false;
-            }
         }
 
         player.sendMessage(ChatColor.GREEN + "You have entangled " + target.getName() + "!");
@@ -112,10 +112,12 @@ public class EntanglingRootsAbility extends BaseAbility {
             public void run() {
                 if (!finalTarget.isValid() || (finalTarget instanceof Player p && !p.isOnline()) || ticks >= 100) { // 5 seconds
                     // Pull them back up if they are still alive
-                    if (finalTarget.isValid() && (finalTarget instanceof Player p && p.isOnline())) {
-                        finalTarget.teleport(finalTarget.getLocation().add(0, 1.0, 0));
-                        finalTarget.removePotionEffect(PotionEffectType.SLOWNESS);
-                        finalTarget.removePotionEffect(PotionEffectType.JUMP_BOOST);
+                    if (finalTarget.isValid()) {
+                        if (!(finalTarget instanceof Player p) || p.isOnline()) {
+                            finalTarget.teleport(finalTarget.getLocation().add(0, 1.0, 0));
+                            finalTarget.removePotionEffect(PotionEffectType.SLOWNESS);
+                            finalTarget.removePotionEffect(PotionEffectType.JUMP_BOOST);
+                        }
                     }
                     if (finalTarget instanceof Player targetPlayer) {
                         entangledPlayers.remove(targetPlayer.getUniqueId());

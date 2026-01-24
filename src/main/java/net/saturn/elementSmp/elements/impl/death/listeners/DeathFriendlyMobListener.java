@@ -1,6 +1,8 @@
 package net.saturn.elementSmp.elements.impl.death.listeners;
 
 import net.saturn.elementSmp.ElementSmp;
+import net.saturn.elementSmp.elements.ElementType;
+import net.saturn.elementSmp.managers.ElementManager;
 import net.saturn.elementSmp.managers.TrustManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.*;
@@ -16,10 +18,12 @@ import java.util.UUID;
 public class DeathFriendlyMobListener implements Listener {
     private final ElementSmp plugin;
     private final TrustManager trustManager;
+    private final ElementManager elementManager;
 
-    public DeathFriendlyMobListener(ElementSmp plugin, TrustManager trustManager) {
+    public DeathFriendlyMobListener(ElementSmp plugin, TrustManager trustManager, ElementManager elementManager) {
         this.plugin = plugin;
         this.trustManager = trustManager;
+        this.elementManager = elementManager;
         startFollowTask();
     }
 
@@ -75,8 +79,8 @@ public class DeathFriendlyMobListener implements Listener {
                                     double bestDistance = Double.MAX_VALUE;
 
                                     for (Player player : mob.getWorld().getPlayers()) {
-                                        if (player.getUniqueId().equals(ownerId)) continue;
-                                        if (trustManager.isTrusted(ownerId, player.getUniqueId())) continue;
+                                        if (player.equals(owner)) continue;
+                                        if (trustManager.isTrusted(owner.getUniqueId(), player.getUniqueId())) continue;
 
                                         double playerDistance = mob.getLocation().distanceSquared(player.getLocation());
                                         if (playerDistance < bestDistance && playerDistance < 20*20) {
@@ -114,16 +118,16 @@ public class DeathFriendlyMobListener implements Listener {
 
                     if (System.currentTimeMillis() > until) return; // expired
 
-                    // Don't target owner
-                    if (target.getUniqueId().equals(ownerId)) {
+                    // Don't target owner or trusted players
+                    Player owner = Bukkit.getPlayer(ownerId);
+                    if (owner != null && (target.equals(owner) || trustManager.isTrusted(owner.getUniqueId(), target.getUniqueId()))) {
                         e.setCancelled(true);
 
                         // Retarget to nearest enemy instead
                         Player nearestEnemy = null;
                         double bestDistance = Double.MAX_VALUE;
                         for (Player p : mob.getWorld().getPlayers()) {
-                            if (p.getUniqueId().equals(ownerId)) continue;
-                            if (trustManager.isTrusted(ownerId, p.getUniqueId())) continue;
+                            if (p.equals(owner) || trustManager.isTrusted(owner.getUniqueId(), p.getUniqueId())) continue;
                             double d = p.getLocation().distanceSquared(mob.getLocation());
                             if (d < bestDistance && d < 20*20) {
                                 bestDistance = d;
@@ -133,12 +137,6 @@ public class DeathFriendlyMobListener implements Listener {
                         if (nearestEnemy != null) {
                             e.setTarget(nearestEnemy);
                         }
-                        return;
-                    }
-
-                    // Don't target trusted players
-                    if (trustManager.isTrusted(ownerId, target.getUniqueId())) {
-                        e.setCancelled(true);
                         return;
                     }
                 } catch (Exception ignored) {}
@@ -158,14 +156,9 @@ public class DeathFriendlyMobListener implements Listener {
 
                     if (System.currentTimeMillis() > until) return; // expired
 
-                    // Don't damage owner
-                    if (target.getUniqueId().equals(ownerId)) {
-                        e.setCancelled(true);
-                        return;
-                    }
-
-                    // Don't damage trusted players
-                    if (target.getUniqueId().equals(ownerId) || trustManager.isTrusted(ownerId, target.getUniqueId())) {
+                    // Don't damage owner or trusted players
+                    Player owner = Bukkit.getPlayer(ownerId);
+                    if (owner != null && (target.equals(owner) || trustManager.isTrusted(owner.getUniqueId(), target.getUniqueId()))) {
                         e.setCancelled(true);
                         return;
                     }
@@ -189,14 +182,13 @@ public class DeathFriendlyMobListener implements Listener {
 
         // NEW FEATURE: When Death element player hits something, make ALL their summoned mobs attack it
         if (e.getDamager() instanceof Player attacker && e.getEntity() instanceof LivingEntity target) {
-            // Skip villagers and armor stands as targets
-            if (target instanceof Villager || target instanceof ArmorStand) {
-                return;
+            if (target.equals(attacker)) return;
+            if (target instanceof Player targetPlayer) {
+                if (trustManager.isTrusted(attacker.getUniqueId(), targetPlayer.getUniqueId())) return;
             }
 
             // Check if attacker has Death element
-            var pd = plugin.getElementManager().data(attacker.getUniqueId());
-            if (pd == null || pd.getCurrentElement() != net.saturn.elementSmp.elements.ElementType.DEATH) {
+            if (elementManager.getPlayerElement(attacker) != ElementType.DEATH) {
                 return;
             }
 

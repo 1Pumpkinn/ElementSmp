@@ -99,11 +99,8 @@ public class FrostCircleAbility extends BaseAbility {
                 for (LivingEntity entity : centerLocation.getNearbyLivingEntities(radius)) {
                     if (entity.equals(player)) continue;
 
-                    // Check if entity is a player and if they're trusted - skip if trusted
                     if (entity instanceof Player targetPlayer) {
-                        if (context.getTrustManager().isTrusted(player.getUniqueId(), targetPlayer.getUniqueId())) {
-                            continue;
-                        }
+                        if (context.getTrustManager().isTrusted(player.getUniqueId(), targetPlayer.getUniqueId())) continue;
                     }
 
                     // Apply freezing effect (same as powder snow)
@@ -157,16 +154,5 @@ public class FrostCircleAbility extends BaseAbility {
     @Override
     public String getDescription() {
         return "Create a circle around you that severely slows enemies who step inside for 10 seconds.";
-    }
-
-    @Override
-    protected boolean isValidTarget(ElementContext context, LivingEntity entity) {
-        if (entity.equals(context.getPlayer())) return false;
-
-        if (entity instanceof Player targetPlayer) {
-            return !context.getTrustManager().isTrusted(context.getPlayer().getUniqueId(), targetPlayer.getUniqueId());
-        }
-
-        return true;
     }
 }

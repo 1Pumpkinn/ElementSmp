@@ -3,6 +3,7 @@ package net.saturn.elementSmp.elements.impl.fire.listeners;
 import net.saturn.elementSmp.elements.ElementType;
 import net.saturn.elementSmp.managers.ElementManager;
 import net.saturn.elementSmp.managers.TrustManager;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -28,21 +29,23 @@ public class FireCombatListener implements Listener {
             return;
         }
 
-        var playerData = elementManager.data(damager.getUniqueId());
-        if (playerData.getCurrentElement() != ElementType.FIRE) {
+        if (elementManager.getPlayerElement(damager) != ElementType.FIRE) {
             return;
         }
 
         // Check if they have Upgrade 2
-        if (playerData.getUpgradeLevel(ElementType.FIRE) < 2) {
+        if (elementManager.data(damager.getUniqueId()).getCurrentElementUpgradeLevel() < 2) {
             return;
         }
 
-        // Don't apply to trusted players
-        if (event.getEntity() instanceof Player victim) {
-            if (trustManager.isTrusted(damager.getUniqueId(), victim.getUniqueId())) {
-                return;
+        // Don't apply to trusted players or self
+        if (event.getEntity() instanceof LivingEntity victim) {
+            if (victim.equals(damager)) return;
+            if (victim instanceof Player targetPlayer) {
+                if (trustManager.isTrusted(damager.getUniqueId(), targetPlayer.getUniqueId())) return;
             }
+        } else {
+            return;
         }
 
         // Apply fire aspect (set entity on fire for 4 seconds)
