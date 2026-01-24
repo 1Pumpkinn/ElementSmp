@@ -2,11 +2,15 @@ package net.saturn.elementSmp.listeners.ability;
 
 import net.saturn.elementSmp.ElementSmp;
 import net.saturn.elementSmp.data.PlayerData;
+import net.saturn.elementSmp.elements.abilities.impl.life.EntanglingRootsAbility;
 import net.saturn.elementSmp.managers.ElementManager;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -49,6 +53,24 @@ public class AbilityListener implements Listener {
         tracker.recordTap(currentTime, player.isSneaking());
 
         scheduleAbilityActivation(player, playerId, currentTime);
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onBlockBreak(BlockBreakEvent event) {
+        Player player = event.getPlayer();
+        if (EntanglingRootsAbility.isEntangled(player.getUniqueId())) {
+            event.setCancelled(true);
+            player.sendMessage(ChatColor.RED + "You cannot break blocks while entangled in roots!");
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onBlockPlace(BlockPlaceEvent event) {
+        Player player = event.getPlayer();
+        if (EntanglingRootsAbility.isEntangled(player.getUniqueId())) {
+            event.setCancelled(true);
+            player.sendMessage(ChatColor.RED + "You cannot place blocks while entangled in roots!");
+        }
     }
 
     private boolean hasElement(Player player) {

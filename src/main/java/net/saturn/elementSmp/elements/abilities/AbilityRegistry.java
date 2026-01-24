@@ -68,8 +68,8 @@ public final class AbilityRegistry {
 
         // Life
         register(ElementType.LIFE,
-                new LifeRegenAbility(plugin),
-                new LifeHealingBeamAbility(plugin)
+                new NaturesEyeAbility(plugin),
+                new EntanglingRootsAbility(plugin)
         );
 
         // Death

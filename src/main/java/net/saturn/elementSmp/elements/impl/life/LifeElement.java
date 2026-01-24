@@ -5,8 +5,8 @@ import net.saturn.elementSmp.elements.BaseElement;
 import net.saturn.elementSmp.elements.ElementContext;
 import net.saturn.elementSmp.elements.ElementType;
 import net.saturn.elementSmp.elements.abilities.Ability;
-import net.saturn.elementSmp.elements.abilities.impl.life.LifeHealingBeamAbility;
-import net.saturn.elementSmp.elements.abilities.impl.life.LifeRegenAbility;
+import net.saturn.elementSmp.elements.abilities.impl.life.EntanglingRootsAbility;
+import net.saturn.elementSmp.elements.abilities.impl.life.NaturesEyeAbility;
 import org.bukkit.ChatColor;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
@@ -31,8 +31,8 @@ public class LifeElement extends BaseElement {
     public LifeElement(ElementSmp plugin) {
         super(plugin);
         this.plugin = plugin;
-        this.ability1 = new LifeRegenAbility(plugin);
-        this.ability2 = new LifeHealingBeamAbility(plugin);
+        this.ability1 = new NaturesEyeAbility(plugin);
+        this.ability2 = new EntanglingRootsAbility(plugin);
     }
 
     @Override
@@ -144,7 +144,7 @@ public class LifeElement extends BaseElement {
 
     @Override
     public String getDescription() {
-        return "Masters of healing and growth. Life users have increased health and can heal allies.";
+        return "Masters of healing and nature. Life users can reveal nearby life and entangle their enemies.";
     }
 
     @Override

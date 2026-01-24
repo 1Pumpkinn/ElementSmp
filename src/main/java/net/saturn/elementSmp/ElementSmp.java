@@ -43,7 +43,6 @@ public final class ElementSmp extends JavaPlugin {
     private ValidationService validationService;
     private TaskScheduler taskScheduler;
     private MetadataHelper metadataHelper;
-    private ResourcePackManager resourcePackManager;
 
     @Override
     public void onEnable() {
@@ -66,9 +65,6 @@ public final class ElementSmp extends JavaPlugin {
     @Override
     public void onDisable() {
         try {
-            if (resourcePackManager != null) {
-                resourcePackManager.stopServer();
-            }
             stopBackgroundTasks();
             saveAllData();
             getLogger().info("ElementSmp disabled successfully!");
@@ -91,7 +87,6 @@ public final class ElementSmp extends JavaPlugin {
         this.manaManager = new ManaManager(this, dataStore, configManager);
         this.elementManager = new ElementManager(this, dataStore, manaManager, trustManager, configManager);
         this.itemManager = new ItemManager(this, manaManager, configManager);
-        this.resourcePackManager = new ResourcePackManager(this);
 
         getLogger().info("Managers initialized");
     }
