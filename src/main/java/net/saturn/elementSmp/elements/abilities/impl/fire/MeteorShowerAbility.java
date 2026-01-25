@@ -25,7 +25,7 @@ public class MeteorShowerAbility extends BaseAbility implements Listener {
     private final Random random = new Random();
 
     public MeteorShowerAbility(ElementSmp plugin) {
-        super("fire_meteor_shower", 75, 30, 2);
+        super();
         this.plugin = plugin;
         // Register this class as a listener
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
@@ -93,15 +93,5 @@ public class MeteorShowerAbility extends BaseAbility implements Listener {
             event.blockList().clear();
             // The explosion will still damage entities, just not blocks
         }
-    }
-
-    @Override
-    public String getName() {
-        return ChatColor.RED + "Meteor Shower";
-    }
-
-    @Override
-    public String getDescription() {
-        return ChatColor.GRAY + "Rain down fireballs from the sky around your position. (100 mana)";
     }
 }

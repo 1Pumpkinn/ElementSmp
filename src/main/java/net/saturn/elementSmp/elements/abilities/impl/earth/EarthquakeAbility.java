@@ -16,7 +16,7 @@ import java.util.Collection;
 public class EarthquakeAbility extends BaseAbility {
 
     public EarthquakeAbility(net.saturn.elementSmp.ElementSmp plugin) {
-        super("earthquake", 60, 20, 1);
+        super();
     }
 
     @Override
@@ -98,18 +98,8 @@ public class EarthquakeAbility extends BaseAbility {
 
             return true;
         } else {
-            player.sendMessage(ChatColor.RED + "No entities nearby for Earthquake.");
+            player.sendMessage(ChatColor.RED + "No enemies nearby!");
             return false;
         }
-    }
-
-    @Override
-    public String getName() {
-        return ChatColor.YELLOW + "Earthquake";
-    }
-
-    @Override
-    public String getDescription() {
-        return "Gives nearby entities Slowness 2 and Weakness for 5 seconds.";
     }
 }

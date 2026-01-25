@@ -19,7 +19,7 @@ public class FireballAbility extends BaseAbility implements Listener {
     private final ElementSmp plugin;
 
     public FireballAbility(ElementSmp plugin) {
-        super("fire_fireball", 50, 10, 1);
+        super();
         this.plugin = plugin;
         // Register this class as a listener
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
@@ -55,15 +55,5 @@ public class FireballAbility extends BaseAbility implements Listener {
             event.blockList().clear();
             // The explosion will still damage entities, just not blocks
         }
-    }
-
-    @Override
-    public String getName() {
-        return ChatColor.RED + "Fireball";
-    }
-
-    @Override
-    public String getDescription() {
-        return ChatColor.GRAY + "Launch a fireball that damages enemies (50 mana)";
     }
 }

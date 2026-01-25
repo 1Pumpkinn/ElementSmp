@@ -13,7 +13,7 @@ public class ShadowStepAbility extends BaseAbility {
     private final net.saturn.elementSmp.ElementSmp plugin;
 
     public ShadowStepAbility(net.saturn.elementSmp.ElementSmp plugin) {
-        super("shadow_step", 50, 10, 1);
+        super();
         this.plugin = plugin;
     }
 
@@ -113,17 +113,7 @@ public class ShadowStepAbility extends BaseAbility {
     }
 
     private void spawnArrivalParticles(Location loc) {
-        loc.getWorld().spawnParticle(Particle.SQUID_INK, loc.clone().add(0, 1, 0), 60, 0.5, 0.5, 0.5, 0.1);
-        loc.getWorld().spawnParticle(Particle.LARGE_SMOKE, loc, 30, 0.3, 0.3, 0.3, 0.05);
-    }
-
-    @Override
-    public String getName() {
-        return ChatColor.DARK_PURPLE + "Shadow Step";
-    }
-
-    @Override
-    public String getDescription() {
-        return "Travel through shadows to a location up to 20 blocks away. Particles travel first, then you teleport.";
+        loc.getWorld().spawnParticle(Particle.SQUID_INK, loc.clone().add(0, 1, 0), 60, 0.4, 0.6, 0.4, 0.1);
+        loc.getWorld().spawnParticle(Particle.SMOKE, loc.clone().add(0, 1, 0), 40, 0.3, 0.5, 0.3, 0.05);
     }
 }

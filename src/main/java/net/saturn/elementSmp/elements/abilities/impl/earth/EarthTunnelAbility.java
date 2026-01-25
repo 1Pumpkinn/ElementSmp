@@ -51,7 +51,7 @@ public class EarthTunnelAbility extends BaseAbility {
     private final net.saturn.elementSmp.ElementSmp plugin;
 
     public EarthTunnelAbility(net.saturn.elementSmp.ElementSmp plugin) {
-        super("earth_tunnel", 50, 10, 1);
+        super();
         this.plugin = plugin;
     }
 
@@ -128,15 +128,5 @@ public class EarthTunnelAbility extends BaseAbility {
                 }
             }
         }
-    }
-
-    @Override
-    public String getName() {
-        return ChatColor.GOLD + "Earth Tunnel";
-    }
-
-    @Override
-    public String getDescription() {
-        return "Create a tunnel through earth and stone by looking in the direction you want to dig. Press again to cancel.";
     }
 }

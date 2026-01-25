@@ -15,7 +15,7 @@ public class IcicleDropAbility extends BaseAbility {
     public static final String META_ICICLE_DROP_READY = "frost_icicle_drop_ready";
 
     public IcicleDropAbility(ElementSmp plugin) {
-        super("frost_icicle_drop", 75, 10, 2);
+        super();
         this.plugin = plugin;
     }
 
@@ -35,15 +35,5 @@ public class IcicleDropAbility extends BaseAbility {
         player.getWorld().spawnParticle(Particle.CLOUD, loc, 15, 0.3, 0.3, 0.3, 0.05, null, true);
 
         return true;
-    }
-
-    @Override
-    public String getName() {
-        return ChatColor.AQUA + "Icicle Drop";
-    }
-
-    @Override
-    public String getDescription() {
-        return "Your next hit on an entity spawns a dripstone 10 blocks above them.";
     }
 }

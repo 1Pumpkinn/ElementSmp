@@ -22,7 +22,7 @@ public class DeathSummonUndeadAbility extends BaseAbility {
     private final net.saturn.elementSmp.ElementSmp plugin;
 
     public DeathSummonUndeadAbility(net.saturn.elementSmp.ElementSmp plugin) {
-        super("death_summon_undead", 100, 45, 1);
+        super();
         this.plugin = plugin;
     }
 
@@ -106,15 +106,5 @@ public class DeathSummonUndeadAbility extends BaseAbility {
             item.setItemMeta(meta);
         }
         return item;
-    }
-
-    @Override
-    public String getName() {
-        return ChatColor.DARK_PURPLE + "Undead Servant";
-    }
-
-    @Override
-    public String getDescription() {
-        return "Summon a Wither Skeleton with Protection 2 Iron Armor and a Sharpness Iron Sword.";
     }
 }

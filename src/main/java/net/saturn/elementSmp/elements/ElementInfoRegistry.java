@@ -46,7 +46,7 @@ public final class ElementInfoRegistry {
                 List.of(
                         "Infinite Water Breathing",
                         "Permanent Conduit Power",
-                        "Dolphin's Grace V (Upgrade II)"
+                        "Loyalty Tridents pull entities (Upgrade II)"
                 ),
                 new ElementInfo.AbilityInfo("Water Geyser", "Launch enemies upward with water pressure", 75, 1),
                 new ElementInfo.AbilityInfo("Water Beam", "Fire a damaging water beam", 50, 2)

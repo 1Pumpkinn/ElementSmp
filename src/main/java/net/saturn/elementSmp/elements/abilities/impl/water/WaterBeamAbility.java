@@ -15,11 +15,10 @@ import java.util.Set;
 import java.util.UUID;
 
 public class WaterBeamAbility extends BaseAbility {
-    private final Set<UUID> activeUsers = new HashSet<>();
     private final net.saturn.elementSmp.ElementSmp plugin;
 
     public WaterBeamAbility(net.saturn.elementSmp.ElementSmp plugin) {
-        super("water_beam", 50, 15, 2);
+        super();
         this.plugin = plugin;
     }
     
@@ -139,119 +138,9 @@ public class WaterBeamAbility extends BaseAbility {
         return true;
     }
     
-    @Override
-    public boolean isActiveFor(Player player) {
-        return activeUsers.contains(player.getUniqueId());
-    }
-    
-    @Override
-    public void setActive(Player player, boolean active) {
-        if (active) {
-            activeUsers.add(player.getUniqueId());
-        } else {
-            activeUsers.remove(player.getUniqueId());
-        }
-    }
-    
-    public void clearEffects(Player player) { 
-         setActive(player, false); 
-     } 
-     
-     @Override
-     public String getName() { 
-         return ChatColor.AQUA + "Water Beam"; 
-     } 
-     
-     @Override
-    public String getDescription() { 
-        return ChatColor.GRAY + "Fire a continuous beam of water that damages and pushes back enemies. (40 mana)"; 
-    }
-   
     private boolean isPassableBlock(Block block) {
-        if (block == null) return true;
-        
         Material type = block.getType();
-        
-        if (type == Material.AIR || type == Material.VOID_AIR || type == Material.CAVE_AIR) {
-            return true;
-        }
-        
-        return type == Material.SHORT_GRASS ||
-               type == Material.TALL_GRASS ||
-                type == Material.SHORT_DRY_GRASS ||
-                type == Material.TALL_DRY_GRASS ||
-                type == Material.FIREFLY_BUSH ||
-                type == Material.FERN ||
-               type == Material.LARGE_FERN ||
-               type == Material.DEAD_BUSH ||
-               type == Material.DANDELION ||
-               type == Material.POPPY ||
-               type == Material.BLUE_ORCHID ||
-               type == Material.ALLIUM ||
-               type == Material.AZURE_BLUET ||
-               type == Material.RED_TULIP ||
-               type == Material.ORANGE_TULIP ||
-               type == Material.WHITE_TULIP ||
-               type == Material.PINK_TULIP ||
-               type == Material.OXEYE_DAISY ||
-               type == Material.CORNFLOWER ||
-               type == Material.LILY_OF_THE_VALLEY ||
-               type == Material.SUNFLOWER ||
-               type == Material.LILAC ||
-               type == Material.ROSE_BUSH ||
-               type == Material.PEONY ||
-               type == Material.SWEET_BERRY_BUSH ||
-               type == Material.BAMBOO ||
-               type == Material.SUGAR_CANE ||
-               type == Material.KELP ||
-               type == Material.SEAGRASS ||
-               type == Material.TALL_SEAGRASS ||
-               type == Material.WHEAT ||
-               type == Material.CARROTS ||
-               type == Material.POTATOES ||
-               type == Material.BEETROOTS ||
-               type == Material.MELON_STEM ||
-               type == Material.PUMPKIN_STEM ||
-               type == Material.TORCH ||
-               type == Material.REDSTONE_TORCH ||
-               type == Material.SOUL_TORCH ||
-               type == Material.REDSTONE_WIRE ||
-               type == Material.TRIPWIRE ||
-               type == Material.TRIPWIRE_HOOK ||
-               type == Material.LEVER ||
-               type == Material.STONE_BUTTON ||
-               type == Material.OAK_BUTTON ||
-               type == Material.SPRUCE_BUTTON ||
-               type == Material.BIRCH_BUTTON ||
-               type == Material.JUNGLE_BUTTON ||
-               type == Material.ACACIA_BUTTON ||
-               type == Material.DARK_OAK_BUTTON ||
-               type == Material.CRIMSON_BUTTON ||
-               type == Material.WARPED_BUTTON ||
-               type == Material.POLISHED_BLACKSTONE_BUTTON ||
-               type == Material.LIGHT_WEIGHTED_PRESSURE_PLATE ||
-               type == Material.HEAVY_WEIGHTED_PRESSURE_PLATE ||
-               type == Material.SPRUCE_PRESSURE_PLATE ||
-               type == Material.BIRCH_PRESSURE_PLATE ||
-               type == Material.JUNGLE_PRESSURE_PLATE ||
-               type == Material.ACACIA_PRESSURE_PLATE ||
-               type == Material.DARK_OAK_PRESSURE_PLATE ||
-               type == Material.CRIMSON_PRESSURE_PLATE ||
-               type == Material.WARPED_PRESSURE_PLATE ||
-               type == Material.POLISHED_BLACKSTONE_PRESSURE_PLATE ||
-               type == Material.STONE_PRESSURE_PLATE ||
-               type == Material.RAIL ||
-               type == Material.POWERED_RAIL ||
-               type == Material.DETECTOR_RAIL ||
-               type == Material.ACTIVATOR_RAIL ||
-               type == Material.COBWEB ||
-               type == Material.VINE ||
-               type == Material.LADDER ||
-               type == Material.SCAFFOLDING ||
-               type == Material.SNOW ||
-               type == Material.WATER ||
-               type == Material.LAVA ||
-               type == Material.FIRE ||
-               type == Material.SOUL_FIRE;
+        return !type.isSolid() || type == Material.WATER || type == Material.SNOW ||
+               type.name().contains("GRASS") || type.name().contains("FLOWER");
     }
 }

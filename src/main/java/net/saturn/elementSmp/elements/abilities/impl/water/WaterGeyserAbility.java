@@ -18,7 +18,7 @@ public class WaterGeyserAbility extends BaseAbility {
     private final net.saturn.elementSmp.ElementSmp plugin;
 
     public WaterGeyserAbility(net.saturn.elementSmp.ElementSmp plugin) {
-        super("water_geyser", 75, 5, 1);
+        super();
         this.plugin = plugin;
     }
 
@@ -113,24 +113,9 @@ public class WaterGeyserAbility extends BaseAbility {
                             cancel();
                         }
                     }
-                }.runTaskTimer(context.getPlugin(), 0L, 1L);
+                }.runTaskTimer(plugin, 0L, 1L);
         }
 
-        if (!foundTargets) {
-            player.sendMessage("§cNo valid targets found!");
-            return false;
-        }
-
-        return true;
-    }
-
-    @Override
-    public String getName() {
-        return "Water Geyser";
-    }
-
-    @Override
-    public String getDescription() {
-        return "Launches nearby enemies upward with a powerful geyser.";
+        return foundTargets;
     }
 }

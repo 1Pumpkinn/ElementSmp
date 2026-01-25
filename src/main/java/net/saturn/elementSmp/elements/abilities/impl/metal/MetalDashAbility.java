@@ -24,7 +24,7 @@ public class MetalDashAbility extends BaseAbility implements Listener {
     private final Set<UUID> dashingPlayers = new HashSet<>();
 
     public MetalDashAbility(ElementSmp plugin) {
-        super("metal_dash", 50, 10, 1);
+        super();
         this.plugin = plugin;
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
@@ -171,34 +171,11 @@ public class MetalDashAbility extends BaseAbility implements Listener {
     }
 
     @EventHandler
-    public void onPlayerMove(PlayerMoveEvent event) {
-        Player player = event.getPlayer();
-        UUID playerId = player.getUniqueId();
-
-        // Check if player is stunned
-        if (stunnedPlayers.contains(playerId)) {
-            Location from = event.getFrom();
-            Location to = event.getTo();
-
-            // If player tried to move (not just looking around)
-            if (to != null && (from.getX() != to.getX() || from.getY() != to.getY() || from.getZ() != to.getZ())) {
-                // Cancel the movement by teleporting back
-                event.setTo(from);
-
-                // Optional: Small visual feedback
-                if (player.getTicksLived() % 10 == 0) { // Only every 10 ticks to avoid spam
-                }
+    public void onMove(PlayerMoveEvent event) {
+        if (stunnedPlayers.contains(event.getPlayer().getUniqueId())) {
+            if (event.getFrom().getX() != event.getTo().getX() || event.getFrom().getZ() != event.getTo().getZ()) {
+                event.setTo(event.getFrom());
             }
         }
-    }
-
-    @Override
-    public String getName() {
-        return ChatColor.GRAY + "Metal Dash";
-    }
-
-    @Override
-    public String getDescription() {
-        return "Dash forward, hitting all enemies in your path. You cannot be stunned in the air; once you land, you have 1.5s to hit at least one entity to avoid a 5s stun. (50 mana)";
     }
 }

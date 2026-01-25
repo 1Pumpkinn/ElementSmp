@@ -13,7 +13,10 @@ import net.saturn.elementSmp.elements.abilities.impl.life.*;
 import net.saturn.elementSmp.elements.abilities.impl.metal.*;
 import net.saturn.elementSmp.elements.abilities.impl.water.*;
 
-import java.util.*;
+import java.util.EnumMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Centralized registry for all abilities.
@@ -105,26 +108,5 @@ public final class AbilityRegistry {
      */
     public Optional<AbilitySet> getAbilities(ElementType type) {
         return Optional.ofNullable(abilities.get(type));
-    }
-
-    /**
-     * Get ability 1 for an element
-     */
-    public Optional<Ability> getAbility1(ElementType type) {
-        return getAbilities(type).map(AbilitySet::ability1);
-    }
-
-    /**
-     * Get ability 2 for an element
-     */
-    public Optional<Ability> getAbility2(ElementType type) {
-        return getAbilities(type).map(AbilitySet::ability2);
-    }
-
-    /**
-     * Get all registered element types
-     */
-    public Set<ElementType> getRegisteredElements() {
-        return Collections.unmodifiableSet(abilities.keySet());
     }
 }

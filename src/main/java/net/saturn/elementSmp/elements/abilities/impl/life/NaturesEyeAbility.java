@@ -14,7 +14,7 @@ import org.bukkit.potion.PotionEffectType;
 public class NaturesEyeAbility extends BaseAbility {
 
     public NaturesEyeAbility(net.saturn.elementSmp.ElementSmp plugin) {
-        super("natures_eye", 40, 30, 1);
+        super();
     }
 
     @Override
@@ -40,15 +40,5 @@ public class NaturesEyeAbility extends BaseAbility {
         }
 
         return true;
-    }
-
-    @Override
-    public String getName() {
-        return ChatColor.GREEN + "Nature's Eye";
-    }
-
-    @Override
-    public String getDescription() {
-        return "Briefly highlight all nearby living entities through walls with a glowing outline for 5 seconds.";
     }
 }

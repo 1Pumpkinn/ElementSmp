@@ -26,7 +26,7 @@ public class EntanglingRootsAbility extends BaseAbility {
     private static final Set<UUID> entangledPlayers = new HashSet<>();
 
     public EntanglingRootsAbility(ElementSmp plugin) {
-        super("entangling_roots", 80, 25, 2);
+        super();
         this.plugin = plugin;
     }
 
@@ -107,52 +107,14 @@ public class EntanglingRootsAbility extends BaseAbility {
         final LivingEntity finalTarget = target;
 
         new BukkitRunnable() {
-            int ticks = 0;
             @Override
             public void run() {
-                if (!finalTarget.isValid() || (finalTarget instanceof Player p && !p.isOnline()) || ticks >= 100) { // 5 seconds
-                    // Pull them back up if they are still alive
-                    if (finalTarget.isValid()) {
-                        if (!(finalTarget instanceof Player p) || p.isOnline()) {
-                            finalTarget.teleport(finalTarget.getLocation().add(0, 1.0, 0));
-                            finalTarget.removePotionEffect(PotionEffectType.SLOWNESS);
-                            finalTarget.removePotionEffect(PotionEffectType.JUMP_BOOST);
-                        }
-                    }
-                    if (finalTarget instanceof Player targetPlayer) {
-                        entangledPlayers.remove(targetPlayer.getUniqueId());
-                    }
-                    cancel();
-                    return;
+                if (finalTarget instanceof Player tp) {
+                    entangledPlayers.remove(tp.getUniqueId());
                 }
-
-                // Keep them at the pull down location and apply suffocation damage
-                finalTarget.teleport(pullDownLoc);
-                finalTarget.setVelocity(new Vector(0, 0, 0));
-                
-                if (ticks % 10 == 0) {
-                    finalTarget.damage(1.0); // 0.5 heart damage per half second
-                }
-                
-                // Visual effects
-                if (ticks % 5 == 0) {
-                    targetLoc.getWorld().spawnParticle(Particle.BLOCK, finalTarget.getLocation().add(0, 1, 0), 5, 0.3, 0.3, 0.3, 0.05, org.bukkit.Material.MOSS_BLOCK.createBlockData());
-                }
-                
-                ticks += 2;
             }
-        }.runTaskTimer(plugin, 0L, 2L); // Run every 2 ticks for much tighter control
+        }.runTaskLater(plugin, 60L);
 
         return true;
-    }
-
-    @Override
-    public String getName() {
-        return ChatColor.GREEN + "Entangling Roots";
-    }
-
-    @Override
-    public String getDescription() {
-        return "Pull an entity into the ground and suffocate them for 5 seconds.";
     }
 }

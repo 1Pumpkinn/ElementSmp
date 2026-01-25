@@ -28,7 +28,7 @@ public class FrostCircleAbility extends BaseAbility {
     public static final String META_CIRCLE_FROZEN = "frost_freezing_circle";
 
     public FrostCircleAbility(ElementSmp plugin) {
-        super("frost_freezing_circle", 50, 10, 1);
+        super();
         this.plugin = plugin;
     }
 
@@ -151,15 +151,5 @@ public class FrostCircleAbility extends BaseAbility {
         if (!active) {
             activeCircleCounts.remove(player.getUniqueId());
         }
-    }
-
-    @Override
-    public String getName() {
-        return ChatColor.AQUA + "Freezing Circle";
-    }
-
-    @Override
-    public String getDescription() {
-        return "Create a circle around you that slows and freezes enemies who step inside for 10 seconds.";
     }
 }

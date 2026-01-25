@@ -14,7 +14,7 @@ public class AirBlastAbility extends BaseAbility {
     private final net.saturn.elementSmp.ElementSmp plugin;
 
     public AirBlastAbility(net.saturn.elementSmp.ElementSmp plugin) {
-        super("air_blast", 50, 8, 1);
+        super();
         this.plugin = plugin;
     }
 
@@ -74,15 +74,5 @@ public class AirBlastAbility extends BaseAbility {
 
         w.playSound(center, Sound.ENTITY_ENDER_DRAGON_FLAP, 1f, 1.5f);
         return true;
-    }
-
-    @Override
-    public String getName() {
-        return ChatColor.WHITE + "Air Blast";
-    }
-
-    @Override
-    public String getDescription() {
-        return "Create a powerful blast of air that pushes enemies away from you.";
     }
 }

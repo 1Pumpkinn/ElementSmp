@@ -71,6 +71,7 @@ public class EffectService implements Listener {
         player.removePotionEffect(PotionEffectType.FIRE_RESISTANCE);
         player.removePotionEffect(PotionEffectType.HERO_OF_THE_VILLAGE);
         player.removePotionEffect(PotionEffectType.HASTE);
+        player.removePotionEffect(PotionEffectType.DOLPHINS_GRACE);
 
         // Clear individual element state/tasks
         for (ElementType type : ElementType.values()) {
@@ -131,17 +132,14 @@ public class EffectService implements Listener {
             }
         }
 
-        // Special handling for Water upgrade 2
-        if (currentElement == ElementType.WATER && upgradeLevel >= 2) {
-            if (!hasValidEffect(player, PotionEffectType.DOLPHINS_GRACE, 4)) {
-                player.addPotionEffect(new PotionEffect(
-                        PotionEffectType.DOLPHINS_GRACE, INFINITE_DURATION, 4, true, false
-                ));
-            }
-        }
-
         // Validate health
         resetHealthIfNeeded(player, currentElement);
+
+        // Cleanup: Remove Dolphin's Grace if it was applied as an element effect
+        PotionEffect dolphinsGrace = player.getPotionEffect(PotionEffectType.DOLPHINS_GRACE);
+        if (dolphinsGrace != null && isElementEffect(dolphinsGrace)) {
+            player.removePotionEffect(PotionEffectType.DOLPHINS_GRACE);
+        }
     }
 
     private boolean hasValidEffect(Player player, PotionEffectType type, int requiredLevel) {

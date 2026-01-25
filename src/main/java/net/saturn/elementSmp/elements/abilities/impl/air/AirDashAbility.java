@@ -15,7 +15,7 @@ public class AirDashAbility extends BaseAbility {
     private final net.saturn.elementSmp.ElementSmp plugin;
 
     public AirDashAbility(net.saturn.elementSmp.ElementSmp plugin) {
-        super("air_dash", 75, 5, 1);
+        super();
         this.plugin = plugin;
     }
 
@@ -61,15 +61,5 @@ public class AirDashAbility extends BaseAbility {
 
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BAT_TAKEOFF, 1.0f, 1.5f);
         return true;
-    }
-
-    @Override
-    public String getName() {
-        return ChatColor.WHITE + "Air Dash";
-    }
-
-    @Override
-    public String getDescription() {
-        return "Dash forward with incredible speed, pushing away any enemies in your path.";
     }
 }

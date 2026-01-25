@@ -262,7 +262,7 @@ public final class ElementSmp extends JavaPlugin {
     private void registerElementListeners(PluginManager pm) {
         pm.registerEvents(new FallDamageListener(elementManager), this);
         pm.registerEvents(new AirCombatListener(elementManager), this);
-        pm.registerEvents(new WaterDrowningImmunityListener(elementManager), this);
+        pm.registerEvents(new WaterPassiveListener(elementManager), this);
         pm.registerEvents(new FireImmunityListener(elementManager), this);
         pm.registerEvents(new FireCombatListener(elementManager, trustManager), this);
         pm.registerEvents(new FireballProtectionListener(), this);

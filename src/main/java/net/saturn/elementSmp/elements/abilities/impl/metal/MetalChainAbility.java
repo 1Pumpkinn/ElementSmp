@@ -18,7 +18,7 @@ public class MetalChainAbility extends BaseAbility {
     public static final String META_CHAINED_STUN = "metal_chain_stunned";
 
     public MetalChainAbility(ElementSmp plugin) {
-        super("metal_chain", 75, 15, 2);
+        super();
         this.plugin = plugin;
     }
 
@@ -238,16 +238,6 @@ public class MetalChainAbility extends BaseAbility {
         }.runTaskTimer(plugin, 0L, 1L);
 
         return true;
-    }
-
-    @Override
-    public String getName() {
-        return ChatColor.GRAY + "Chain Reel";
-    }
-
-    @Override
-    public String getDescription() {
-        return "Look at an enemy and pull them towards you with a chain. (75 mana)";
     }
 
     /**

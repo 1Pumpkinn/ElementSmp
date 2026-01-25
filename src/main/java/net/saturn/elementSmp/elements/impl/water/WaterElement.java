@@ -31,11 +31,6 @@ public class WaterElement extends BaseElement {
     public void applyUpsides(Player player, int upgradeLevel) {
         // Upside 1: Infinite conduit power
         player.addPotionEffect(new PotionEffect(PotionEffectType.CONDUIT_POWER, Integer.MAX_VALUE, 0, true, false));
-        
-        if (upgradeLevel >= 2) {
-            // Upside 2: Dolphins grace 5 (level 4 = dolphins grace 5)
-            player.addPotionEffect(new PotionEffect(PotionEffectType.DOLPHINS_GRACE, Integer.MAX_VALUE, 4, true, false));
-        }
     }
 
     @Override
@@ -51,7 +46,6 @@ public class WaterElement extends BaseElement {
     @Override
     public void clearEffects(Player player) {
         player.removePotionEffect(PotionEffectType.CONDUIT_POWER);
-        player.removePotionEffect(PotionEffectType.DOLPHINS_GRACE);
         ability1.setActive(player, false);
         ability2.setActive(player, false);
     }
