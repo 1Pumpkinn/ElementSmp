@@ -36,7 +36,6 @@ public class InfernoBlastAbility extends BaseAbility {
         loc.getWorld().playSound(loc, Sound.ENTITY_GENERIC_EXPLODE, 1.5f, 0.8f);
 
         double radius = 6.0;
-        double maxDamage = 10.0; // 5 hearts
 
         for (Entity entity : player.getNearbyEntities(radius, radius, radius)) {
             if (entity instanceof LivingEntity victim && !entity.equals(player)) {
@@ -47,12 +46,17 @@ public class InfernoBlastAbility extends BaseAbility {
                     }
                 }
 
-                double distance = entity.getLocation().distance(loc);
-                double damage = maxDamage * (1.0 - (distance / radius));
+                // Deal 3.5 hearts (7.0 damage) of TRUE damage
+                // True damage ignores armor, enchantments, and effects
+                double damage = 7.0;
                 
-                if (damage > 0) {
-                    victim.damage(damage, player);
-                }
+                // Set health directly for true damage, but ensure we don't go below 0
+                double newHealth = Math.max(0, victim.getHealth() - damage);
+                victim.setHealth(newHealth);
+
+                // Trigger hurt animation and attribute damage to the player
+                // We use a tiny amount of damage to trigger the damage event for death attribution
+                victim.damage(0.01, player);
             }
         }
         
