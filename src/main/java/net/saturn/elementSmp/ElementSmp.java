@@ -266,6 +266,7 @@ public final class ElementSmp extends JavaPlugin {
         pm.registerEvents(new FireImmunityListener(elementManager), this);
         pm.registerEvents(new FireCombatListener(elementManager, trustManager), this);
         pm.registerEvents(new FireballProtectionListener(), this);
+        pm.registerEvents(new FireAutoSmeltListener(elementManager), this);
         pm.registerEvents(new EarthFriendlyMobListener(this, trustManager), this);
         pm.registerEvents(new EarthOreDropListener(elementManager), this);
         pm.registerEvents(new LifeListener(elementManager), this);

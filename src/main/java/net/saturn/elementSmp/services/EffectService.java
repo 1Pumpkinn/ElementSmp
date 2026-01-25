@@ -26,7 +26,6 @@ import java.util.Map;
  * Single source of truth for all effect-related operations.
  */
 public class EffectService implements Listener {
-    private static final int INFINITE_DURATION = 1000000; // Large enough to be considered infinite
     private final ElementSmp plugin;
     private final ElementManager elementManager;
 
@@ -86,8 +85,8 @@ public class EffectService implements Listener {
     }
 
     private boolean isElementEffect(PotionEffect effect) {
-        // Element effects are applied with a very long duration and specific flags
-        return effect.getDuration() > 100000 || (effect.isAmbient() && !effect.hasParticles());
+        // Element effects are applied with infinite duration or a very long duration
+        return effect.getDuration() == PotionEffect.INFINITE_DURATION || effect.getDuration() > 100000 || (effect.isAmbient() && !effect.hasParticles());
     }
 
     /**
@@ -125,7 +124,7 @@ public class EffectService implements Listener {
                 if (!req.upgradeRequired || upgradeLevel >= 2) {
                     if (!hasValidEffect(player, req.type, req.level)) {
                         player.addPotionEffect(new PotionEffect(
-                                req.type, INFINITE_DURATION, req.level, true, false
+                                req.type, PotionEffect.INFINITE_DURATION, req.level, true, false
                         ));
                     }
                 }

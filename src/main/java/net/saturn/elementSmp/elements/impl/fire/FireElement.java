@@ -5,8 +5,8 @@ import net.saturn.elementSmp.elements.BaseElement;
 import net.saturn.elementSmp.elements.ElementContext;
 import net.saturn.elementSmp.elements.ElementType;
 import net.saturn.elementSmp.elements.abilities.Ability;
-import net.saturn.elementSmp.elements.abilities.impl.fire.FireballAbility;
-import net.saturn.elementSmp.elements.abilities.impl.fire.MeteorShowerAbility;
+import net.saturn.elementSmp.elements.abilities.impl.fire.ScorchAbility;
+import net.saturn.elementSmp.elements.abilities.impl.fire.InfernoBlastAbility;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
@@ -18,8 +18,8 @@ public class FireElement extends BaseElement {
 
     public FireElement(ElementSmp plugin) {
         super(plugin);
-        this.ability1 = new FireballAbility(plugin);
-        this.ability2 = new MeteorShowerAbility(plugin);
+        this.ability1 = new ScorchAbility(plugin);
+        this.ability2 = new InfernoBlastAbility(plugin);
     }
 
     @Override
@@ -29,11 +29,8 @@ public class FireElement extends BaseElement {
 
     @Override
     public void applyUpsides(Player player, int upgradeLevel) {
-        // Upside 1: Infinite Fire Resistance
-        player.addPotionEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, Integer.MAX_VALUE, 0, true, false));
-
-        // Upside 2: Fire Aspect on hits (handled in listener)
-        // No passive effect needed here
+        // Passive: Infinite Fire Resistance is still good to keep for a fire element
+        player.addPotionEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, PotionEffect.INFINITE_DURATION, 0, true, false));
     }
 
     @Override

@@ -32,11 +32,11 @@ public final class ElementInfoRegistry {
                 "Fire",
                 ChatColor.RED,
                 List.of(
-                        "Immune to fire/lava damage",
-                        "Apply Fire Aspect to all attacks (Upgrade II)"
+                        "Auto smelt ores",
+                        "Fire aspect on any tool or fist (4s) (Upgrade II)"
                 ),
-                new ElementInfo.AbilityInfo("Fireball", "Launch an explosive fireball", 50, 1),
-                new ElementInfo.AbilityInfo("Meteor Shower", "Rain down fireballs from the sky", 75, 2)
+                new ElementInfo.AbilityInfo("Scorch", "The next entity you hit clears their Fire Resistance", 50, 1),
+                new ElementInfo.AbilityInfo("Inferno Blast", "Causes an explosion on you dealing 5 hearts to nearby entities", 75, 2)
         ));
 
         // Water
