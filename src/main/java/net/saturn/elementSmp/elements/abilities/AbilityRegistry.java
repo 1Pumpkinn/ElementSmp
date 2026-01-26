@@ -54,7 +54,7 @@ public final class AbilityRegistry {
         // Water
         register(ElementType.WATER,
                 new WaterGeyserAbility(plugin),
-                new WaterBeamAbility(plugin)
+                new WaterPrisonAbility(plugin)
         );
 
         // Fire

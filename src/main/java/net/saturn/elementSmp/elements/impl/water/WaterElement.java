@@ -5,8 +5,8 @@ import net.saturn.elementSmp.elements.BaseElement;
 import net.saturn.elementSmp.elements.ElementContext;
 import net.saturn.elementSmp.elements.ElementType;
 import net.saturn.elementSmp.elements.abilities.Ability;
-import net.saturn.elementSmp.elements.abilities.impl.water.WaterBeamAbility;
 import net.saturn.elementSmp.elements.abilities.impl.water.WaterGeyserAbility;
+import net.saturn.elementSmp.elements.abilities.impl.water.WaterPrisonAbility;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
@@ -21,7 +21,7 @@ public class WaterElement extends BaseElement {
         super(plugin);
         this.plugin = plugin;
         this.ability1 = new WaterGeyserAbility(plugin);
-        this.ability2 = new WaterBeamAbility(plugin);
+        this.ability2 = new WaterPrisonAbility(plugin);
     }
 
     @Override
