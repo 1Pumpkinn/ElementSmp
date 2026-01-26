@@ -59,8 +59,8 @@ public final class AbilityRegistry {
 
         // Fire
         register(ElementType.FIRE,
-                new FireballAbility(plugin),
-                new MeteorShowerAbility(plugin)
+                new ScorchAbility(plugin),
+                new InfernoBlastAbility(plugin)
         );
 
         // Earth
