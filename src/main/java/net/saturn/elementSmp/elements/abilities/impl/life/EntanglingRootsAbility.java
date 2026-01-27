@@ -1,6 +1,7 @@
 package net.saturn.elementSmp.elements.abilities.impl.life;
 
 import net.saturn.elementSmp.ElementSmp;
+import net.saturn.elementSmp.config.Constants;
 import net.saturn.elementSmp.config.MetadataKeys;
 import net.saturn.elementSmp.elements.ElementContext;
 import net.saturn.elementSmp.elements.abilities.BaseAbility;
@@ -92,7 +93,7 @@ public class EntanglingRootsAbility extends BaseAbility {
 
         player.sendMessage(ChatColor.GREEN + "You have entangled " + target.getName() + "!");
         
-        long durationMs = 3000; // 3 seconds
+        long durationMs = Constants.Duration.LIFE_ENTANGLE_MS;
         long stunUntil = System.currentTimeMillis() + durationMs;
         target.setMetadata(META_ENTANGLED, new FixedMetadataValue(plugin, stunUntil));
 

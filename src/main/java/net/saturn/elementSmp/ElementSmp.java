@@ -16,14 +16,14 @@ import net.saturn.elementSmp.managers.*;
 import net.saturn.elementSmp.services.EffectService;
 import net.saturn.elementSmp.util.bukkit.MetadataHelper;
 import net.saturn.elementSmp.util.scheduling.TaskScheduler;
-import net.saturn.elementSmp.elements.impl.air.listeners.*;
-import net.saturn.elementSmp.elements.impl.water.listeners.*;
-import net.saturn.elementSmp.elements.impl.fire.listeners.*;
-import net.saturn.elementSmp.elements.impl.earth.listeners.*;
-import net.saturn.elementSmp.elements.impl.life.listeners.*;
-import net.saturn.elementSmp.elements.impl.death.listeners.*;
-import net.saturn.elementSmp.elements.impl.metal.listeners.*;
-import net.saturn.elementSmp.elements.impl.frost.listeners.*;
+import net.saturn.elementSmp.elements.abilities.impl.air.passives.*;
+import net.saturn.elementSmp.elements.abilities.impl.water.passives.*;
+import net.saturn.elementSmp.elements.abilities.impl.fire.passives.*;
+import net.saturn.elementSmp.elements.abilities.impl.earth.passives.*;
+import net.saturn.elementSmp.elements.abilities.impl.life.passives.*;
+import net.saturn.elementSmp.elements.abilities.impl.death.passives.*;
+import net.saturn.elementSmp.elements.abilities.impl.metal.passives.*;
+import net.saturn.elementSmp.elements.abilities.impl.frost.passives.*;
 import net.saturn.elementSmp.recipes.UtilRecipes;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
@@ -262,24 +262,44 @@ public final class ElementSmp extends JavaPlugin {
     }
 
     private void registerElementListeners(PluginManager pm) {
-        pm.registerEvents(new FallDamageListener(elementManager), this);
-        pm.registerEvents(new AirCombatListener(elementManager), this);
-        pm.registerEvents(new WaterPassiveListener(elementManager), this);
-        pm.registerEvents(new WaterPrisonListener(this), this);
-        pm.registerEvents(new FireImmunityListener(elementManager), this);
-        pm.registerEvents(new FireCombatListener(elementManager, trustManager), this);
-        pm.registerEvents(new FireballProtectionListener(), this);
-        pm.registerEvents(new FireAutoSmeltListener(elementManager), this);
-        pm.registerEvents(new EarthFriendlyMobListener(this, trustManager), this);
-        pm.registerEvents(new EarthOreDropListener(elementManager), this);
-        pm.registerEvents(new LifeListener(this, elementManager), this);
-        pm.registerEvents(new DeathRawFoodListener(elementManager), this);
-        pm.registerEvents(new DeathFriendlyMobListener(this, trustManager, elementManager), this);
-        pm.registerEvents(new DeathPassiveListener(this, elementManager), this);
-        pm.registerEvents(new MetalArrowImmunityListener(elementManager), this);
-        pm.registerEvents(new MetalChainStunListener(), this);
-        pm.registerEvents(new FrostPassiveListener(this, elementManager), this);
-        pm.registerEvents(new IcicleDropListener(this, elementManager, trustManager), this);
+        // Air
+        pm.registerEvents(new FallDamagePassive(elementManager), this);
+        pm.registerEvents(new AirCombatPassive(elementManager), this);
+        
+        // Water
+        pm.registerEvents(new WaterBreathingPassive(elementManager), this);
+        pm.registerEvents(new WaterCombatPassive(elementManager), this);
+        pm.registerEvents(new net.saturn.elementSmp.elements.impl.water.listeners.WaterPrisonListener(this), this);
+        
+        // Fire
+        pm.registerEvents(new FireImmunityPassive(elementManager), this);
+        pm.registerEvents(new FireCombatPassive(elementManager, trustManager), this);
+        pm.registerEvents(new FireballProtectionPassive(), this);
+        pm.registerEvents(new FireAutoSmeltPassive(elementManager), this);
+        
+        // Earth
+        pm.registerEvents(new EarthCombatPassive(elementManager, trustManager), this);
+        pm.registerEvents(new EarthOreDropPassive(elementManager), this);
+        
+        // Life
+        pm.registerEvents(new LifeRegenPassive(elementManager), this);
+        pm.registerEvents(new LifeCropPassive(this, elementManager), this);
+        pm.registerEvents(new net.saturn.elementSmp.elements.impl.life.listeners.LifeListener(this, elementManager), this);
+        
+        // Death
+        pm.registerEvents(new DeathWitherPassive(elementManager, trustManager), this);
+        pm.registerEvents(new DeathInvisibilityPassive(this, elementManager), this);
+        pm.registerEvents(new DeathFriendlyMobPassive(this, trustManager, elementManager), this);
+        
+        // Metal
+        pm.registerEvents(new MetalCombatPassive(elementManager, trustManager), this);
+        pm.registerEvents(new MetalArrowImmunityPassive(elementManager), this);
+        pm.registerEvents(new net.saturn.elementSmp.elements.impl.metal.listeners.MetalChainStunListener(), this);
+        
+        // Frost
+        pm.registerEvents(new FrostSpeedPassive(this, elementManager), this);
+        pm.registerEvents(new FrostCombatPassive(elementManager, trustManager), this);
+        pm.registerEvents(new net.saturn.elementSmp.elements.impl.frost.listeners.IcicleDropListener(this, elementManager, trustManager), this);
     }
 
     private void registerRecipes() {

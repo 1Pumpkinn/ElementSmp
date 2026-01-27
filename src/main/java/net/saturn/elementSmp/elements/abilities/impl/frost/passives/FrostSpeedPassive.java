@@ -1,4 +1,4 @@
-package net.saturn.elementSmp.elements.impl.frost.listeners;
+package net.saturn.elementSmp.elements.abilities.impl.frost.passives;
 
 import net.saturn.elementSmp.ElementSmp;
 import net.saturn.elementSmp.elements.ElementType;
@@ -17,15 +17,15 @@ import java.util.Set;
 import java.util.UUID;
 
 /**
- * Handles Frost element passive speed effects
+ * Handles Frost element passive 1: Speed effects when wearing leather boots
  */
-public class FrostPassiveListener implements Listener {
+public class FrostSpeedPassive implements Listener {
 
     private final ElementSmp plugin;
     private final ElementManager elementManager;
     private final Set<UUID> frostSpeedPlayers = new HashSet<>();
 
-    public FrostPassiveListener(ElementSmp plugin, ElementManager elementManager) {
+    public FrostSpeedPassive(ElementSmp plugin, ElementManager elementManager) {
         this.plugin = plugin;
         this.elementManager = elementManager;
         startPassiveEffectTask();
@@ -98,13 +98,8 @@ public class FrostPassiveListener implements Listener {
         return boots != null && boots.getType() == Material.LEATHER_BOOTS;
     }
 
-    //Checks if Frost User is on Ice
     private boolean isOnIce(Player player) {
-        Material blockBelow = player.getLocation().add(0, -1, 0).getBlock().getType();
-        return switch (blockBelow) {
-            case ICE, PACKED_ICE, BLUE_ICE, FROSTED_ICE -> true;
-            default -> false;
-
-        };
+        Material blockType = player.getLocation().getBlock().getRelative(org.bukkit.block.BlockFace.DOWN).getType();
+        return blockType == Material.ICE || blockType == Material.PACKED_ICE || blockType == Material.BLUE_ICE || blockType == Material.FROSTED_ICE;
     }
 }

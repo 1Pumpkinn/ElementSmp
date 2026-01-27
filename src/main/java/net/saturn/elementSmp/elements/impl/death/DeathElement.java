@@ -32,8 +32,8 @@ public class DeathElement extends BaseElement {
 
     @Override
     public void applyUpsides(Player player, int upgradeLevel) {
-        // Upside 1: Soul Harvest - Killing players restores health (handled in DeathPassiveListener)
-        // Upside 2: Detector - Low health invisibility (handled in DeathPassiveListener)
+        // Upside 1: 10% Wither effect on hit (handled in DeathPassive)
+        // Upside 2: Invisibility and equipment hiding at 2 hearts (handled in DeathPassive)
     }
 
     @Override

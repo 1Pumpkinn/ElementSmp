@@ -1,5 +1,6 @@
 package net.saturn.elementSmp.elements.abilities.impl.air;
 
+import net.saturn.elementSmp.config.Constants;
 import net.saturn.elementSmp.elements.ElementContext;
 import net.saturn.elementSmp.elements.abilities.BaseAbility;
 import net.saturn.elementSmp.managers.ManaManager;
@@ -24,7 +25,7 @@ public class AirBlastAbility extends BaseAbility {
         
         // Launch all nearby players away, with particles
 
-        double radius = 6.0;
+        double radius = Constants.Distance.AIR_BLAST_RADIUS;
         World w = player.getWorld();
         Location center = player.getLocation();
 

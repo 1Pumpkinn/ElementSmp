@@ -1,6 +1,7 @@
 package net.saturn.elementSmp.elements.abilities.impl.water;
 
 import net.saturn.elementSmp.ElementSmp;
+import net.saturn.elementSmp.config.Constants;
 import net.saturn.elementSmp.config.MetadataKeys;
 import net.saturn.elementSmp.elements.ElementContext;
 import net.saturn.elementSmp.elements.abilities.BaseAbility;
@@ -71,8 +72,8 @@ public class WaterPrisonAbility extends BaseAbility {
         player.getWorld().playSound(player.getLocation(), Sound.ITEM_TRIDENT_RIPTIDE_1, 1.0f, 0.8f);
         finalTarget.getWorld().playSound(finalTarget.getLocation(), Sound.ENTITY_PLAYER_SPLASH, 1.0f, 1.0f);
 
-        // Apply metadata for stun duration (5 seconds = 5000ms)
-        long durationMs = 5000;
+        // Apply metadata for stun duration
+        long durationMs = Constants.Duration.WATER_PRISON_MS;
         long stunUntil = System.currentTimeMillis() + durationMs;
         finalTarget.setMetadata(META_WATER_PRISON, new FixedMetadataValue(plugin, stunUntil));
 

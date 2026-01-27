@@ -2,6 +2,7 @@ package net.saturn.elementSmp.managers;
 
 import net.saturn.elementSmp.ElementSmp;
 import net.saturn.elementSmp.config.AbilityCosts;
+import net.saturn.elementSmp.config.Constants;
 import net.saturn.elementSmp.elements.ElementType;
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -34,19 +35,19 @@ public class ConfigManager {
     // Mana settings
     public int getMaxMana() {
         try {
-            return config.getInt("mana.max", 100);
+            return config.getInt("mana.max", Constants.Mana.DEFAULT_MAX);
         } catch (Exception e) {
-            plugin.getLogger().log(Level.WARNING, "Error reading mana.max from config, using default value 100", e);
-            return 100;
+            plugin.getLogger().log(Level.WARNING, "Error reading mana.max from config, using default value " + Constants.Mana.DEFAULT_MAX, e);
+            return Constants.Mana.DEFAULT_MAX;
         }
     }
 
     public int getManaRegenPerSecond() {
         try {
-            return config.getInt("mana.regen_per_second", 1);
+            return config.getInt("mana.regen_per_second", Constants.Mana.DEFAULT_REGEN);
         } catch (Exception e) {
-            plugin.getLogger().log(Level.WARNING, "Error reading mana.regen_per_second from config, using default value 1", e);
-            return 1;
+            plugin.getLogger().log(Level.WARNING, "Error reading mana.regen_per_second from config, using default value " + Constants.Mana.DEFAULT_REGEN, e);
+            return Constants.Mana.DEFAULT_REGEN;
         }
     }
 
@@ -73,10 +74,10 @@ public class ConfigManager {
 
     public boolean isAdvancedRerollerRecipeEnabled() {
         try {
-            return config.getBoolean("recipes.advanced_reroller_enabled", true);
+            return config.getBoolean("recipes.advanced_reroller_enabled", Constants.Default.ADVANCED_REROLLER_ENABLED);
         } catch (Exception e) {
-            plugin.getLogger().log(Level.WARNING, "Error reading advanced_reroller_enabled from config, using default value true", e);
-            return true;
+            plugin.getLogger().log(Level.WARNING, "Error reading advanced_reroller_enabled from config, using default value " + Constants.Default.ADVANCED_REROLLER_ENABLED, e);
+            return Constants.Default.ADVANCED_REROLLER_ENABLED;
         }
     }
 

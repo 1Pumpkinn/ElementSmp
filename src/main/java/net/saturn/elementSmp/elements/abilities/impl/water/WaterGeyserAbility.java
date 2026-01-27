@@ -1,5 +1,6 @@
 package net.saturn.elementSmp.elements.abilities.impl.water;
 
+import net.saturn.elementSmp.config.Constants;
 import net.saturn.elementSmp.elements.ElementContext;
 import net.saturn.elementSmp.elements.abilities.BaseAbility;
 import org.bukkit.Location;
@@ -28,7 +29,7 @@ public class WaterGeyserAbility extends BaseAbility {
         Location playerLoc = player.getLocation();
         boolean foundTargets = false;
 
-        for (LivingEntity entity : playerLoc.getNearbyLivingEntities(5.0)) {
+        for (LivingEntity entity : playerLoc.getNearbyLivingEntities(Constants.Distance.WATER_GEYSER_RADIUS)) {
             if (entity.equals(player)) continue;
             
             if (entity instanceof Player targetPlayer) {

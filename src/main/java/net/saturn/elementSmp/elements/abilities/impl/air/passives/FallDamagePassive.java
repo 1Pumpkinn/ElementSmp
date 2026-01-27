@@ -1,4 +1,4 @@
-package net.saturn.elementSmp.elements.impl.air.listeners;
+package net.saturn.elementSmp.elements.abilities.impl.air.passives;
 
 import net.saturn.elementSmp.elements.ElementType;
 import net.saturn.elementSmp.managers.ElementManager;
@@ -7,10 +7,10 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 
-public class FallDamageListener implements Listener {
+public class FallDamagePassive implements Listener {
     private final ElementManager elementManager;
 
-    public FallDamageListener(ElementManager elementManager) {
+    public FallDamagePassive(ElementManager elementManager) {
         this.elementManager = elementManager;
     }
 

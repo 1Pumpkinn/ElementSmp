@@ -1,4 +1,4 @@
-package net.saturn.elementSmp.elements.impl.metal.listeners;
+package net.saturn.elementSmp.elements.abilities.impl.metal.passives;
 
 import net.saturn.elementSmp.elements.ElementType;
 import net.saturn.elementSmp.managers.ElementManager;
@@ -8,10 +8,10 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
-public class MetalArrowImmunityListener implements Listener {
+public class MetalArrowImmunityPassive implements Listener {
     private final ElementManager elementManager;
 
-    public MetalArrowImmunityListener(ElementManager elementManager) {
+    public MetalArrowImmunityPassive(ElementManager elementManager) {
         this.elementManager = elementManager;
     }
 

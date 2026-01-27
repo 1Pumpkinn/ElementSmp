@@ -1,4 +1,4 @@
-package net.saturn.elementSmp.elements.impl.air.listeners;
+package net.saturn.elementSmp.elements.abilities.impl.air.passives;
 
 import net.saturn.elementSmp.elements.ElementType;
 import net.saturn.elementSmp.managers.ElementManager;
@@ -9,10 +9,10 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-public class AirCombatListener implements Listener {
+public class AirCombatPassive implements Listener {
     private final ElementManager elementManager;
 
-    public AirCombatListener(ElementManager elementManager) {
+    public AirCombatPassive(ElementManager elementManager) {
         this.elementManager = elementManager;
     }
 
@@ -30,4 +30,3 @@ public class AirCombatListener implements Listener {
         }
     }
 }
-

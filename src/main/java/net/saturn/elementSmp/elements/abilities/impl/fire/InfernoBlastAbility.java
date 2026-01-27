@@ -1,6 +1,7 @@
 package net.saturn.elementSmp.elements.abilities.impl.fire;
 
 import net.saturn.elementSmp.ElementSmp;
+import net.saturn.elementSmp.config.Constants;
 import net.saturn.elementSmp.elements.ElementContext;
 import net.saturn.elementSmp.elements.abilities.BaseAbility;
 import org.bukkit.ChatColor;
@@ -35,7 +36,7 @@ public class InfernoBlastAbility extends BaseAbility {
         loc.getWorld().spawnParticle(Particle.LARGE_SMOKE, loc, 50, 2, 2, 2, 0.05);
         loc.getWorld().playSound(loc, Sound.ENTITY_GENERIC_EXPLODE, 1.5f, 0.8f);
 
-        double radius = 6.0;
+        double radius = Constants.Distance.FIRE_EXPLOSION_RADIUS;
 
         for (Entity entity : player.getNearbyEntities(radius, radius, radius)) {
             if (entity instanceof LivingEntity victim && !entity.equals(player)) {
@@ -46,9 +47,9 @@ public class InfernoBlastAbility extends BaseAbility {
                     }
                 }
 
-                // Deal 3.5 hearts (7.0 damage) of TRUE damage
+                // Deal TRUE damage
                 // True damage ignores armor, enchantments, and effects
-                double damage = 7.0;
+                double damage = Constants.Damage.FIRE_EXPLOSION_DAMAGE;
                 
                 // Set health directly for true damage, but ensure we don't go below 0
                 double newHealth = Math.max(0, victim.getHealth() - damage);

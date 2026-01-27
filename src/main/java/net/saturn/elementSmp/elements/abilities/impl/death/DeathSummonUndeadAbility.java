@@ -1,5 +1,6 @@
 package net.saturn.elementSmp.elements.abilities.impl.death;
 
+import net.saturn.elementSmp.config.Constants;
 import net.saturn.elementSmp.config.MetadataKeys;
 import net.saturn.elementSmp.elements.ElementContext;
 import net.saturn.elementSmp.elements.abilities.BaseAbility;
@@ -63,7 +64,7 @@ public class DeathSummonUndeadAbility extends BaseAbility {
             s.setCustomNameVisible(true);
             
             // Use metadata for DeathFriendlyMobListener
-            long durationMs = 120000; // 2 minutes (120,000 ms)
+            long durationMs = Constants.Duration.DEATH_SUMMON_MS;
             s.setMetadata(MetadataKeys.Death.SUMMONED_OWNER, new FixedMetadataValue(plugin, player.getUniqueId().toString()));
             s.setMetadata(MetadataKeys.Death.SUMMONED_UNTIL, new FixedMetadataValue(plugin, System.currentTimeMillis() + durationMs));
             
@@ -81,11 +82,11 @@ public class DeathSummonUndeadAbility extends BaseAbility {
 
         player.getWorld().spawnParticle(Particle.SQUID_INK, skeleton.getLocation().add(0, 1, 0), 50, 0.5, 0.5, 0.5, 0.1);
         player.getWorld().playSound(skeleton.getLocation(), Sound.ENTITY_WITHER_SKELETON_AMBIENT, 1.0f, 0.5f);
-        player.sendMessage(ChatColor.DARK_PURPLE + "Summoned an Undead Servant for 2 minutes!");
+        player.sendMessage(ChatColor.DARK_PURPLE + "Summoned an Undead Servant for " + (Constants.Duration.DEATH_SUMMON_MS / 60000) + " minutes!");
         
         // The following and attacking logic is handled by DeathFriendlyMobListener.java
         
-        // Remove after 2 minutes
+        // Remove after duration
         new BukkitRunnable() {
             @Override
             public void run() {
@@ -94,7 +95,7 @@ public class DeathSummonUndeadAbility extends BaseAbility {
                     skeleton.remove();
                 }
             }
-        }.runTaskLater(plugin, 2400L); // 2 minutes (120 seconds * 20 ticks)
+        }.runTaskLater(plugin, Constants.Duration.DEATH_SUMMON_MS / 1000 * 20); // ms to ticks
         
         return true;
     }

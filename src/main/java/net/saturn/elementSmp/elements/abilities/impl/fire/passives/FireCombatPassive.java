@@ -1,4 +1,4 @@
-package net.saturn.elementSmp.elements.impl.fire.listeners;
+package net.saturn.elementSmp.elements.abilities.impl.fire.passives;
 
 import net.saturn.elementSmp.elements.ElementType;
 import net.saturn.elementSmp.managers.ElementManager;
@@ -13,11 +13,11 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
  * Handles Fire element combat interactions
  * Fire Upside 2: Apply fire aspect when hitting enemies
  */
-public class FireCombatListener implements Listener {
+public class FireCombatPassive implements Listener {
     private final ElementManager elementManager;
     private final TrustManager trustManager;
 
-    public FireCombatListener(ElementManager elementManager, TrustManager trustManager) {
+    public FireCombatPassive(ElementManager elementManager, TrustManager trustManager) {
         this.elementManager = elementManager;
         this.trustManager = trustManager;
     }

@@ -1,4 +1,4 @@
-package net.saturn.elementSmp.elements.impl.earth.listeners;
+package net.saturn.elementSmp.elements.abilities.impl.earth.passives;
 
 import net.saturn.elementSmp.elements.ElementType;
 import net.saturn.elementSmp.managers.ElementManager;
@@ -14,7 +14,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.EnumSet;
 import java.util.Set;
 
-public class EarthOreDropListener implements Listener {
+public class EarthOreDropPassive implements Listener {
     private final ElementManager elements;
 
     private static final Set<Material> ORES = EnumSet.of(
@@ -29,7 +29,7 @@ public class EarthOreDropListener implements Listener {
             Material.NETHER_GOLD_ORE, Material.NETHER_QUARTZ_ORE
     );
 
-    public EarthOreDropListener(ElementManager elements) {
+    public EarthOreDropPassive(ElementManager elements) {
         this.elements = elements;
     }
 

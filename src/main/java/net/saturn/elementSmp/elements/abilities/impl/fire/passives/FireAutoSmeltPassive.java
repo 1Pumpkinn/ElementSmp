@@ -1,4 +1,4 @@
-package net.saturn.elementSmp.elements.impl.fire.listeners;
+package net.saturn.elementSmp.elements.abilities.impl.fire.passives;
 
 import net.saturn.elementSmp.elements.ElementType;
 import net.saturn.elementSmp.managers.ElementManager;
@@ -13,7 +13,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.HashMap;
 import java.util.Map;
 
-public class FireAutoSmeltListener implements Listener {
+public class FireAutoSmeltPassive implements Listener {
     private final ElementManager elementManager;
     private static final Map<Material, Material> SMELT_MAP = new HashMap<>();
 
@@ -29,7 +29,7 @@ public class FireAutoSmeltListener implements Listener {
         SMELT_MAP.put(Material.DEEPSLATE_COPPER_ORE, Material.COPPER_INGOT);
     }
 
-    public FireAutoSmeltListener(ElementManager elementManager) {
+    public FireAutoSmeltPassive(ElementManager elementManager) {
         this.elementManager = elementManager;
     }
 

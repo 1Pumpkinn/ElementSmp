@@ -82,9 +82,8 @@ public final class ElementInfoRegistry {
                 "Death",
                 ChatColor.DARK_PURPLE,
                 List.of(
-                        "Soul Harvest: Restore 2 hearts on player kill",
-                        "Void's Pull: Pull enemies toward you on hit with sword/axe",
-                        "Low health invisibility (Upgrade II)"
+                        "10% chance to apply Wither effect on hit",
+                        "Invisibility and equipment hiding at 2 hearts (Upgrade II)"
                 ),
                 new ElementInfo.AbilityInfo("Summon Undead", "Summon a powerful undead ally", 50, 1),
                 new ElementInfo.AbilityInfo("Shadow Step", "Teleport behind your target", 75, 2)

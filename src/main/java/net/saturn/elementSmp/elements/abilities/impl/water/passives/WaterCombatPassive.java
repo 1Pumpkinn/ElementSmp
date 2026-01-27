@@ -1,4 +1,4 @@
-package net.saturn.elementSmp.elements.impl.water.listeners;
+package net.saturn.elementSmp.elements.abilities.impl.water.passives;
 
 import net.saturn.elementSmp.data.PlayerData;
 import net.saturn.elementSmp.elements.ElementType;
@@ -15,30 +15,21 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.util.Vector;
 
-public class WaterPassiveListener implements Listener {
+/**
+ * Handles Water element passive 2: Pulling enemies with Loyalty Tridents
+ */
+public class WaterCombatPassive implements Listener {
     private final ElementManager elementManager;
     private final Plugin plugin;
 
-    public WaterPassiveListener(ElementManager elementManager) {
+    public WaterCombatPassive(ElementManager elementManager) {
         this.elementManager = elementManager;
         this.plugin = elementManager.getPlugin();
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    public void onWaterDamage(EntityDamageEvent event) {
-        if (!(event.getEntity() instanceof Player player)) return;
-        if (elementManager.data(player.getUniqueId()).getCurrentElement() != ElementType.WATER) return;
-        
-        // Passive: Drowning Immunity
-        if (event.getCause() == EntityDamageEvent.DamageCause.DROWNING) {
-            event.setCancelled(true);
-        }
     }
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = false)
@@ -108,9 +99,6 @@ public class WaterPassiveListener implements Listener {
                     
                     if (shooter.isOnline()) {
                         shooter.getWorld().playSound(shooter.getLocation(), Sound.ENTITY_FISHING_BOBBER_RETRIEVE, 1f, 0.8f);
-                        if (victim instanceof Player) {
-                        } else {
-                        }
                     }
                 }
             }, 1L);

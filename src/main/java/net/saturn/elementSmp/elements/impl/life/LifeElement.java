@@ -1,23 +1,15 @@
 package net.saturn.elementSmp.elements.impl.life;
 
 import net.saturn.elementSmp.ElementSmp;
+import net.saturn.elementSmp.config.Constants;
 import net.saturn.elementSmp.elements.BaseElement;
 import net.saturn.elementSmp.elements.ElementContext;
 import net.saturn.elementSmp.elements.ElementType;
 import net.saturn.elementSmp.elements.abilities.Ability;
 import net.saturn.elementSmp.elements.abilities.impl.life.EntanglingRootsAbility;
 import net.saturn.elementSmp.elements.abilities.impl.life.NaturesEyeAbility;
-import org.bukkit.ChatColor;
 import org.bukkit.attribute.Attribute;
-import org.bukkit.block.Block;
-import org.bukkit.block.data.Ageable;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
 
 public class LifeElement extends BaseElement {
 
@@ -25,8 +17,7 @@ public class LifeElement extends BaseElement {
     private final Ability ability1;
     private final Ability ability2;
 
-    // Fixed: only ONE passive task map
-    private final Map<UUID, BukkitTask> passiveTasks = new HashMap<>();
+
 
     public LifeElement(ElementSmp plugin) {
         super(plugin);
@@ -40,69 +31,19 @@ public class LifeElement extends BaseElement {
         return ElementType.LIFE;
     }
 
-    // APPLY UPSIDES — fixed to prevent duplicate tasks
+    // APPLY UPSIDES
     @Override
     public void applyUpsides(Player player, int upgradeLevel) {
-
-        // Cancel previous task to prevent stacking
-        cancelPassiveTask(player);
-
         // Upside 1: 15 hearts (30 HP)
         var attr = player.getAttribute(Attribute.MAX_HEALTH);
         if (attr != null) {
-            if (attr.getBaseValue() < 30.0) attr.setBaseValue(30.0);
+            if (attr.getBaseValue() < Constants.Health.LIFE_MAX) attr.setBaseValue(Constants.Health.LIFE_MAX);
             if (player.getHealth() > attr.getBaseValue()) {
                 player.setHealth(attr.getBaseValue());
             }
         }
 
-        // Upside 2: crop growth aura (upgrade level 2+)
-        if (upgradeLevel >= 2) {
-            BukkitTask task = new BukkitRunnable() {
-                @Override
-                public void run() {
-                    if (!player.isOnline()) {
-                        cancelPassiveTask(player);
-                        return;
-                    }
-
-                    int radius = 5;
-
-                    // Force-grow crops within 5x5 around the player
-                    for (int dx = -radius; dx <= radius; dx++) {
-                        for (int dz = -radius; dz <= radius; dz++) {
-                            for (int dy = -1; dy <= 1; dy++) {
-                                Block block = player.getLocation().clone().add(dx, dy, dz).getBlock();
-                                growIfCrop(block);
-                            }
-                        }
-                    }
-                }
-            }.runTaskTimer(plugin, 0L, 40L); // Every 2 seconds
-
-            // Store the running task
-            passiveTasks.put(player.getUniqueId(), task);
-        }
-    }
-
-    // Crop Growth Helper
-    private boolean growIfCrop(Block block) {
-        if (block.getBlockData() instanceof Ageable ageable) {
-            if (ageable.getAge() < ageable.getMaximumAge()) {
-                ageable.setAge(ageable.getMaximumAge());
-                block.setBlockData(ageable);
-                return true;
-            }
-        }
-        return false;
-    }
-
-    // Cancel passive task
-    private void cancelPassiveTask(Player player) {
-        BukkitTask task = passiveTasks.remove(player.getUniqueId());
-        if (task != null && !task.isCancelled()) {
-            task.cancel();
-        }
+        // Upside 2: crop growth aura (handled in LifePassive)
     }
 
     // Abilities
@@ -116,16 +57,12 @@ public class LifeElement extends BaseElement {
         return ability2.execute(context);
     }
 
-    // Clearing Effects
     @Override
     public void clearEffects(Player player) {
-        cancelPassiveTask(player);
-
-        // Reset health
+        // Reset health if they are not Life element anymore
         var attr = player.getAttribute(Attribute.MAX_HEALTH);
         if (attr != null) {
             attr.setBaseValue(20.0);
-            if (player.getHealth() > 20.0) player.setHealth(20.0);
         }
 
         ability1.setActive(player, false);

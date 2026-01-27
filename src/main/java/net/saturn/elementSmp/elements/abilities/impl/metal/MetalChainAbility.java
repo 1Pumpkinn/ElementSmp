@@ -1,6 +1,7 @@
 package net.saturn.elementSmp.elements.abilities.impl.metal;
 
 import net.saturn.elementSmp.ElementSmp;
+import net.saturn.elementSmp.config.Constants;
 import net.saturn.elementSmp.config.MetadataKeys;
 import net.saturn.elementSmp.elements.ElementContext;
 import net.saturn.elementSmp.elements.abilities.BaseAbility;
@@ -105,8 +106,8 @@ public class MetalChainAbility extends BaseAbility {
                         mob.setAware(true);
                     }
 
-                    // Set metadata for stun duration (3 seconds = 3000ms)
-                    long stunDuration = 3000; // 3 seconds in milliseconds
+                    // Set metadata for stun duration
+                    long stunDuration = Constants.Duration.METAL_CHAIN_STUN_MS;
                     long stunUntil = System.currentTimeMillis() + stunDuration;
                     finalTarget.setMetadata(META_CHAINED_STUN, new FixedMetadataValue(plugin, stunUntil));
 
@@ -119,9 +120,11 @@ public class MetalChainAbility extends BaseAbility {
                     // Schedule metadata removal and re-enable AI after stun expires
                     new BukkitRunnable() {
                         int stunTicks = 0;
+                        final int maxStunTicks = (int) (Constants.Duration.METAL_CHAIN_STUN_MS / 50);
+
                         @Override
                         public void run() {
-                            if (!finalTarget.isValid() || stunTicks >= 60) {
+                            if (!finalTarget.isValid() || stunTicks >= maxStunTicks) {
                                 if (finalTarget.isValid()) {
                                     finalTarget.removeMetadata(META_CHAINED_STUN, plugin);
                                     if (finalTarget instanceof Mob mob) {

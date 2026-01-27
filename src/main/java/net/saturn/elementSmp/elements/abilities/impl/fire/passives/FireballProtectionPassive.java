@@ -1,4 +1,4 @@
-package net.saturn.elementSmp.elements.impl.fire.listeners;
+package net.saturn.elementSmp.elements.abilities.impl.fire.passives;
 
 import org.bukkit.entity.Fireball;
 import org.bukkit.entity.Player;
@@ -9,7 +9,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 /**
  * Prevents Fire element players from being damaged by their own fireballs
  */
-public class FireballProtectionListener implements Listener {
+public class FireballProtectionPassive implements Listener {
 
     @EventHandler
     public void onFireballDamage(EntityDamageByEntityEvent event) {

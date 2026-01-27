@@ -86,7 +86,7 @@ public class EffectService implements Listener {
 
     private boolean isElementEffect(PotionEffect effect) {
         // Element effects are applied with infinite duration or a very long duration
-        return effect.getDuration() == PotionEffect.INFINITE_DURATION || effect.getDuration() > 100000 || (effect.isAmbient() && !effect.hasParticles());
+        return effect.getDuration() == PotionEffect.INFINITE_DURATION || effect.getDuration() > Constants.Timing.PASSIVE_EFFECT_THRESHOLD || (effect.isAmbient() && !effect.hasParticles());
     }
 
     /**
@@ -152,7 +152,7 @@ public class EffectService implements Listener {
         
         // If it's a normal potion, only consider it valid if it's at least the same level
         // and has more than 5 seconds remaining
-        return effect.getAmplifier() >= requiredLevel && effect.getDuration() > 100;
+        return effect.getAmplifier() >= requiredLevel && effect.getDuration() > Constants.Timing.POTION_EXPIRY_THRESHOLD;
     }
 
     private void resetHealthIfNeeded(Player player, ElementType currentElement) {

@@ -1,4 +1,4 @@
-package net.saturn.elementSmp.elements.impl.fire.listeners;
+package net.saturn.elementSmp.elements.abilities.impl.fire.passives;
 
 import net.saturn.elementSmp.elements.ElementType;
 import net.saturn.elementSmp.managers.ElementManager;
@@ -7,10 +7,10 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 
-public class FireImmunityListener implements Listener {
+public class FireImmunityPassive implements Listener {
     private final ElementManager elementManager;
 
-    public FireImmunityListener(ElementManager elementManager) {
+    public FireImmunityPassive(ElementManager elementManager) {
         this.elementManager = elementManager;
     }
 
@@ -26,4 +26,3 @@ public class FireImmunityListener implements Listener {
         }
     }
 }
-
