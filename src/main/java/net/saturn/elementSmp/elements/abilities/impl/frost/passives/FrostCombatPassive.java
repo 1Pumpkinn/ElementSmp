@@ -44,7 +44,7 @@ public class FrostCombatPassive implements Listener {
 
         // 10% chance to apply Slowness II for 3 seconds
         if (Math.random() < 0.10) {
-            victim.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 60, 1));
+            victim.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, 60, 1));
             victim.getWorld().spawnParticle(org.bukkit.Particle.SNOWFLAKE, victim.getLocation().add(0, 1, 0), 10, 0.3, 0.3, 0.3, 0.05);
             victim.getWorld().playSound(victim.getLocation(), org.bukkit.Sound.BLOCK_POWDER_SNOW_BREAK, 1f, 1.2f);
         }
