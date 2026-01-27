@@ -1,6 +1,7 @@
 package net.saturn.elementSmp.elements.abilities.impl.life;
 
 import net.saturn.elementSmp.ElementSmp;
+import net.saturn.elementSmp.config.MetadataKeys;
 import net.saturn.elementSmp.elements.ElementContext;
 import net.saturn.elementSmp.elements.abilities.BaseAbility;
 import org.bukkit.ChatColor;
@@ -31,7 +32,7 @@ import java.util.UUID;
 public class EntanglingRootsAbility extends BaseAbility {
 
     private final ElementSmp plugin;
-    public static final String META_ENTANGLED = "life_entangled";
+    public static final String META_ENTANGLED = MetadataKeys.Life.ENTANGLED;
 
     public EntanglingRootsAbility(ElementSmp plugin) {
         super();

@@ -1,6 +1,7 @@
 package net.saturn.elementSmp.elements.impl.earth;
 
 import net.saturn.elementSmp.ElementSmp;
+import net.saturn.elementSmp.config.MetadataKeys;
 import net.saturn.elementSmp.elements.BaseElement;
 import net.saturn.elementSmp.elements.ElementContext;
 import net.saturn.elementSmp.elements.ElementType;
@@ -13,9 +14,9 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 public class EarthElement extends BaseElement {
-    public static final String META_MINE_UNTIL = "earth_mine_until";
-    public static final String META_CHARM_NEXT_UNTIL = "earth_charm_next_until";
-    public static final String META_TUNNELING = "earth_tunneling";
+    public static final String META_MINE_UNTIL = MetadataKeys.Earth.MINE_UNTIL;
+    public static final String META_CHARM_NEXT_UNTIL = MetadataKeys.Earth.CHARM_NEXT_UNTIL;
+    public static final String META_TUNNELING = MetadataKeys.Earth.TUNNELING;
 
     private final ElementSmp plugin;
     private final Ability ability1;

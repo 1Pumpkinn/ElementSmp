@@ -1,6 +1,7 @@
 package net.saturn.elementSmp.elements.abilities.impl.frost;
 
 import net.saturn.elementSmp.ElementSmp;
+import net.saturn.elementSmp.config.MetadataKeys;
 import net.saturn.elementSmp.elements.ElementContext;
 import net.saturn.elementSmp.elements.abilities.BaseAbility;
 import org.bukkit.ChatColor;
@@ -25,7 +26,7 @@ public class FrostCircleAbility extends BaseAbility {
     private final ElementSmp plugin;
     private final Map<UUID, Integer> activeCircleCounts = new HashMap<>();
 
-    public static final String META_CIRCLE_FROZEN = "frost_freezing_circle";
+    public static final String META_CIRCLE_FROZEN = MetadataKeys.Frost.CIRCLE_FROZEN;
 
     public FrostCircleAbility(ElementSmp plugin) {
         super();

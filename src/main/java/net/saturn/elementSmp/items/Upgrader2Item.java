@@ -1,6 +1,7 @@
 package net.saturn.elementSmp.items;
 
 import net.saturn.elementSmp.ElementSmp;
+import net.saturn.elementSmp.items.builder.ItemBuilder;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -8,8 +9,6 @@ import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.util.List;
@@ -20,23 +19,17 @@ public final class Upgrader2Item {
     public static final String KEY = "upgrader_2";
 
     public static ItemStack make(ElementSmp plugin) {
-        ItemStack item = new ItemStack(Material.ECHO_SHARD);
-        ItemMeta meta = item.getItemMeta();
-        
-        meta.displayName(Component.text("Upgrader II")
-                .color(NamedTextColor.AQUA)
-                .decoration(TextDecoration.ITALIC, false));
-        
-        meta.setCustomModelData(2);
-        
-        meta.lore(List.of(
-                Component.text("Use by crafting to unlock").color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false),
-                Component.text("Ability 2 + Upside 2 for your element").color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false)
-        ));
-        PersistentDataContainer pdc = meta.getPersistentDataContainer();
-        pdc.set(ItemKeys.upgraderLevel(plugin), PersistentDataType.INTEGER, 2);
-        item.setItemMeta(meta);
-        return item;
+        return ItemBuilder.start(Material.ECHO_SHARD)
+                .name(Component.text("Upgrader II")
+                        .color(NamedTextColor.AQUA)
+                        .decoration(TextDecoration.ITALIC, false))
+                .customModelData(2)
+                .lore(List.of(
+                        Component.text("Use by crafting to unlock").color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false),
+                        Component.text("Ability 2 + Upside 2 for your element").color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false)
+                ))
+                .data(ItemKeys.upgraderLevel(plugin), PersistentDataType.INTEGER, 2)
+                .build();
     }
 
     public static void registerRecipe(ElementSmp plugin) {

@@ -4,7 +4,10 @@ import net.saturn.elementSmp.commands.*;
 import net.saturn.elementSmp.config.Constants;
 import net.saturn.elementSmp.data.DataStore;
 import net.saturn.elementSmp.elements.abilities.AbilityRegistry;
+import net.saturn.elementSmp.elements.ElementType;
 import net.saturn.elementSmp.listeners.ability.AbilityListener;
+import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.Material;
 import net.saturn.elementSmp.listeners.combat.CombatListener;
 import net.saturn.elementSmp.listeners.GUIListener;
 import net.saturn.elementSmp.listeners.item.*;
@@ -253,7 +256,6 @@ public final class ElementSmp extends JavaPlugin {
     private void registerItemListeners(PluginManager pm) {
         pm.registerEvents(new ElementItemCraftListener(this, elementManager), this);
         pm.registerEvents(new ElementItemDeathListener(this, elementManager), this);
-        pm.registerEvents(new ElementCombatProjectileListener(itemManager), this);
         pm.registerEvents(new RerollerListener(this), this);
         pm.registerEvents(new AdvancedRerollerListener(this), this);
         pm.registerEvents(new UpgraderListener(this, elementManager), this);

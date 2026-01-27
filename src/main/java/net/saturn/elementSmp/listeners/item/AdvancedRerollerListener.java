@@ -5,7 +5,6 @@ import net.saturn.elementSmp.data.PlayerData;
 import net.saturn.elementSmp.elements.ElementType;
 import net.saturn.elementSmp.gui.ElementSelectionGUI;
 import net.saturn.elementSmp.items.ItemKeys;
-import net.saturn.elementSmp.managers.ElementManager;
 import org.bukkit.ChatColor;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
@@ -15,7 +14,6 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Random;
 

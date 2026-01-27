@@ -1,6 +1,7 @@
 package net.saturn.elementSmp.managers;
 
 import net.saturn.elementSmp.ElementSmp;
+import net.saturn.elementSmp.config.AbilityCosts;
 import net.saturn.elementSmp.elements.ElementType;
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -53,40 +54,20 @@ public class ConfigManager {
     public int getAbility1Cost(ElementType type) {
         try {
             String path = "costs." + type.name().toLowerCase() + ".ability1";
-            return config.getInt(path, 50);
+            return config.getInt(path, AbilityCosts.getDefaults(type).ability1());
         } catch (Exception e) {
-            plugin.getLogger().log(Level.WARNING, "Error reading ability1 cost for " + type + " from config, using default value 50", e);
-            return 50;
+            plugin.getLogger().log(Level.WARNING, "Error reading ability1 cost for " + type + " from config, using default value", e);
+            return AbilityCosts.getDefaults(type).ability1();
         }
     }
 
     public int getAbility2Cost(ElementType type) {
         try {
             String path = "costs." + type.name().toLowerCase() + ".ability2";
-            return config.getInt(path, 75);
+            return config.getInt(path, AbilityCosts.getDefaults(type).ability2());
         } catch (Exception e) {
-            plugin.getLogger().log(Level.WARNING, "Error reading ability2 cost for " + type + " from config, using default value 75", e);
-            return 75;
-        }
-    }
-
-    public int getItemUseCost(ElementType type) {
-        try {
-            String path = "costs." + type.name().toLowerCase() + ".item_use";
-            return config.getInt(path, 75);
-        } catch (Exception e) {
-            plugin.getLogger().log(Level.WARNING, "Error reading item_use cost for " + type + " from config, using default value 75", e);
-            return 75;
-        }
-    }
-
-    public int getItemThrowCost(ElementType type) {
-        try {
-            String path = "costs." + type.name().toLowerCase() + ".item_throw";
-            return config.getInt(path, 25);
-        } catch (Exception e) {
-            plugin.getLogger().log(Level.WARNING, "Error reading item_throw cost for " + type + " from config, using default value 25", e);
-            return 25;
+            plugin.getLogger().log(Level.WARNING, "Error reading ability2 cost for " + type + " from config, using default value", e);
+            return AbilityCosts.getDefaults(type).ability2();
         }
     }
 

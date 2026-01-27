@@ -1,6 +1,7 @@
 package net.saturn.elementSmp.elements.abilities.impl.fire;
 
 import net.saturn.elementSmp.ElementSmp;
+import net.saturn.elementSmp.config.MetadataKeys;
 import net.saturn.elementSmp.elements.ElementContext;
 import net.saturn.elementSmp.elements.abilities.BaseAbility;
 import org.bukkit.ChatColor;
@@ -22,7 +23,7 @@ import java.util.UUID;
 public class ScorchAbility extends BaseAbility implements Listener {
     private final ElementSmp plugin;
     private final Set<UUID> activeScorches = new HashSet<>();
-    private static final String META_SCORCH = "fire_scorch_active";
+    private static final String META_SCORCH = MetadataKeys.Fire.SCORCH_ACTIVE;
 
     public ScorchAbility(ElementSmp plugin) {
         super();

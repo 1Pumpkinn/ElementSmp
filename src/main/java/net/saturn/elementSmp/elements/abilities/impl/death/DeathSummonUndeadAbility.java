@@ -1,5 +1,6 @@
 package net.saturn.elementSmp.elements.abilities.impl.death;
 
+import net.saturn.elementSmp.config.MetadataKeys;
 import net.saturn.elementSmp.elements.ElementContext;
 import net.saturn.elementSmp.elements.abilities.BaseAbility;
 import org.bukkit.ChatColor;
@@ -63,8 +64,8 @@ public class DeathSummonUndeadAbility extends BaseAbility {
             
             // Use metadata for DeathFriendlyMobListener
             long durationMs = 120000; // 2 minutes (120,000 ms)
-            s.setMetadata("death_summoned_owner", new FixedMetadataValue(plugin, player.getUniqueId().toString()));
-            s.setMetadata("death_summoned_until", new FixedMetadataValue(plugin, System.currentTimeMillis() + durationMs));
+            s.setMetadata(MetadataKeys.Death.SUMMONED_OWNER, new FixedMetadataValue(plugin, player.getUniqueId().toString()));
+            s.setMetadata(MetadataKeys.Death.SUMMONED_UNTIL, new FixedMetadataValue(plugin, System.currentTimeMillis() + durationMs));
             
             // Make it faster - using GENERIC_MOVEMENT_SPEED for 1.21 compatibility
             if (s.getAttribute(Attribute.MOVEMENT_SPEED) != null) {

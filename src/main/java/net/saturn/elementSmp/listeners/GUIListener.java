@@ -2,15 +2,11 @@ package net.saturn.elementSmp.listeners;
 
 import net.saturn.elementSmp.ElementSmp;
 import net.saturn.elementSmp.gui.ElementSelectionGUI;
-import net.saturn.elementSmp.items.ItemKeys;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.persistence.PersistentDataType;
 
 public class GUIListener implements Listener {
     private final ElementSmp plugin;

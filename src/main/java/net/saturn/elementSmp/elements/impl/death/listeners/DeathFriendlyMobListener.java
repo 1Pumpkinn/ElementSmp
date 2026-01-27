@@ -1,6 +1,8 @@
 package net.saturn.elementSmp.elements.impl.death.listeners;
 
 import net.saturn.elementSmp.ElementSmp;
+import net.saturn.elementSmp.config.MetadataKeys;
+import net.saturn.elementSmp.util.bukkit.MetadataHelper;
 import net.saturn.elementSmp.elements.ElementType;
 import net.saturn.elementSmp.managers.ElementManager;
 import net.saturn.elementSmp.managers.TrustManager;
@@ -27,25 +29,26 @@ public class DeathFriendlyMobListener implements Listener {
         startFollowTask();
     }
 
+
     private void startFollowTask() {
         new BukkitRunnable() {
             @Override
             public void run() {
                 for (org.bukkit.World world : Bukkit.getWorlds()) {
                     for (Mob mob : world.getEntitiesByClass(Mob.class)) {
-                        if (!mob.hasMetadata("death_summoned_owner") || !mob.hasMetadata("death_summoned_until")) {
-                            continue;
-                        }
-
                         try {
-                            long until = mob.getMetadata("death_summoned_until").get(0).asLong();
-                            if (System.currentTimeMillis() > until) {
-                                mob.removeMetadata("death_summoned_owner", plugin);
-                                mob.removeMetadata("death_summoned_until", plugin);
+                            if (!mob.hasMetadata(MetadataKeys.Death.SUMMONED_OWNER) || !mob.hasMetadata(MetadataKeys.Death.SUMMONED_UNTIL)) {
                                 continue;
                             }
 
-                            String ownerStr = mob.getMetadata("death_summoned_owner").get(0).asString();
+                            long until = mob.getMetadata(MetadataKeys.Death.SUMMONED_UNTIL).get(0).asLong();
+                            if (System.currentTimeMillis() > until) {
+                                mob.removeMetadata(MetadataKeys.Death.SUMMONED_OWNER, plugin);
+                                mob.removeMetadata(MetadataKeys.Death.SUMMONED_UNTIL, plugin);
+                                continue;
+                            }
+
+                            String ownerStr = mob.getMetadata(MetadataKeys.Death.SUMMONED_OWNER).get(0).asString();
                             UUID ownerId = UUID.fromString(ownerStr);
                             Player owner = Bukkit.getPlayer(ownerId);
 
@@ -83,7 +86,7 @@ public class DeathFriendlyMobListener implements Listener {
                                         if (trustManager.isTrusted(owner.getUniqueId(), player.getUniqueId())) continue;
 
                                         double playerDistance = mob.getLocation().distanceSquared(player.getLocation());
-                                        if (playerDistance < bestDistance && playerDistance < 20*20) {
+                                        if (playerDistance < bestDistance && playerDistance < 20 * 20) {
                                             bestDistance = playerDistance;
                                             nearestEnemy = player;
                                         }
@@ -99,21 +102,30 @@ public class DeathFriendlyMobListener implements Listener {
                                     }
                                 }
                             }
-                        } catch (Exception ignored) {}
+                        } catch (Exception ignored) {
+                        }
                     }
                 }
             }
         }.runTaskTimer(plugin, 20L, 10L); // Run every 0.5 seconds
     }
 
+    @EventHandler
+    public void onDeath(org.bukkit.event.entity.EntityDeathEvent event) {
+        if (event.getEntity().hasMetadata(MetadataKeys.Death.SUMMONED_OWNER)) {
+            event.getDrops().clear();
+            event.setDroppedExp(0);
+        }
+    }
+
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onTarget(EntityTargetLivingEntityEvent e) {
         // Death summoned undead: don't target owner or trusted players
         if (e.getEntity() instanceof Mob mob && e.getTarget() instanceof Player target) {
-            if (mob.hasMetadata("death_summoned_owner") && mob.hasMetadata("death_summoned_until")) {
+            if (mob.hasMetadata(MetadataKeys.Death.SUMMONED_OWNER) && mob.hasMetadata(MetadataKeys.Death.SUMMONED_UNTIL)) {
                 try {
-                    String ownerStr = mob.getMetadata("death_summoned_owner").get(0).asString();
-                    long until = mob.getMetadata("death_summoned_until").get(0).asLong();
+                    String ownerStr = mob.getMetadata(MetadataKeys.Death.SUMMONED_OWNER).get(0).asString();
+                    long until = mob.getMetadata(MetadataKeys.Death.SUMMONED_UNTIL).get(0).asLong();
                     UUID ownerId = UUID.fromString(ownerStr);
 
                     if (System.currentTimeMillis() > until) return; // expired
@@ -148,10 +160,10 @@ public class DeathFriendlyMobListener implements Listener {
     public void onDamage(EntityDamageByEntityEvent e) {
         // Prevent death summoned undead from damaging their owner or trusted players
         if (e.getDamager() instanceof Mob mob && e.getEntity() instanceof Player target) {
-            if (mob.hasMetadata("death_summoned_owner") && mob.hasMetadata("death_summoned_until")) {
+            if (mob.hasMetadata(MetadataKeys.Death.SUMMONED_OWNER) && mob.hasMetadata(MetadataKeys.Death.SUMMONED_UNTIL)) {
                 try {
-                    String ownerStr = mob.getMetadata("death_summoned_owner").get(0).asString();
-                    long until = mob.getMetadata("death_summoned_until").get(0).asLong();
+                    String ownerStr = mob.getMetadata(MetadataKeys.Death.SUMMONED_OWNER).get(0).asString();
+                    long until = mob.getMetadata(MetadataKeys.Death.SUMMONED_UNTIL).get(0).asLong();
                     UUID ownerId = UUID.fromString(ownerStr);
 
                     if (System.currentTimeMillis() > until) return; // expired
@@ -168,10 +180,10 @@ public class DeathFriendlyMobListener implements Listener {
 
         // Prevent summoned mobs from attacking each other if they have the same owner
         if (e.getDamager() instanceof Mob damager && e.getEntity() instanceof Mob victim) {
-            if (damager.hasMetadata("death_summoned_owner") && victim.hasMetadata("death_summoned_owner")) {
+            if (damager.hasMetadata(MetadataKeys.Death.SUMMONED_OWNER) && victim.hasMetadata(MetadataKeys.Death.SUMMONED_OWNER)) {
                 try {
-                    String damagerOwner = damager.getMetadata("death_summoned_owner").get(0).asString();
-                    String victimOwner = victim.getMetadata("death_summoned_owner").get(0).asString();
+                    String damagerOwner = damager.getMetadata(MetadataKeys.Death.SUMMONED_OWNER).get(0).asString();
+                    String victimOwner = victim.getMetadata(MetadataKeys.Death.SUMMONED_OWNER).get(0).asString();
                     if (damagerOwner.equals(victimOwner)) {
                         e.setCancelled(true);
                         return;
@@ -194,13 +206,13 @@ public class DeathFriendlyMobListener implements Listener {
 
             // Find all summoned mobs belonging to this player
             for (Mob mob : attacker.getWorld().getEntitiesByClass(Mob.class)) {
-                if (!mob.hasMetadata("death_summoned_owner") || !mob.hasMetadata("death_summoned_until")) {
+                if (!mob.hasMetadata(MetadataKeys.Death.SUMMONED_OWNER) || !mob.hasMetadata(MetadataKeys.Death.SUMMONED_UNTIL)) {
                     continue;
                 }
 
                 try {
-                    String ownerStr = mob.getMetadata("death_summoned_owner").get(0).asString();
-                    long until = mob.getMetadata("death_summoned_until").get(0).asLong();
+                    String ownerStr = mob.getMetadata(MetadataKeys.Death.SUMMONED_OWNER).get(0).asString();
+                    long until = mob.getMetadata(MetadataKeys.Death.SUMMONED_UNTIL).get(0).asLong();
                     UUID ownerId = UUID.fromString(ownerStr);
 
                     // Check if this mob belongs to the attacker

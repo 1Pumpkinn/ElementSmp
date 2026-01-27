@@ -1,6 +1,7 @@
 package net.saturn.elementSmp.elements.abilities.impl.frost;
 
 import net.saturn.elementSmp.ElementSmp;
+import net.saturn.elementSmp.config.MetadataKeys;
 import net.saturn.elementSmp.elements.ElementContext;
 import net.saturn.elementSmp.elements.abilities.BaseAbility;
 import org.bukkit.ChatColor;
@@ -12,7 +13,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 
 public class IcicleDropAbility extends BaseAbility {
     private final ElementSmp plugin;
-    public static final String META_ICICLE_DROP_READY = "frost_icicle_drop_ready";
+    public static final String META_ICICLE_DROP_READY = MetadataKeys.Frost.ICICLE_DROP_READY;
 
     public IcicleDropAbility(ElementSmp plugin) {
         super();

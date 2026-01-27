@@ -1,6 +1,7 @@
 package net.saturn.elementSmp.elements.abilities.impl.metal;
 
 import net.saturn.elementSmp.ElementSmp;
+import net.saturn.elementSmp.config.MetadataKeys;
 import net.saturn.elementSmp.elements.ElementContext;
 import net.saturn.elementSmp.elements.abilities.BaseAbility;
 import org.bukkit.*;
@@ -15,7 +16,7 @@ public class MetalChainAbility extends BaseAbility {
     private final ElementSmp plugin;
 
     // Metadata key for stun tracking
-    public static final String META_CHAINED_STUN = "metal_chain_stunned";
+    public static final String META_CHAINED_STUN = MetadataKeys.Metal.CHAIN_STUN;
 
     public MetalChainAbility(ElementSmp plugin) {
         super();

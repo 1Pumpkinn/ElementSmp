@@ -1,7 +1,8 @@
 package net.saturn.elementSmp.items.builder;
 
-import org.bukkit.ChatColor;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -18,50 +19,43 @@ import java.util.function.Consumer;
  */
 public class ItemBuilder {
     private Material material;
-    private String name;
-    private List<String> lore = new ArrayList<>();
+    private Component name;
+    private List<Component> lore = new ArrayList<>();
     private boolean unbreakable = false;
     private boolean hideAttributes = false;
     private boolean hideEnchants = false;
+    private Integer customModelData;
     private int amount = 1;
     private List<Consumer<ItemMeta>> metaModifiers = new ArrayList<>();
-    
-    /**
-     * Create a new ItemBuilder with the specified material
-     * 
-     * @param material The material
-     * @return The builder instance
-     */
-    public static ItemBuilder of(Material material) {
-        ItemBuilder builder = new ItemBuilder();
-        builder.material = material;
-        return builder;
+
+    public ItemBuilder(Material material) {
+        this.material = material;
     }
-    
-    /**
-     * Set the display name
-     * 
-     * @param name The display name
-     * @return The builder instance
-     */
-    public ItemBuilder name(String name) {
-        this.name = ChatColor.translateAlternateColorCodes('&', name);
+
+    public static ItemBuilder start(Material material) {
+        return new ItemBuilder(material);
+    }
+
+    public ItemBuilder name(Component name) {
+        this.name = name;
         return this;
     }
-    
-    /**
-     * Add lore lines
-     * 
-     * @param lines The lore lines
-     * @return The builder instance
-     */
-    public ItemBuilder lore(String... lines) {
-        for (String line : lines) {
-            this.lore.add(ChatColor.translateAlternateColorCodes('&', line));
-        }
+
+    public ItemBuilder lore(Component line) {
+        this.lore.add(line);
         return this;
     }
-    
+
+    public ItemBuilder lore(List<Component> lore) {
+        this.lore.addAll(lore);
+        return this;
+    }
+
+    public ItemBuilder customModelData(int data) {
+        this.customModelData = data;
+        return this;
+    }
+
     /**
      * Set the item as unbreakable
      * 
@@ -81,7 +75,7 @@ public class ItemBuilder {
         this.hideAttributes = true;
         return this;
     }
-    
+
     /**
      * Hide enchantments
      * 
@@ -102,7 +96,7 @@ public class ItemBuilder {
         this.amount = amount;
         return this;
     }
-    
+
     /**
      * Add an enchantment
      * 
@@ -114,7 +108,7 @@ public class ItemBuilder {
         metaModifiers.add(meta -> meta.addEnchant(enchantment, level, true));
         return this;
     }
-    
+
     /**
      * Add a persistent data value
      * 
@@ -129,7 +123,7 @@ public class ItemBuilder {
         });
         return this;
     }
-    
+
     /**
      * Build the ItemStack
      * 
@@ -141,11 +135,15 @@ public class ItemBuilder {
         
         if (meta != null) {
             if (name != null) {
-                meta.setDisplayName(name);
+                meta.displayName(name);
             }
             
             if (!lore.isEmpty()) {
-                meta.setLore(lore);
+                meta.lore(lore);
+            }
+            
+            if (customModelData != null) {
+                meta.setCustomModelData(customModelData);
             }
             
             meta.setUnbreakable(unbreakable);
@@ -167,5 +165,13 @@ public class ItemBuilder {
         }
         
         return item;
+    }
+
+    public <T, Z> ItemBuilder data(NamespacedKey key, PersistentDataType<T, Z> type, Z value) {
+        metaModifiers.add(meta -> {
+            PersistentDataContainer container = meta.getPersistentDataContainer();
+            container.set(key, type, value);
+        });
+        return this;
     }
 }

@@ -4,12 +4,10 @@ import net.saturn.elementSmp.ElementSmp;
 import net.saturn.elementSmp.data.PlayerData;
 import net.saturn.elementSmp.elements.ElementType;
 import net.saturn.elementSmp.managers.ElementManager;
-import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 public record ElementItemDeathListener(ElementSmp plugin, ElementManager elements) implements Listener {

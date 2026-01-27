@@ -1,7 +1,9 @@
 package net.saturn.elementSmp.elements.impl.earth.listeners;
 
 import net.saturn.elementSmp.ElementSmp;
+import net.saturn.elementSmp.config.MetadataKeys;
 import net.saturn.elementSmp.managers.TrustManager;
+import net.saturn.elementSmp.util.bukkit.MetadataHelper;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Mob;
 import org.bukkit.entity.Player;
@@ -29,19 +31,19 @@ public class EarthFriendlyMobListener implements Listener {
             public void run() {
                 for (org.bukkit.World world : Bukkit.getWorlds()) {
                     for (Mob mob : world.getEntitiesByClass(Mob.class)) {
-                        if (!mob.hasMetadata("earth_charmed_owner") || !mob.hasMetadata("earth_charmed_until")) {
-                            continue;
-                        }
-
                         try {
-                            long until = mob.getMetadata("earth_charmed_until").get(0).asLong();
-                            if (System.currentTimeMillis() > until) {
-                                mob.removeMetadata("earth_charmed_owner", plugin);
-                                mob.removeMetadata("earth_charmed_until", plugin);
+                            if (!mob.hasMetadata(MetadataKeys.Earth.CHARMED_OWNER) || !mob.hasMetadata(MetadataKeys.Earth.CHARMED_UNTIL)) {
                                 continue;
                             }
 
-                            String ownerStr = mob.getMetadata("earth_charmed_owner").get(0).asString();
+                            long until = mob.getMetadata(MetadataKeys.Earth.CHARMED_UNTIL).get(0).asLong();
+                            if (System.currentTimeMillis() > until) {
+                                mob.removeMetadata(MetadataKeys.Earth.CHARMED_OWNER, plugin);
+                                mob.removeMetadata(MetadataKeys.Earth.CHARMED_UNTIL, plugin);
+                                continue;
+                            }
+
+                            String ownerStr = mob.getMetadata(MetadataKeys.Earth.CHARMED_OWNER).get(0).asString();
                             UUID ownerId = UUID.fromString(ownerStr);
                             Player owner = Bukkit.getPlayer(ownerId);
 
@@ -55,18 +57,18 @@ public class EarthFriendlyMobListener implements Listener {
                                     // Look for enemies to attack first
                                     Player nearestEnemy = null;
                                     double bestDistance = Double.MAX_VALUE;
-                                    
+
                                     for (Player player : mob.getWorld().getPlayers()) {
                                         if (player.equals(owner)) continue;
                                         if (trustManager.isTrusted(owner.getUniqueId(), player.getUniqueId())) continue;
-                                        
+
                                         double playerDistance = mob.getLocation().distanceSquared(player.getLocation());
-                                        if (playerDistance < bestDistance && playerDistance < 16*16) { // 16 block range
+                                        if (playerDistance < bestDistance && playerDistance < 16 * 16) { // 16 block range
                                             bestDistance = playerDistance;
                                             nearestEnemy = player;
                                         }
                                     }
-                                    
+
                                     if (nearestEnemy != null) {
                                         // Attack the nearest enemy
                                         mob.setTarget(nearestEnemy);
@@ -77,21 +79,22 @@ public class EarthFriendlyMobListener implements Listener {
                                     }
                                 }
                             }
-                        } catch (Exception ignored) {}
+                        } catch (Exception ignored) {
+                        }
                     }
                 }
             }
         }.runTaskTimer(plugin, 20L, 10L); // Run every 0.5 seconds
     }
 
-    @EventHandler
+    @EventHandler(priority = org.bukkit.event.EventPriority.HIGHEST)
     public void onTarget(EntityTargetLivingEntityEvent e) {
         // Earth charmed mobs: don't target owner or trusted players; retarget nearest other player
         if (e.getEntity() instanceof Mob mob && e.getTarget() instanceof Player tgt) {
-            if (mob.hasMetadata("earth_charmed_owner") && mob.hasMetadata("earth_charmed_until")) {
+            if (mob.hasMetadata(MetadataKeys.Earth.CHARMED_OWNER) && mob.hasMetadata(MetadataKeys.Earth.CHARMED_UNTIL)) {
                 try {
-                    String ownerStr = mob.getMetadata("earth_charmed_owner").get(0).asString();
-                    long until = mob.getMetadata("earth_charmed_until").get(0).asLong();
+                    String ownerStr = mob.getMetadata(MetadataKeys.Earth.CHARMED_OWNER).get(0).asString();
+                    long until = mob.getMetadata(MetadataKeys.Earth.CHARMED_UNTIL).get(0).asLong();
                     UUID ownerId = UUID.fromString(ownerStr);
 
                     if (System.currentTimeMillis() > until) return; // expired
@@ -107,13 +110,13 @@ public class EarthFriendlyMobListener implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(priority = org.bukkit.event.EventPriority.HIGH)
     public void onDamage(EntityDamageByEntityEvent e) {
         // Owner or trusted player shouldn't hurt the mob
         if (e.getEntity() instanceof Mob mob && e.getDamager() instanceof Player damager) {
-            if (mob.hasMetadata("earth_charmed_owner")) {
+            if (mob.hasMetadata(MetadataKeys.Earth.CHARMED_OWNER)) {
                 try {
-                    String ownerStr = mob.getMetadata("earth_charmed_owner").get(0).asString();
+                    String ownerStr = mob.getMetadata(MetadataKeys.Earth.CHARMED_OWNER).get(0).asString();
                     UUID ownerId = UUID.fromString(ownerStr);
                     if (damager.getUniqueId().equals(ownerId) || trustManager.isTrusted(ownerId, damager.getUniqueId())) {
                         e.setCancelled(true);

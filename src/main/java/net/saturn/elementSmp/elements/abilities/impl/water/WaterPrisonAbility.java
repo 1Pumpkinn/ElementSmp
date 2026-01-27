@@ -1,6 +1,7 @@
 package net.saturn.elementSmp.elements.abilities.impl.water;
 
 import net.saturn.elementSmp.ElementSmp;
+import net.saturn.elementSmp.config.MetadataKeys;
 import net.saturn.elementSmp.elements.ElementContext;
 import net.saturn.elementSmp.elements.abilities.BaseAbility;
 import org.bukkit.*;
@@ -14,7 +15,7 @@ public class WaterPrisonAbility extends BaseAbility {
     private final ElementSmp plugin;
 
     // Metadata key for stun tracking
-    public static final String META_WATER_PRISON = "water_prison_stunned";
+    public static final String META_WATER_PRISON = MetadataKeys.Water.PRISON_STUNNED;
 
     public WaterPrisonAbility(ElementSmp plugin) {
         super();
