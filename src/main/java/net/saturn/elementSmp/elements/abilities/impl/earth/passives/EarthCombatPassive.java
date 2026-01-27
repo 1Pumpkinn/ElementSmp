@@ -37,7 +37,7 @@ public class EarthCombatPassive implements Listener {
 
         // 10% chance to apply Slowness II for 3 seconds
         if (Math.random() < 0.10) {
-            victim.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 60, 1));
+            victim.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, 60, 1));
         }
     }
 }
