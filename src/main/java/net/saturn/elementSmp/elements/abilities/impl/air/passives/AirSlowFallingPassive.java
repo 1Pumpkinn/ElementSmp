@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -20,14 +21,30 @@ public class AirSlowFallingPassive implements Listener {
     public void onMove(PlayerMoveEvent event) {
         Player player = event.getPlayer();
         
-        // Quick check for sneaking and air before doing expensive database/map lookups
-        if (!player.isSneaking() || player.isOnGround()) return;
-
         // Check if player has Air element
         var pd = elementManager.data(player.getUniqueId());
         if (pd == null || pd.getCurrentElement() != ElementType.AIR) return;
 
-        // Give slow falling
-        player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_FALLING, 40, 0, true, false, true));
+        // If shifting and in air, give slow falling
+        if (player.isSneaking() && !player.isOnGround()) {
+            player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_FALLING, 40, 0, true, false, true));
+        } else if (!player.isSneaking()) {
+            // If not shifting, remove it immediately
+            if (player.hasPotionEffect(PotionEffectType.SLOW_FALLING)) {
+                player.removePotionEffect(PotionEffectType.SLOW_FALLING);
+            }
+        }
+    }
+
+    @EventHandler
+    public void onToggleSneak(PlayerToggleSneakEvent event) {
+        // If they STOP sneaking, remove slow falling straight away
+        if (!event.isSneaking()) {
+            Player player = event.getPlayer();
+            var pd = elementManager.data(player.getUniqueId());
+            if (pd != null && pd.getCurrentElement() == ElementType.AIR) {
+                player.removePotionEffect(PotionEffectType.SLOW_FALLING);
+            }
+        }
     }
 }
