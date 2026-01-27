@@ -16,6 +16,14 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 
+import org.bukkit.entity.Mob;
+import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.RayTraceResult;
+import org.bukkit.util.Vector;
+
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -23,21 +31,17 @@ import java.util.UUID;
 public class EntanglingRootsAbility extends BaseAbility {
 
     private final ElementSmp plugin;
-    private static final Set<UUID> entangledPlayers = new HashSet<>();
+    public static final String META_ENTANGLED = "life_entangled";
 
     public EntanglingRootsAbility(ElementSmp plugin) {
         super();
         this.plugin = plugin;
     }
 
-    public static boolean isEntangled(UUID uuid) {
-        return entangledPlayers.contains(uuid);
-    }
-
     @Override
     public boolean execute(ElementContext context) {
         Player player = context.getPlayer();
-        double range = 10;
+        double range = 15;
         double maxCheckRange = 30;
 
         // 1. Check if there is ANY entity in line of sight within a larger range
@@ -86,34 +90,63 @@ public class EntanglingRootsAbility extends BaseAbility {
         }
 
         player.sendMessage(ChatColor.GREEN + "You have entangled " + target.getName() + "!");
+        
+        long durationMs = 3000; // 3 seconds
+        long stunUntil = System.currentTimeMillis() + durationMs;
+        target.setMetadata(META_ENTANGLED, new FixedMetadataValue(plugin, stunUntil));
+
         if (target instanceof Player targetPlayer) {
-            targetPlayer.sendMessage(ChatColor.RED + "You have been pulled into the ground by roots!");
-            entangledPlayers.add(targetPlayer.getUniqueId());
+            targetPlayer.sendMessage(ChatColor.RED + "You have been entangled by roots!");
+        } else if (target instanceof Mob mob) {
+            mob.setAware(false);
         }
 
-        Location targetLoc = target.getLocation();
-        targetLoc.getWorld().playSound(targetLoc, Sound.BLOCK_ROOTS_BREAK, 1.5f, 0.5f);
-        targetLoc.getWorld().spawnParticle(Particle.BLOCK, targetLoc, 50, 0.5, 0.5, 0.5, 0.1, org.bukkit.Material.DIRT.createBlockData());
+        Location originalLoc = target.getLocation().clone();
+        Location sinkLoc = originalLoc.clone().subtract(0, 1.2, 0);
+        
+        originalLoc.getWorld().playSound(originalLoc, Sound.BLOCK_ROOTS_BREAK, 1.5f, 0.5f);
+        originalLoc.getWorld().spawnParticle(Particle.BLOCK, originalLoc, 50, 0.5, 0.5, 0.5, 0.1, org.bukkit.Material.MANGROVE_ROOTS.createBlockData());
 
-        // Pull them slightly down
-        Location pullDownLoc = targetLoc.clone().add(0, -1.0, 0);
-        target.teleport(pullDownLoc);
+        // Sink them into the ground
+        target.teleport(sinkLoc);
         target.setVelocity(new Vector(0, 0, 0));
 
-        // Apply slowness and jump boost (level 250 prevents jumping)
-        target.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, 100, 5, false, false, true));
-        target.addPotionEffect(new PotionEffect(PotionEffectType.JUMP_BOOST, 100, 250, false, false, false));
+        // Apply visual effects
+        target.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, 100, 10, false, false, true));
 
         final LivingEntity finalTarget = target;
 
         new BukkitRunnable() {
+            int ticks = 0;
             @Override
             public void run() {
-                if (finalTarget instanceof Player tp) {
-                    entangledPlayers.remove(tp.getUniqueId());
+                if (!finalTarget.isValid() || ticks >= 100) {
+                    if (finalTarget.isValid()) {
+                        finalTarget.removeMetadata(META_ENTANGLED, plugin);
+                        if (finalTarget instanceof Mob mob) {
+                            mob.setAware(true);
+                        }
+                        // Teleport back up safely
+                        finalTarget.teleport(originalLoc);
+                    }
+                    cancel();
+                    return;
                 }
+
+                // Visual root particles
+                if (ticks % 5 == 0) {
+                    finalTarget.getWorld().spawnParticle(Particle.BLOCK, originalLoc.clone().add(0, 0.1, 0), 5, 0.3, 0.1, 0.3, 0.0, org.bukkit.Material.MANGROVE_ROOTS.createBlockData());
+                }
+                
+                // Keep them at the sink location
+                if (ticks % 2 == 0) {
+                    finalTarget.teleport(sinkLoc);
+                }
+                finalTarget.setVelocity(new Vector(0, 0, 0));
+                
+                ticks++;
             }
-        }.runTaskLater(plugin, 60L);
+        }.runTaskTimer(plugin, 0L, 1L);
 
         return true;
     }
