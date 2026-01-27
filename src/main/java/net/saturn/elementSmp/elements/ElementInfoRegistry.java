@@ -20,8 +20,8 @@ public final class ElementInfoRegistry {
                 "Air",
                 ChatColor.WHITE,
                 List.of(
-                        "No fall damage",
-                        "5% chance to apply Slow Falling to enemies (Upgrade II)"
+                        "Slow Falling while shifting in air",
+                        "No fall damage (except on dripstone) (Upgrade II)"
                 ),
                 new ElementInfo.AbilityInfo("Air Blast", "Push enemies away with a gust of wind", 50, 1),
                 new ElementInfo.AbilityInfo("Air Dash", "Dash forward swiftly, pushing enemies aside", 75, 2)

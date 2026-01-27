@@ -263,8 +263,8 @@ public final class ElementSmp extends JavaPlugin {
 
     private void registerElementListeners(PluginManager pm) {
         // Air
-        pm.registerEvents(new FallDamagePassive(elementManager), this);
-        pm.registerEvents(new AirCombatPassive(elementManager), this);
+        pm.registerEvents(new AirSlowFallingPassive(elementManager), this);
+        pm.registerEvents(new AirFallDamagePassive(elementManager), this);
         
         // Water
         pm.registerEvents(new WaterBreathingPassive(elementManager), this);

@@ -29,7 +29,8 @@ public class AirElement extends BaseElement {
 
     @Override
     public void applyUpsides(Player player, int upgradeLevel) {
-        // Upside 1: No fall damage (handled in FallDamageListener)
+        // Upside 1: Slow falling while shifting in air (handled in AirSlowFallingPassive)
+        // Upside 2: No fall damage (handled in AirFallDamagePassive)
         // No potion effects needed
     }
 
