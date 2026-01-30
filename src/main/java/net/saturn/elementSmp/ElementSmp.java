@@ -42,6 +42,7 @@ public final class ElementSmp extends JavaPlugin {
     private EffectService effectService;
     private TaskScheduler taskScheduler;
     private MetadataHelper metadataHelper;
+    private AbilityListener abilityListener;
 
     @Override
     public void onEnable() {
@@ -219,6 +220,26 @@ public final class ElementSmp extends JavaPlugin {
                 };
                 toggleRecipeCmd.setDescription("Toggle recipes");
 
+                var ability1Cmd = new org.bukkit.command.defaults.BukkitCommand("ability1") {
+                    @Override
+                    public boolean execute(org.bukkit.command.CommandSender sender, String label, String[] args) {
+                        if (!(sender instanceof org.bukkit.entity.Player player)) return false;
+                        abilityListener.triggerAbility(player, 1);
+                        return true;
+                    }
+                };
+                ability1Cmd.setDescription("Use Ability 1");
+
+                var ability2Cmd = new org.bukkit.command.defaults.BukkitCommand("ability2") {
+                    @Override
+                    public boolean execute(org.bukkit.command.CommandSender sender, String label, String[] args) {
+                        if (!(sender instanceof org.bukkit.entity.Player player)) return false;
+                        abilityListener.triggerAbility(player, 2);
+                        return true;
+                    }
+                };
+                ability2Cmd.setDescription("Use Ability 2");
+
                 // Register all commands
                 commandMap.register("elementsmp", elementsCmd);
                 commandMap.register("elementsmp", elementInfoCmd);
@@ -227,6 +248,8 @@ public final class ElementSmp extends JavaPlugin {
                 commandMap.register("elementsmp", manaCmd);
                 commandMap.register("elementsmp", utilCmd);
                 commandMap.register("elementsmp", toggleRecipeCmd);
+                commandMap.register("elementsmp", ability1Cmd);
+                commandMap.register("elementsmp", ability2Cmd);
 
                 getLogger().info("Commands registered successfully");
             } catch (Exception e) {
@@ -245,7 +268,8 @@ public final class ElementSmp extends JavaPlugin {
         pm.registerEvents(effectService, this);
         pm.registerEvents(new GameModeListener(manaManager, configManager), this);
         pm.registerEvents(new CombatListener(trustManager, elementManager), this);
-        pm.registerEvents(new AbilityListener(this, elementManager), this);
+        this.abilityListener = new AbilityListener(this, elementManager);
+        pm.registerEvents(this.abilityListener, this);
         registerItemListeners(pm);
         pm.registerEvents(new GUIListener(this), this);
         registerElementListeners(pm);
@@ -298,6 +322,7 @@ public final class ElementSmp extends JavaPlugin {
         // Frost
         pm.registerEvents(new FrostSpeedPassive(this, elementManager), this);
         pm.registerEvents(new FrostCombatPassive(elementManager, trustManager), this);
+        pm.registerEvents(new FrostWaterFreezePassive(elementManager), this);
         pm.registerEvents(new net.saturn.elementSmp.elements.impl.frost.listeners.IcicleDropListener(this, elementManager, trustManager), this);
     }
 

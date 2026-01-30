@@ -48,6 +48,3 @@ costs:
 
 recipes:
   advanced_reroller_enabled: true
-
-resource_pack:
-  enabled: false

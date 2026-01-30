@@ -106,7 +106,7 @@ public final class ElementInfoRegistry {
                 ChatColor.AQUA,
                 List.of(
                         "Speed II on snow, Speed III on ice",
-                        "Freeze water walking (Upgrade II)"
+                        "Freeze water walking (Shift) (Upgrade II)"
                 ),
                 new ElementInfo.AbilityInfo("Freezing Circle", "Create a circle that slows and damages enemies", 50, 1),
                 new ElementInfo.AbilityInfo("Frozen Punch", "Punch an enemy to freeze them solid", 75, 2)

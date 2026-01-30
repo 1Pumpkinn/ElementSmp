@@ -4,10 +4,7 @@ import net.saturn.elementSmp.ElementSmp;
 import net.saturn.elementSmp.data.PlayerData;
 import net.saturn.elementSmp.managers.ElementManager;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 
 import java.util.Map;
 import java.util.UUID;
@@ -25,17 +22,9 @@ public class AbilityListener implements Listener {
         this.elements = elements;
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void onSwapHands(PlayerSwapHandItemsEvent event) {
-        Player player = event.getPlayer();
+    public void triggerAbility(Player player, int abilityNum) {
         if (!hasElement(player)) return;
 
-        event.setCancelled(true);
-        triggerAbility(player);
-    }
-
-
-    private void triggerAbility(Player player) {
         long currentTime = System.currentTimeMillis();
         long lastTime = lastActivation.getOrDefault(player.getUniqueId(), 0L);
 
@@ -45,7 +34,7 @@ public class AbilityListener implements Listener {
 
         lastActivation.put(player.getUniqueId(), currentTime);
 
-        if (player.isSneaking()) {
+        if (abilityNum == 2) {
             elements.useAbility2(player);
         } else {
             elements.useAbility1(player);

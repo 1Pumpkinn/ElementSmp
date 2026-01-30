@@ -42,6 +42,6 @@ Ability 2: Metal Chain: Launch a chain to pull enemies toward you
 
 [Frost]
 Passive 1: Speed II on snow, Speed III on ice
-Passive 2: Freeze water walking (Upgrade II)
+Passive 2: Freeze water walking (Shift) (Upgrade II)
 Ability 1: Freezing Circle: Create a circle that slows and damages enemies
 Ability 2: Frozen Punch: Punch an enemy to freeze them solid

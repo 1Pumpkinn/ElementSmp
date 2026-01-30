@@ -39,11 +39,13 @@ public class DeathElement extends BaseElement {
 
     @Override
     protected boolean executeAbility1(ElementContext context) {
+        plugin.getLogger().info("DEBUG: DeathElement.executeAbility1 called for " + context.getPlayer().getName());
         return ability1.execute(context);
     }
 
     @Override
     protected boolean executeAbility2(ElementContext context) {
+        plugin.getLogger().info("DEBUG: DeathElement.executeAbility2 called for " + context.getPlayer().getName());
         return ability2.execute(context);
     }
 

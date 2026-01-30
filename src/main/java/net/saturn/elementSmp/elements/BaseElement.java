@@ -72,14 +72,9 @@ public abstract class BaseElement implements Element {
         if (!hasMana(context.getPlayer(), context.getManaManager(), cost)) return false;
 
         // Execute ability first, only consume mana if successful
-        if (executeAbility1(context)) { // Note: This might be a bug in original code, should be executeAbility2? 
-            // I'll keep it as executeAbility2 to be correct, but original had executeAbility1? 
-            // Wait, looking at the read output line 74: "if (executeAbility2(context))"
-            // Ah, the read output was correct. I will use executeAbility2.
-            if (executeAbility2(context)) {
-                context.getManaManager().spend(context.getPlayer(), cost);
-                return true;
-            }
+        if (executeAbility2(context)) {
+            context.getManaManager().spend(context.getPlayer(), cost);
+            return true;
         }
         return false;
     }
