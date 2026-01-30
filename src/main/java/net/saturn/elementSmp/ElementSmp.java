@@ -282,7 +282,6 @@ public final class ElementSmp extends JavaPlugin {
         pm.registerEvents(new EarthOreDropPassive(elementManager), this);
         
         // Life
-        pm.registerEvents(new LifeRegenPassive(elementManager), this);
         pm.registerEvents(new LifeCropPassive(this, elementManager), this);
         pm.registerEvents(new net.saturn.elementSmp.elements.impl.life.listeners.LifeListener(this, elementManager), this);
         

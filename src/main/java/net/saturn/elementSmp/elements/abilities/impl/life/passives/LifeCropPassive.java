@@ -34,7 +34,7 @@ public class LifeCropPassive implements Listener {
                     }
 
                     var playerData = elementManager.data(player.getUniqueId());
-                    if (playerData.getUpgradeLevel(ElementType.LIFE) < 2) {
+                    if (playerData.getUpgradeLevel(ElementType.LIFE) < 1) {
                         continue;
                     }
 

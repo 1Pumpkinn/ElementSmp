@@ -34,16 +34,24 @@ public class LifeElement extends BaseElement {
     // APPLY UPSIDES
     @Override
     public void applyUpsides(Player player, int upgradeLevel) {
-        // Upside 1: 15 hearts (30 HP)
-        var attr = player.getAttribute(Attribute.MAX_HEALTH);
-        if (attr != null) {
-            if (attr.getBaseValue() < Constants.Health.LIFE_MAX) attr.setBaseValue(Constants.Health.LIFE_MAX);
-            if (player.getHealth() > attr.getBaseValue()) {
-                player.setHealth(attr.getBaseValue());
+        // Upside 1: Crop growth aura (handled in LifePassive)
+
+        // Upside 2: 15 hearts (30 HP) (Upgrade II)
+        if (upgradeLevel >= 2) {
+            var attr = player.getAttribute(Attribute.MAX_HEALTH);
+            if (attr != null) {
+                if (attr.getBaseValue() < Constants.Health.LIFE_MAX) attr.setBaseValue(Constants.Health.LIFE_MAX);
+                if (player.getHealth() > attr.getBaseValue()) {
+                    player.setHealth(attr.getBaseValue());
+                }
+            }
+        } else {
+            // Reset health if they don't have Upgrade II
+            var attr = player.getAttribute(Attribute.MAX_HEALTH);
+            if (attr != null && attr.getBaseValue() > 20.0) {
+                attr.setBaseValue(20.0);
             }
         }
-
-        // Upside 2: crop growth aura (handled in LifePassive)
     }
 
     // Abilities

@@ -69,9 +69,8 @@ public final class ElementInfoRegistry {
                 "Life",
                 ChatColor.GREEN,
                 List.of(
-                        "15 Hearts (30 HP) max health",
-                        "50% faster natural health regeneration",
-                        "Crop growth aura around you (Upgrade II)"
+                        "Crop growth aura around you",
+                        "15 Hearts (30 HP) max health (Upgrade II)"
                 ),
                 new ElementInfo.AbilityInfo("Nature's Eye", "Reveal nearby living entities through walls", 40, 1),
                 new ElementInfo.AbilityInfo("Entangling Roots", "Pull enemies into the ground and suffocate them", 80, 2)

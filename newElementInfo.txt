@@ -1,0 +1,47 @@
+[Air]
+Passive 1: Slow Falling while shifting in air
+Passive 2: No fall damage (except on dripstone) (Upgrade II)
+Ability 1: Air Blast: Push enemies away with a gust of wind
+Ability 2: Air Dash: Dash forward swiftly, pushing enemies aside
+
+[Fire]
+Passive 1: Auto smelt ores
+Passive 2: Fire aspect on any tool or fist (4s) (Upgrade II)
+Ability 1: Scorch: The next entity you hit clears their Fire Resistance
+Ability 2: Inferno Blast: Causes an explosion on you dealing 5 hearts to nearby entities
+
+[Water]
+Passive 1: Infinite Water Breathing and Permanent Conduit Power
+Passive 2: Loyalty Tridents pull entities (Upgrade II)
+Ability 1: Water Geyser: Launch enemies upward with water pressure
+Ability 2: Water Beam: Fire a damaging water beam
+
+[Earth]
+Passive 1: Hero of The Village permanently
+Passive 2: Double ore drops (Upgrade II)
+Ability 1: Earth Tunnel: Dig tunnels through stone and dirt
+Ability 2: Earthquake: Stomp the ground to damage and slow nearby enemies
+
+[Life]
+Passive 1: Crop growth aura around you
+Passive 2: 15 Hearts (30 HP) max health (Upgrade II)
+Ability 1: Nature's Eye: Reveal nearby living entities through walls
+Ability 2: Entangling Roots: Pull enemies into the ground and suffocate them
+
+[Death]
+Passive 1: 10% chance to apply Wither effect on hit
+Passive 2: Invisibility and equipment hiding at 2 hearts (Upgrade II)
+Ability 1: Summon Undead: Summon a powerful undead ally
+Ability 2: Shadow Step: Teleport behind your target
+
+[Metal]
+Passive 1: Haste I permanently
+Passive 2: Immunity to all arrows (Upgrade II)
+Ability 1: Metal Dash: Swiftly dash through enemies, damaging them
+Ability 2: Metal Chain: Launch a chain to pull enemies toward you
+
+[Frost]
+Passive 1: Speed II on snow, Speed III on ice
+Passive 2: Freeze water walking (Upgrade II)
+Ability 1: Freezing Circle: Create a circle that slows and damages enemies
+Ability 2: Frozen Punch: Punch an enemy to freeze them solid
