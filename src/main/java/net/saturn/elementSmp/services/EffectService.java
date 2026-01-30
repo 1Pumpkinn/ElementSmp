@@ -71,6 +71,8 @@ public class EffectService implements Listener {
         player.removePotionEffect(PotionEffectType.HERO_OF_THE_VILLAGE);
         player.removePotionEffect(PotionEffectType.HASTE);
         player.removePotionEffect(PotionEffectType.DOLPHINS_GRACE);
+        player.removePotionEffect(PotionEffectType.INVISIBILITY);
+        player.removePotionEffect(PotionEffectType.SLOW_FALLING);
 
         // Clear individual element state/tasks
         for (ElementType type : ElementType.values()) {

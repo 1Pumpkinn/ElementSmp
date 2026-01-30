@@ -18,8 +18,10 @@ import org.bukkit.event.entity.EntityResurrectEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
@@ -33,6 +35,7 @@ import java.util.UUID;
 
 public class DeathInvisibilityPassive implements Listener {
 
+    private static DeathInvisibilityPassive instance;
     private final ElementSmp plugin;
     private final ElementManager elementManager;
     private final Set<UUID> hiddenPlayers = new HashSet<>();
@@ -40,6 +43,37 @@ public class DeathInvisibilityPassive implements Listener {
     public DeathInvisibilityPassive(ElementSmp plugin, ElementManager elementManager) {
         this.plugin = plugin;
         this.elementManager = elementManager;
+        instance = this;
+        startPeriodicCheck();
+    }
+
+    private void startPeriodicCheck() {
+        Bukkit.getScheduler().runTaskTimer(plugin, () -> {
+            for (UUID uuid : new HashSet<>(hiddenPlayers)) {
+                Player player = Bukkit.getPlayer(uuid);
+                if (player != null && player.isOnline()) {
+                    checkHealth(player);
+                } else {
+                    hiddenPlayers.remove(uuid);
+                }
+            }
+        }, 40L, 40L); // Every 2 seconds
+    }
+
+    public static void clearState(Player player) {
+        if (instance != null) {
+            instance.stopHiding(player);
+        }
+    }
+
+    @EventHandler
+    public void onDeath(PlayerDeathEvent event) {
+        stopHiding(event.getEntity());
+    }
+
+    @EventHandler
+    public void onRespawn(PlayerRespawnEvent event) {
+        checkHealth(event.getPlayer());
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -83,7 +117,16 @@ public class DeathInvisibilityPassive implements Listener {
 
         if (hiddenPlayers.contains(player.getUniqueId())) {
             Bukkit.getScheduler().runTask(plugin, () -> {
-                if (hiddenPlayers.contains(player.getUniqueId()) && player.isOnline()) {
+                if (!player.isOnline()) return;
+                
+                // Check if they still qualify before reapplying
+                var pd = elementManager.data(player.getUniqueId());
+                if (pd == null || pd.getCurrentElement() != ElementType.DEATH || pd.getUpgradeLevel(ElementType.DEATH) < 2 || player.getHealth() > 4.0) {
+                    stopHiding(player);
+                    return;
+                }
+
+                if (hiddenPlayers.contains(player.getUniqueId())) {
                     player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, PotionEffect.INFINITE_DURATION, 0, false, false, true));
                 }
             });

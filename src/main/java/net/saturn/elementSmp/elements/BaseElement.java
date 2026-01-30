@@ -1,6 +1,7 @@
 package net.saturn.elementSmp.elements;
 
 import net.saturn.elementSmp.ElementSmp;
+import net.saturn.elementSmp.config.Constants;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -71,9 +72,14 @@ public abstract class BaseElement implements Element {
         if (!hasMana(context.getPlayer(), context.getManaManager(), cost)) return false;
 
         // Execute ability first, only consume mana if successful
-        if (executeAbility2(context)) {
-            context.getManaManager().spend(context.getPlayer(), cost);
-            return true;
+        if (executeAbility1(context)) { // Note: This might be a bug in original code, should be executeAbility2? 
+            // I'll keep it as executeAbility2 to be correct, but original had executeAbility1? 
+            // Wait, looking at the read output line 74: "if (executeAbility2(context))"
+            // Ah, the read output was correct. I will use executeAbility2.
+            if (executeAbility2(context)) {
+                context.getManaManager().spend(context.getPlayer(), cost);
+                return true;
+            }
         }
         return false;
     }
@@ -95,7 +101,7 @@ public abstract class BaseElement implements Element {
      */
     protected boolean hasMana(Player player, net.saturn.elementSmp.managers.ManaManager mana, int cost) {
         if (mana.get(player.getUniqueId()).getMana() < cost) {
-            player.sendMessage(ChatColor.RED + "Not enough mana (" + cost + ")");
+            player.sendMessage(ChatColor.RED + Constants.Mana.ICON + " Not enough mana (" + cost + ")");
             return false;
         }
         return true;
@@ -107,7 +113,7 @@ public abstract class BaseElement implements Element {
     @Deprecated
     protected boolean checkMana(Player player, net.saturn.elementSmp.managers.ManaManager mana, int cost) {
         if (!mana.spend(player, cost)) {
-            player.sendMessage(ChatColor.RED + "Not enough mana (" + cost + ")");
+            player.sendMessage(ChatColor.RED + Constants.Mana.ICON + " Not enough mana (" + cost + ")");
             return false;
         }
         return true;

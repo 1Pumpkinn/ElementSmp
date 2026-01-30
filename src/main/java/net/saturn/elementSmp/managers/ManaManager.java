@@ -1,6 +1,7 @@
 package net.saturn.elementSmp.managers;
 
 import net.saturn.elementSmp.ElementSmp;
+import net.saturn.elementSmp.config.Constants;
 import net.saturn.elementSmp.data.DataStore;
 import net.saturn.elementSmp.data.PlayerData;
 import org.bukkit.Bukkit;
@@ -47,10 +48,10 @@ public class ManaManager {
                     }
                 }
 
-                // Action bar display with mana emoji
+                // Action bar display with mana icon
                 String manaDisplay = p.getGameMode() == GameMode.CREATIVE ? "∞" : String.valueOf(pd.getMana());
                 p.sendActionBar(
-                    net.kyori.adventure.text.Component.text("Ⓜ Mana: ")
+                    net.kyori.adventure.text.Component.text(Constants.Mana.ICON + " Mana: ")
                         .color(net.kyori.adventure.text.format.NamedTextColor.AQUA)
                         .append(net.kyori.adventure.text.Component.text(manaDisplay, net.kyori.adventure.text.format.NamedTextColor.WHITE))
                         .append(net.kyori.adventure.text.Component.text("/" + maxMana, net.kyori.adventure.text.format.NamedTextColor.GRAY))
@@ -101,4 +102,3 @@ public class ManaManager {
         return pd.getMana() >= amount;
     }
 }
-

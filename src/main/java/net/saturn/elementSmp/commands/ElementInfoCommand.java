@@ -1,6 +1,7 @@
 package net.saturn.elementSmp.commands;
 
 import net.saturn.elementSmp.ElementSmp;
+import net.saturn.elementSmp.config.Constants;
 import net.saturn.elementSmp.elements.ElementInfo;
 import net.saturn.elementSmp.elements.ElementInfoRegistry;
 import net.saturn.elementSmp.elements.ElementType;
@@ -8,7 +9,6 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -114,7 +114,7 @@ public class ElementInfoCommand implements CommandExecutor, TabCompleter {
         player.sendMessage(Component.text("     " + ability.description())
                 .color(NamedTextColor.GRAY));
         
-        player.sendMessage(Component.text("     Mana: ")
+        player.sendMessage(Component.text("     " + Constants.Mana.ICON + " Mana: ")
                 .color(NamedTextColor.DARK_AQUA)
                 .append(Component.text(ability.manaCost())
                         .color(NamedTextColor.AQUA)));

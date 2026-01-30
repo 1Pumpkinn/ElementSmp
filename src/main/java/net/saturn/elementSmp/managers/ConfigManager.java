@@ -85,4 +85,25 @@ public class ConfigManager {
         config.set("recipes.advanced_reroller_enabled", enabled);
         plugin.saveConfig();
     }
+
+    // Resource pack settings
+    public boolean isResourcePackEnabled() {
+        return config.getBoolean("resource_pack.enabled", false);
+    }
+
+    public String getResourcePackUrl() {
+        return config.getString("resource_pack.url", "");
+    }
+
+    public String getResourcePackHash() {
+        return config.getString("resource_pack.hash", "");
+    }
+
+    public boolean isResourcePackRequired() {
+        return config.getBoolean("resource_pack.required", false);
+    }
+
+    public String getResourcePackPrompt() {
+        return config.getString("resource_pack.prompt", "This server requires a custom resource pack.");
+    }
 }

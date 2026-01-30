@@ -7,6 +7,7 @@ import net.saturn.elementSmp.elements.ElementType;
 import net.saturn.elementSmp.elements.abilities.Ability;
 import net.saturn.elementSmp.elements.abilities.impl.death.DeathSummonUndeadAbility;
 import net.saturn.elementSmp.elements.abilities.impl.death.ShadowStepAbility;
+import net.saturn.elementSmp.elements.abilities.impl.death.passives.DeathInvisibilityPassive;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
@@ -50,6 +51,6 @@ public class DeathElement extends BaseElement {
     public void clearEffects(Player player) {
         ability1.setActive(player, false);
         ability2.setActive(player, false);
+        DeathInvisibilityPassive.clearState(player);
     }
 }
-

@@ -19,6 +19,7 @@ public final class Constants {
     public static final class Mana {
         public static final int DEFAULT_MAX = 100;
         public static final int DEFAULT_REGEN = 1;
+        public static final String ICON = "✦";
 
         private Mana() {}
     }
