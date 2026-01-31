@@ -1,5 +1,6 @@
 package net.saturn.elementSmp.elements.abilities.impl.death.passives;
 
+import io.papermc.paper.event.entity.EntityEquipmentChangedEvent;
 import net.saturn.elementSmp.ElementSmp;
 import net.saturn.elementSmp.elements.ElementType;
 import net.saturn.elementSmp.managers.ElementManager;
@@ -12,16 +13,20 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.EntityPotionEffectEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.EntityResurrectEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
@@ -170,6 +175,46 @@ public class DeathInvisibilityPassive implements Listener {
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onEquipmentChange(EntityEquipmentChangedEvent event) {
+        if (!(event.getEntity() instanceof Player player)) return;
+        if (hiddenPlayers.contains(player.getUniqueId())) {
+            Bukkit.getScheduler().runTask(plugin, () -> hideEquipment(player));
+        }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onSwapHandItems(PlayerSwapHandItemsEvent event) {
+        Player player = event.getPlayer();
+        if (hiddenPlayers.contains(player.getUniqueId())) {
+            Bukkit.getScheduler().runTask(plugin, () -> hideEquipment(player));
+        }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onPickupItem(EntityPickupItemEvent event) {
+        if (!(event.getEntity() instanceof Player player)) return;
+        if (hiddenPlayers.contains(player.getUniqueId())) {
+            Bukkit.getScheduler().runTask(plugin, () -> hideEquipment(player));
+        }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onDropItem(PlayerDropItemEvent event) {
+        Player player = event.getPlayer();
+        if (hiddenPlayers.contains(player.getUniqueId())) {
+            Bukkit.getScheduler().runTask(plugin, () -> hideEquipment(player));
+        }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onConsume(PlayerItemConsumeEvent event) {
+        Player player = event.getPlayer();
+        if (hiddenPlayers.contains(player.getUniqueId())) {
+            Bukkit.getScheduler().runTask(plugin, () -> hideEquipment(player));
+        }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onInteract(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         if (hiddenPlayers.contains(player.getUniqueId())) {
@@ -231,29 +276,17 @@ public class DeathInvisibilityPassive implements Listener {
     private void hideEquipment(Player player, Player observer) {
         Map<EquipmentSlot, ItemStack> equipmentMap = new EnumMap<>(EquipmentSlot.class);
         ItemStack air = new ItemStack(Material.AIR);
-        ItemStack mainHand = player.getEquipment().getItemInMainHand();
         
         equipmentMap.put(EquipmentSlot.HEAD, air);
         equipmentMap.put(EquipmentSlot.CHEST, air);
         equipmentMap.put(EquipmentSlot.LEGS, air);
         equipmentMap.put(EquipmentSlot.FEET, air);
+        equipmentMap.put(EquipmentSlot.HAND, air);
         equipmentMap.put(EquipmentSlot.OFF_HAND, air);
-
-        if (isSword(mainHand)) {
-            equipmentMap.put(EquipmentSlot.HAND, mainHand);
-        } else {
-            equipmentMap.put(EquipmentSlot.HAND, air);
-        }
 
         if (!observer.equals(player)) {
             observer.sendEquipmentChange(player, equipmentMap);
         }
-    }
-
-    private boolean isSword(ItemStack item) {
-        if (item == null || item.getType() == Material.AIR) return false;
-        String name = item.getType().name();
-        return name.endsWith("_SWORD") || name.endsWith("_AXE");
     }
 
     private void showEquipment(Player player) {
