@@ -5,7 +5,7 @@ import net.saturn.elementSmp.elements.BaseElement;
 import net.saturn.elementSmp.elements.ElementContext;
 import net.saturn.elementSmp.elements.ElementType;
 import net.saturn.elementSmp.elements.abilities.Ability;
-import net.saturn.elementSmp.elements.abilities.impl.water.WaterGeyserAbility;
+import net.saturn.elementSmp.elements.abilities.impl.water.WaterLeechTridentAbility;
 import net.saturn.elementSmp.elements.abilities.impl.water.WaterPrisonAbility;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -20,7 +20,7 @@ public class WaterElement extends BaseElement {
     public WaterElement(ElementSmp plugin) {
         super(plugin);
         this.plugin = plugin;
-        this.ability1 = new WaterGeyserAbility(plugin);
+        this.ability1 = new WaterLeechTridentAbility(plugin);
         this.ability2 = new WaterPrisonAbility(plugin);
     }
 

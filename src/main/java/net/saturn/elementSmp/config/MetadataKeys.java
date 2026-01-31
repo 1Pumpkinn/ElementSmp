@@ -41,6 +41,7 @@ public final class MetadataKeys {
 
     public static final class Water {
         public static final String PRISON_STUNNED = "water_prison_stunned";
+        public static final String LEECHING_TRIDENT = "water_leeching_trident";
         private Water() {}
     }
 

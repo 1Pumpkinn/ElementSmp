@@ -5,6 +5,7 @@ api-version: '1.21'
 load: STARTUP
 authors: [ ___Pumpkinn ]
 
+depend: []
 commands:
   elements:
     description: View element info
