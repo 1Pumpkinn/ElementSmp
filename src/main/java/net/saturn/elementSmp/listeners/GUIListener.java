@@ -2,6 +2,7 @@ package net.saturn.elementSmp.listeners;
 
 import net.saturn.elementSmp.ElementSmp;
 import net.saturn.elementSmp.gui.ElementSelectionGUI;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -38,8 +39,23 @@ public class GUIListener implements Listener {
 
         String title = event.getView().getTitle();
         if (title.contains("Rolling Element") || title.contains("Select Your Element")) {
-            ElementSelectionGUI.removeGUI(player.getUniqueId());
+            ElementSelectionGUI gui = ElementSelectionGUI.getGUI(player.getUniqueId());
             InventoryCloseEvent.Reason reason = event.getReason();
+
+            // If it's a reroll and not finished, re-open it
+            if (gui != null && !gui.isFinished()) {
+                plugin.getServer().getScheduler().runTask(plugin, () -> {
+                    if (reason == InventoryCloseEvent.Reason.OPEN_NEW ||
+                            reason == InventoryCloseEvent.Reason.PLUGIN) {
+                        return;
+                    }
+                    gui.open();
+                });
+                return;
+            }
+
+            // Original logic for initial element selection
+            ElementSelectionGUI.removeGUI(player.getUniqueId());
             plugin.getServer().getScheduler().runTask(plugin, () -> {
                 if (suppressReopen.contains(player.getUniqueId())) return;
                 if (reason == InventoryCloseEvent.Reason.OPEN_NEW ||

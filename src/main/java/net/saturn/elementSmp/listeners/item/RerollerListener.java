@@ -25,10 +25,13 @@ public class RerollerListener implements Listener {
         Player player = event.getPlayer();
         ItemStack item = event.getItem();
 
-        if (item == null) return;
+        if (item == null || !item.hasItemMeta()) return;
 
-        if (item.hasItemMeta() && item.getItemMeta().getPersistentDataContainer()
-                .has(ItemKeys.reroller(plugin), PersistentDataType.BYTE)) {
+        var container = item.getItemMeta().getPersistentDataContainer();
+        boolean isReroller = container.has(ItemKeys.reroller(plugin), PersistentDataType.BYTE);
+        boolean isAdvancedReroller = container.has(ItemKeys.advancedReroller(plugin), PersistentDataType.BYTE);
+
+        if (isReroller || isAdvancedReroller) {
             org.bukkit.event.block.Action action = event.getAction();
             if (action != org.bukkit.event.block.Action.RIGHT_CLICK_AIR &&
                     action != org.bukkit.event.block.Action.RIGHT_CLICK_BLOCK) {
@@ -37,10 +40,22 @@ public class RerollerListener implements Listener {
 
             event.setCancelled(true);
 
+            // Check if holding any reroller in BOTH hands
+            ItemStack mainHand = player.getInventory().getItemInMainHand();
+            ItemStack offHand = player.getInventory().getItemInOffHand();
+
+            if (isAnyReroller(mainHand) && isAnyReroller(offHand)) {
+                player.sendMessage(net.kyori.adventure.text.Component.text("You cannot use rerollers while holding one in each hand!").color(net.kyori.adventure.text.format.NamedTextColor.RED));
+                return;
+            }
+
             if (plugin.getElementManager().isCurrentlyRolling(player)) {
                 player.sendMessage(net.kyori.adventure.text.Component.text("You are already rerolling your element!").color(net.kyori.adventure.text.format.NamedTextColor.RED));
                 return;
             }
+
+            // Only proceed if this is a normal Reroller (Advanced is handled in its own listener)
+            if (!isReroller) return;
 
             PlayerData pd = plugin.getElementManager().data(player.getUniqueId());
             ElementType oldElement = pd.getCurrentElement();
@@ -56,6 +71,13 @@ public class RerollerListener implements Listener {
 
             new ElementSelectionGUI(plugin, player, true).open();
         }
+    }
+
+    private boolean isAnyReroller(ItemStack item) {
+        if (item == null || !item.hasItemMeta()) return false;
+        var container = item.getItemMeta().getPersistentDataContainer();
+        return container.has(ItemKeys.reroller(plugin), PersistentDataType.BYTE) ||
+               container.has(ItemKeys.advancedReroller(plugin), PersistentDataType.BYTE);
     }
 
     private void clearOldElementEffects(Player player, ElementType oldElement) {

@@ -34,24 +34,45 @@ public class AdvancedRerollerListener implements Listener {
         var meta = item.getItemMeta();
         var container = meta.getPersistentDataContainer();
 
-        if (!container.has(ItemKeys.advancedReroller(plugin), PersistentDataType.BYTE)) return;
+        boolean isAdvancedReroller = container.has(ItemKeys.advancedReroller(plugin), PersistentDataType.BYTE);
+        boolean isReroller = container.has(ItemKeys.reroller(plugin), PersistentDataType.BYTE);
+
+        if (!isAdvancedReroller && !isReroller) return;
 
         Action action = event.getAction();
         if (action != Action.RIGHT_CLICK_AIR && action != Action.RIGHT_CLICK_BLOCK) return;
 
         event.setCancelled(true);
 
-        var elementManager = plugin.getElementManager();
-        if (elementManager.isCurrentlyRolling(player)) {
+        // Check if holding any reroller in BOTH hands
+        ItemStack mainHand = player.getInventory().getItemInMainHand();
+        ItemStack offHand = player.getInventory().getItemInOffHand();
+
+        if (isAnyReroller(mainHand) && isAnyReroller(offHand)) {
+            player.sendMessage(ChatColor.RED + "You cannot use rerollers while holding one in each hand!");
+            return;
+        }
+
+        if (plugin.getElementManager().isCurrentlyRolling(player)) {
             player.sendMessage(ChatColor.RED + "You are already rerolling your element!");
             return;
         }
+
+        // Only proceed if this is an Advanced Reroller
+        if (!isAdvancedReroller) return;
 
         item.setAmount(item.getAmount() - 1);
         if (item.getAmount() <= 0) player.getInventory().removeItem(item);
 
         ElementType[] pool = {ElementType.METAL, ElementType.FROST};
         new ElementSelectionGUI(plugin, player, true, pool).open();
+    }
+
+    private boolean isAnyReroller(ItemStack item) {
+        if (item == null || !item.hasItemMeta()) return false;
+        var container = item.getItemMeta().getPersistentDataContainer();
+        return container.has(ItemKeys.reroller(plugin), PersistentDataType.BYTE) ||
+               container.has(ItemKeys.advancedReroller(plugin), PersistentDataType.BYTE);
     }
 
     private void clearOldElementEffects(Player player, PlayerData pd) {

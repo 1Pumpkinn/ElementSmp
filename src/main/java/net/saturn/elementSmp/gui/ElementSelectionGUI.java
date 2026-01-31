@@ -34,7 +34,8 @@ public class ElementSelectionGUI {
     private int ticksElapsed = 0;
     private ElementType selectedElement;
     private boolean isAnimating = false;
-    
+    private boolean isFinished = false;
+
     public ElementSelectionGUI(ElementSmp plugin, Player player, boolean isReroll) {
         this(plugin, player, isReroll, DEFAULT_POOL);
     }
@@ -209,6 +210,7 @@ public class ElementSelectionGUI {
     
     private void finishAnimation() {
         isAnimating = false;
+        isFinished = true;
         
         ItemStack finalItem = createElementItem(selectedElement);
         ItemMeta meta = finalItem.getItemMeta();
@@ -262,7 +264,11 @@ public class ElementSelectionGUI {
         }
         openGuis.remove(player.getUniqueId());
     }
-    
+
+    public boolean isFinished() {
+        return isFinished;
+    }
+
     public static ElementSelectionGUI getGUI(UUID playerId) {
         return openGuis.get(playerId);
     }

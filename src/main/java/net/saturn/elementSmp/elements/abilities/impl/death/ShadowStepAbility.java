@@ -3,10 +3,8 @@ package net.saturn.elementSmp.elements.abilities.impl.death;
 import net.saturn.elementSmp.elements.ElementContext;
 import net.saturn.elementSmp.elements.abilities.BaseAbility;
 import org.bukkit.*;
-import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
 
 public class ShadowStepAbility extends BaseAbility {
@@ -22,35 +20,18 @@ public class ShadowStepAbility extends BaseAbility {
         Player player = context.getPlayer();
         Location startLoc = player.getEyeLocation();
         
-        // Find the target location (max 20 blocks)
-        Location targetLoc = findTargetLocation(player, 20);
-        
-        Vector direction = targetLoc.toVector().subtract(startLoc.toVector());
-        double distance = direction.length();
-        
-        if (distance < 0.5) {
-            // If we're already basically at the target, just teleport immediately
-            player.teleport(targetLoc);
-            spawnArrivalParticles(targetLoc);
-            return true;
-        }
-        
-        Vector normalizedDir = direction.clone().normalize();
-
-        // Particle travel settings
-        double speed = 1.2; // blocks per tick (about 24 blocks per second)
-        int totalTicks = (int) (distance / speed);
-        if (totalTicks <= 0) totalTicks = 1;
-        
-        final int finalTotalTicks = totalTicks;
-        final Location finalTarget = targetLoc;
-        final Vector finalDir = normalizedDir;
-        final double finalDist = distance;
+        // Initial projectile settings (Like an arrow)
+        Vector velocity = startLoc.getDirection().multiply(1.6);
+        final Location currentLocation = startLoc.clone();
+        final Vector currentVelocity = velocity.clone();
+        final Vector gravity = new Vector(0, -0.06, 0); // Gravity strength
+        final double drag = 0.99; // Air resistance
 
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 0.5f, 0.5f);
 
         new BukkitRunnable() {
-            int tick = 0;
+            int ticks = 0;
+            final int maxTicks = 100; // Increased to 5 seconds to ensure it hits the ground
 
             @Override
             public void run() {
@@ -59,57 +40,63 @@ public class ShadowStepAbility extends BaseAbility {
                     return;
                 }
 
-                if (tick >= finalTotalTicks) {
-                    // REACHED THE POS - TELEPORT NOW
-                    
-                    // Update target location with player's CURRENT rotation
-                    finalTarget.setYaw(player.getLocation().getYaw());
-                    finalTarget.setPitch(player.getLocation().getPitch());
-                    
-                    player.teleport(finalTarget);
-                    spawnArrivalParticles(finalTarget);
-                    player.getWorld().playSound(finalTarget, Sound.ENTITY_ENDERMAN_TELEPORT, 1.0f, 1.0f);
+                if (ticks >= maxTicks) {
+                    // Stop if it takes too long without hitting anything, but don't TP mid-air
                     cancel();
                     return;
                 }
 
-                // Calculate current particle position
-                double currentDist = ((double) tick / finalTotalTicks) * finalDist;
-                Location particleLoc = startLoc.clone().add(finalDir.clone().multiply(currentDist));
-                
-                // Spawn the traveling particles (Black square like)
-                player.getWorld().spawnParticle(Particle.SQUID_INK, particleLoc, 25, 0.15, 0.15, 0.15, 0.05);
-                player.getWorld().spawnParticle(Particle.SMOKE, particleLoc, 10, 0.1, 0.1, 0.1, 0.02);
-                
-                // Sound during travel
-                if (tick % 2 == 0) {
-                    player.getWorld().playSound(particleLoc, Sound.ENTITY_ENDERMAN_AMBIENT, 0.4f, 2.0f);
+                // Raytrace to check for collisions in the next step
+                double speed = currentVelocity.length();
+                if (speed > 0) {
+                    org.bukkit.util.RayTraceResult result = currentLocation.getWorld().rayTraceBlocks(
+                        currentLocation, 
+                        currentVelocity, 
+                        speed, 
+                        FluidCollisionMode.NEVER, 
+                        true
+                    );
+
+                    if (result != null && result.getHitBlock() != null) {
+                        // Collision! Teleport to hit position (slightly offset from the wall/floor)
+                        Location hitLoc = result.getHitPosition().toLocation(currentLocation.getWorld());
+                        Vector offset = result.getHitBlockFace().getDirection().multiply(0.2);
+                        hitLoc.add(offset);
+                        finish(hitLoc);
+                        cancel();
+                        return;
+                    }
                 }
 
-                tick++;
+                // Update position and velocity
+                currentLocation.add(currentVelocity);
+                currentVelocity.add(gravity);
+                currentVelocity.multiply(drag);
+
+                // Particles
+                currentLocation.getWorld().spawnParticle(Particle.SQUID_INK, currentLocation, 15, 0.1, 0.1, 0.1, 0.05);
+                currentLocation.getWorld().spawnParticle(Particle.SMOKE, currentLocation, 8, 0.05, 0.05, 0.05, 0.02);
+                
+                // Travel sound
+                if (ticks % 3 == 0) {
+                    currentLocation.getWorld().playSound(currentLocation, Sound.ENTITY_ENDERMAN_AMBIENT, 0.4f, 2.0f);
+                }
+
+                ticks++;
+            }
+
+            private void finish(Location target) {
+                // Keep player's current looking direction
+                target.setYaw(player.getLocation().getYaw());
+                target.setPitch(player.getLocation().getPitch());
+                
+                player.teleport(target);
+                spawnArrivalParticles(target);
+                player.getWorld().playSound(target, Sound.ENTITY_ENDERMAN_TELEPORT, 1.0f, 1.0f);
             }
         }.runTaskTimer(plugin, 0L, 1L);
 
         return true;
-    }
-
-    private Location findTargetLocation(Player player, int maxDistance) {
-        Location start = player.getEyeLocation();
-        Vector dir = start.getDirection();
-        
-        BlockIterator iterator = new BlockIterator(player.getWorld(), start.toVector(), dir, 0, maxDistance);
-        Block lastSafe = start.getBlock();
-        
-        while (iterator.hasNext()) {
-            Block next = iterator.next();
-            if (next.getType().isSolid()) {
-                break;
-            }
-            lastSafe = next;
-        }
-        
-        Location target = lastSafe.getLocation().add(0.5, 0.1, 0.5);
-        return target;
     }
 
     private void spawnArrivalParticles(Location loc) {
