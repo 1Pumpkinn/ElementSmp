@@ -20,8 +20,8 @@ public class WaterElement extends BaseElement {
     public WaterElement(ElementSmp plugin) {
         super(plugin);
         this.plugin = plugin;
-        this.ability1 = new WaterLeechTridentAbility(plugin);
-        this.ability2 = new WaterPrisonAbility(plugin);
+        this.ability1 = new WaterPrisonAbility(plugin);
+        this.ability2 = new WaterLeechTridentAbility(plugin);
     }
 
     @Override

@@ -86,7 +86,7 @@ public class WaterPrisonAbility extends BaseAbility {
         // Particle and Drowning Effect Task
         new BukkitRunnable() {
             int ticks = 0;
-            final int maxTicks = 100; // 5 seconds
+            final int maxTicks = 60; // 3 seconds
 
             @Override
             public void run() {

@@ -51,7 +51,7 @@ public final class Constants {
         public static final long FROST_CIRCLE_MS = 10_000L;
         public static final long METAL_CHAIN_STUN_MS = 3_000L;
         public static final long LIFE_ENTANGLE_MS = 3_000L;
-        public static final long WATER_PRISON_MS = 5_000L;
+        public static final long WATER_PRISON_MS = 3_000L;
 
         private Duration() {}
     }
