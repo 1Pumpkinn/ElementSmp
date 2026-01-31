@@ -29,8 +29,6 @@ public class FireElement extends BaseElement {
 
     @Override
     public void applyUpsides(Player player, int upgradeLevel) {
-        // Passive: Infinite Fire Resistance is still good to keep for a fire element
-        player.addPotionEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, PotionEffect.INFINITE_DURATION, 0, true, false));
     }
 
     @Override
@@ -45,7 +43,6 @@ public class FireElement extends BaseElement {
 
     @Override
     public void clearEffects(Player player) {
-        player.removePotionEffect(PotionEffectType.FIRE_RESISTANCE);
         ability1.setActive(player, false);
         ability2.setActive(player, false);
     }

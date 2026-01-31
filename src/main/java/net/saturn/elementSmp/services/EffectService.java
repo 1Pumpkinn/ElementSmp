@@ -67,10 +67,8 @@ public class EffectService implements Listener {
 
         // Hardcoded removal of element-granted effects
         player.removePotionEffect(PotionEffectType.CONDUIT_POWER);
-        player.removePotionEffect(PotionEffectType.FIRE_RESISTANCE);
         player.removePotionEffect(PotionEffectType.HERO_OF_THE_VILLAGE);
         player.removePotionEffect(PotionEffectType.HASTE);
-        player.removePotionEffect(PotionEffectType.DOLPHINS_GRACE);
         player.removePotionEffect(PotionEffectType.INVISIBILITY);
         player.removePotionEffect(PotionEffectType.SLOW_FALLING);
 

@@ -44,7 +44,6 @@ public final class ElementInfoRegistry {
                 "Water",
                 ChatColor.BLUE,
                 List.of(
-                        "Infinite Water Breathing",
                         "Permanent Conduit Power",
                         "Loyalty Tridents pull entities (Upgrade II)"
                 ),

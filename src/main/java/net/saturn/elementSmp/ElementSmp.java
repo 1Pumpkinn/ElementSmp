@@ -17,13 +17,18 @@ import net.saturn.elementSmp.services.EffectService;
 import net.saturn.elementSmp.util.bukkit.MetadataHelper;
 import net.saturn.elementSmp.util.scheduling.TaskScheduler;
 import net.saturn.elementSmp.elements.abilities.impl.air.passives.*;
-import net.saturn.elementSmp.elements.abilities.impl.water.passives.*;
-import net.saturn.elementSmp.elements.abilities.impl.fire.passives.*;
+import net.saturn.elementSmp.elements.abilities.impl.water.passives.WaterCombatPassive;
+import net.saturn.elementSmp.elements.abilities.impl.fire.passives.FireAutoSmeltPassive;
+import net.saturn.elementSmp.elements.abilities.impl.fire.passives.FireCombatPassive;
+import net.saturn.elementSmp.elements.abilities.impl.fire.passives.FireballProtectionPassive;
 import net.saturn.elementSmp.elements.abilities.impl.earth.passives.*;
 import net.saturn.elementSmp.elements.abilities.impl.life.passives.*;
 import net.saturn.elementSmp.elements.abilities.impl.death.passives.*;
-import net.saturn.elementSmp.elements.abilities.impl.metal.passives.*;
-import net.saturn.elementSmp.elements.abilities.impl.frost.passives.*;
+import net.saturn.elementSmp.elements.abilities.impl.metal.passives.MetalArrowImmunityPassive;
+import net.saturn.elementSmp.elements.abilities.impl.metal.passives.MetalCombatPassive;
+import net.saturn.elementSmp.elements.abilities.impl.frost.passives.FrostCombatPassive;
+import net.saturn.elementSmp.elements.abilities.impl.frost.passives.FrostSpeedPassive;
+import net.saturn.elementSmp.elements.abilities.impl.frost.passives.FrostWaterFreezePassive;
 import net.saturn.elementSmp.recipes.UtilRecipes;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
@@ -291,12 +296,10 @@ public final class ElementSmp extends JavaPlugin {
         pm.registerEvents(new AirFallDamagePassive(elementManager), this);
         
         // Water
-        pm.registerEvents(new WaterBreathingPassive(elementManager), this);
         pm.registerEvents(new WaterCombatPassive(elementManager), this);
         pm.registerEvents(new net.saturn.elementSmp.elements.impl.water.listeners.WaterPrisonListener(this), this);
         
         // Fire
-        pm.registerEvents(new FireImmunityPassive(elementManager), this);
         pm.registerEvents(new FireCombatPassive(elementManager, trustManager), this);
         pm.registerEvents(new FireballProtectionPassive(), this);
         pm.registerEvents(new FireAutoSmeltPassive(elementManager), this);

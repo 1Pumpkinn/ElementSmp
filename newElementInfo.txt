@@ -11,7 +11,7 @@ Ability 1: Scorch: The next entity you hit clears their Fire Resistance
 Ability 2: Inferno Blast: Causes an explosion on you dealing 5 hearts to nearby entities
 
 [Water]
-Passive 1: Infinite Water Breathing and Permanent Conduit Power
+Passive 1: Conduit Power
 Passive 2: Loyalty Tridents pull entities (Upgrade II)
 Ability 1: Water Geyser: Launch enemies upward with water pressure
 Ability 2: Water Beam: Fire a damaging water beam
