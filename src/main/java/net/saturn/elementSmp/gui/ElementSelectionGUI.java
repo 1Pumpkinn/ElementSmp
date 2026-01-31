@@ -28,6 +28,7 @@ public class ElementSelectionGUI {
     private final Player player;
     private final Inventory inventory;
     private final boolean isReroll;
+    private final String rerollerType;
     private final ElementType[] pool;
     private BukkitTask animationTask;
     private int currentIndex = 0;
@@ -37,14 +38,19 @@ public class ElementSelectionGUI {
     private boolean isFinished = false;
 
     public ElementSelectionGUI(ElementSmp plugin, Player player, boolean isReroll) {
-        this(plugin, player, isReroll, DEFAULT_POOL);
+        this(plugin, player, isReroll, null, DEFAULT_POOL);
     }
 
-    public ElementSelectionGUI(ElementSmp plugin, Player player, boolean isReroll, ElementType[] pool) {
+    public ElementSelectionGUI(ElementSmp plugin, Player player, boolean isReroll, String rerollerType) {
+        this(plugin, player, isReroll, rerollerType, DEFAULT_POOL);
+    }
+
+    public ElementSelectionGUI(ElementSmp plugin, Player player, boolean isReroll, String rerollerType, ElementType[] pool) {
         this.plugin = plugin;
         this.elementManager = plugin.getElementManager();
         this.player = player;
         this.isReroll = isReroll;
+        this.rerollerType = rerollerType;
         this.pool = pool;
         this.inventory = Bukkit.createInventory(null, 27, INVENTORY_TITLE);
         
@@ -227,6 +233,7 @@ public class ElementSelectionGUI {
             @Override
             public void run() {
                 if (!player.isOnline()) {
+                    cleanup();
                     return;
                 }
                 
@@ -267,6 +274,10 @@ public class ElementSelectionGUI {
 
     public boolean isFinished() {
         return isFinished;
+    }
+
+    public String getRerollerType() {
+        return rerollerType;
     }
 
     public static ElementSelectionGUI getGUI(UUID playerId) {

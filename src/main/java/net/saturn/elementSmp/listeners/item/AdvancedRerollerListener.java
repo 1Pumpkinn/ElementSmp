@@ -65,7 +65,7 @@ public class AdvancedRerollerListener implements Listener {
         if (item.getAmount() <= 0) player.getInventory().removeItem(item);
 
         ElementType[] pool = {ElementType.METAL, ElementType.FROST};
-        new ElementSelectionGUI(plugin, player, true, pool).open();
+        new ElementSelectionGUI(plugin, player, true, ItemKeys.KEY_ADVANCED_REROLLER, pool).open();
     }
 
     private boolean isAnyReroller(ItemStack item) {

@@ -13,8 +13,11 @@ import org.bukkit.potion.PotionEffectType;
 
 public class NaturesEyeAbility extends BaseAbility {
 
+    private final net.saturn.elementSmp.ElementSmp plugin;
+
     public NaturesEyeAbility(net.saturn.elementSmp.ElementSmp plugin) {
         super();
+        this.plugin = plugin;
     }
 
     @Override

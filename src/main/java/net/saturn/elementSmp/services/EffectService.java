@@ -71,6 +71,15 @@ public class EffectService implements Listener {
         player.removePotionEffect(PotionEffectType.HASTE);
         player.removePotionEffect(PotionEffectType.INVISIBILITY);
         player.removePotionEffect(PotionEffectType.SLOW_FALLING);
+        player.removePotionEffect(PotionEffectType.FIRE_RESISTANCE);
+        player.removePotionEffect(PotionEffectType.DOLPHINS_GRACE);
+        player.removePotionEffect(PotionEffectType.WATER_BREATHING);
+        player.removePotionEffect(PotionEffectType.NIGHT_VISION);
+        player.removePotionEffect(PotionEffectType.RESISTANCE);
+        player.removePotionEffect(PotionEffectType.REGENERATION);
+        player.removePotionEffect(PotionEffectType.SPEED);
+        player.removePotionEffect(PotionEffectType.STRENGTH);
+        player.removePotionEffect(PotionEffectType.JUMP_BOOST);
 
         // Clear individual element state/tasks
         for (ElementType type : ElementType.values()) {

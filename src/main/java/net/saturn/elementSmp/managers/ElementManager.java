@@ -14,11 +14,16 @@ import net.saturn.elementSmp.elements.impl.life.LifeElement;
 import net.saturn.elementSmp.elements.impl.metal.MetalElement;
 import net.saturn.elementSmp.elements.impl.water.WaterElement;
 import net.saturn.elementSmp.gui.ElementSelectionGUI;
+import net.saturn.elementSmp.items.AdvancedRerollerItem;
+import net.saturn.elementSmp.items.ItemKeys;
+import net.saturn.elementSmp.items.RerollerItem;
 import net.saturn.elementSmp.services.EffectService;
 import net.saturn.elementSmp.util.scheduling.TaskScheduler;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
@@ -77,6 +82,24 @@ public class ElementManager {
     }
 
     public void cancelRolling(Player player) {
+        ElementSelectionGUI gui = ElementSelectionGUI.getGUI(player.getUniqueId());
+        if (gui != null && !gui.isFinished()) {
+            String rerollerType = gui.getRerollerType();
+            if (rerollerType != null) {
+                ItemStack refund = null;
+                if (rerollerType.equals(ItemKeys.KEY_REROLLER)) {
+                    refund = RerollerItem.make(plugin);
+                } else if (rerollerType.equals(ItemKeys.KEY_ADVANCED_REROLLER)) {
+                    refund = AdvancedRerollerItem.make(plugin);
+                }
+
+                if (refund != null) {
+                    player.getInventory().addItem(refund).values().forEach(item -> 
+                        player.getWorld().dropItemNaturally(player.getLocation(), item));
+                    player.sendMessage(ChatColor.YELLOW + "Your reroller has been refunded because you left while rolling!");
+                }
+            }
+        }
         ElementSelectionGUI.removeGUI(player.getUniqueId());
     }
 

@@ -141,6 +141,9 @@ public class DataStore {
 
             // Update cache
             playerDataCache.put(pd.getUuid(), pd);
+            
+            // CRITICAL: Flush to disk immediately after saving to config object
+            flushPlayerData();
         } catch (Exception e) {
             plugin.getLogger().log(Level.SEVERE, "Failed to save player data for " + pd.getUuid(), e);
         }
