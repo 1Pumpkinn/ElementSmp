@@ -111,11 +111,7 @@ public class WaterLeechTridentAbility extends BaseAbility implements Listener {
 
                     if (ticks % 20 == 0) { // Every second
                         target.damage(9.0); // Trident damage
-                        target.getWorld().playSound(target.getLocation(), Sound.ENTITY_DROWNED_HURT_WATER, 0.5f, 1.0f);
-                        target.getWorld().spawnParticle(Particle.DRIPPING_WATER, target.getLocation().add(0, 1, 0), 10, 0.3, 0.3, 0.3, 0.1);
-                        
-                        // Leeching visual
-                        target.getWorld().spawnParticle(Particle.HAPPY_VILLAGER, target.getLocation().add(0, 1.5, 0), 5, 0.3, 0.3, 0.3, 0.1);
+                        target.getWorld().playSound(target.getLocation(), Sound.ITEM_TRIDENT_RETURN, 0.5f, 1.0f);
                     }
 
                     ticks++;
