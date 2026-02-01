@@ -23,7 +23,7 @@ public final class ElementInfoRegistry {
                         "Slow Falling while shifting in air",
                         "No fall damage (except on dripstone) (Upgrade II)"
                 ),
-                new ElementInfo.AbilityInfo("Air Blast", "Push enemies away with a gust of wind", 50, 1),
+                new ElementInfo.AbilityInfo("Air Blast", "Launch into the air, then slam down to damage and fling enemies", 50, 1),
                 new ElementInfo.AbilityInfo("Air Dash", "Dash forward swiftly, pushing enemies aside", 75, 2)
         ));
 
@@ -47,8 +47,8 @@ public final class ElementInfoRegistry {
                         "Permanent Conduit Power",
                         "Loyalty Tridents pull entities (Upgrade II)"
                 ),
-                new ElementInfo.AbilityInfo("Water Geyser", "Launch enemies upward with water pressure", 75, 1),
-                new ElementInfo.AbilityInfo("Water Beam", "Fire a damaging water beam", 50, 2)
+                new ElementInfo.AbilityInfo("Water Geyser", "Launch enemies upward with water pressure", 50, 1),
+                new ElementInfo.AbilityInfo("Water Beam", "Fire a damaging water beam", 75, 2)
         ));
 
         // Earth
@@ -71,8 +71,8 @@ public final class ElementInfoRegistry {
                         "Crop growth aura around you",
                         "15 Hearts (30 HP) max health (Upgrade II)"
                 ),
-                new ElementInfo.AbilityInfo("Nature's Eye", "Reveal nearby living entities through walls", 40, 1),
-                new ElementInfo.AbilityInfo("Entangling Roots", "Pull enemies into the ground and suffocate them", 80, 2)
+                new ElementInfo.AbilityInfo("Nature's Eye", "Reveal nearby living entities through walls", 50, 1),
+                new ElementInfo.AbilityInfo("Entangling Roots", "Pull enemies into the ground and suffocate them", 75, 2)
         ));
 
         // Death

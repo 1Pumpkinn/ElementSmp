@@ -26,8 +26,8 @@ costs:
     item_use: 75
     item_throw: 25
   life:
-    ability1: 40
-    ability2: 80
+    ability1: 50
+    ability2: 75
     item_use: 75
     item_throw: 25
   death:

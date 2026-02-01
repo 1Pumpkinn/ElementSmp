@@ -18,8 +18,8 @@ public class AirElement extends BaseElement {
     public AirElement(ElementSmp plugin) {
         super(plugin);
         this.plugin = plugin;
-        this.ability1 = new AirDashAbility(plugin);
-        this.ability2 = new AirBlastAbility(plugin);
+        this.ability1 = new AirBlastAbility(plugin);
+        this.ability2 = new AirDashAbility(plugin);
     }
 
     @Override
