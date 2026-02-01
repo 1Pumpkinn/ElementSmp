@@ -22,6 +22,55 @@ public class AirBlastAbility extends BaseAbility {
     @Override
     public boolean execute(ElementContext context) {
         Player player = context.getPlayer();
+
+        // Launch the player upward
+        player.setVelocity(player.getVelocity().setY(2.5));
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BAT_TAKEOFF, 1f, 0.5f);
+        player.getWorld().spawnParticle(Particle.CLOUD, player.getLocation(), 10, 0.5, 0.5, 0.5, 0.1);
+
+        // Monitor flight and perform blast on landing
+        new BukkitRunnable() {
+            int ticks = 0;
+
+            @Override
+            public void run() {
+                if (!player.isOnline()) {
+                    cancel();
+                    return;
+                }
+
+                // Increase gravity when falling
+                double yVel = player.getVelocity().getY();
+                if (yVel < -0.1) {
+                    yVel -= 0.15;
+                }
+
+                // Air control: Steer in look direction
+                Vector lookDir = player.getLocation().getDirection().normalize();
+                double speed = 0.75;
+                player.setVelocity(new Vector(lookDir.getX() * speed, yVel, lookDir.getZ() * speed));
+
+                // Check for landing (wait a few ticks to ensure they left ground)
+                if (ticks > 5 && player.isOnGround()) {
+                    performBlast(context);
+                    cancel();
+                    return;
+                }
+
+                // Timeout
+                if (ticks > 100) {
+                    cancel();
+                }
+
+                ticks++;
+            }
+        }.runTaskTimer(plugin, 1L, 1L);
+
+        return true;
+    }
+
+    private void performBlast(ElementContext context) {
+        Player player = context.getPlayer();
         
         // Launch all nearby players away, with particles
 
@@ -71,9 +120,21 @@ public class AirBlastAbility extends BaseAbility {
 
             Vector push = e.getLocation().toVector().subtract(center.toVector()).normalize().multiply(2.25).setY(1.5);
             e.setVelocity(push);
+
+            // True Damage (2 hearts = 4.0 damage)
+            double oldHealth = e.getHealth();
+            double trueDamage = 4.0;
+
+            e.setNoDamageTicks(0);
+            e.damage(trueDamage); // Visuals
+
+            // True Damage Correction
+            double expectedHealth = oldHealth - trueDamage;
+            if (e.getHealth() > expectedHealth) {
+                e.setHealth(Math.max(0, expectedHealth));
+            }
         }
 
         w.playSound(center, Sound.ENTITY_ENDER_DRAGON_FLAP, 1f, 1.5f);
-        return true;
     }
 }
