@@ -84,7 +84,7 @@ public final class AbilityRegistry {
         // Metal
         register(ElementType.METAL,
                 new MetalDashAbility(plugin),
-                new MetalChainAbility(plugin)
+                new MagneticAccumulationAbility(plugin)
         );
 
         // Frost

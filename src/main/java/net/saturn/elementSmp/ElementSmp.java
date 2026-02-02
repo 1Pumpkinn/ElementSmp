@@ -320,7 +320,7 @@ public final class ElementSmp extends JavaPlugin {
         // Metal
         pm.registerEvents(new MetalCombatPassive(elementManager, trustManager), this);
         pm.registerEvents(new MetalArrowImmunityPassive(elementManager), this);
-        pm.registerEvents(new net.saturn.elementSmp.elements.impl.metal.listeners.MetalChainStunListener(), this);
+        // pm.registerEvents(new net.saturn.elementSmp.elements.impl.metal.listeners.MetalChainStunListener(), this);
         
         // Frost
         pm.registerEvents(new FrostSpeedPassive(this, elementManager), this);

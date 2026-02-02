@@ -5,7 +5,7 @@ import net.saturn.elementSmp.elements.BaseElement;
 import net.saturn.elementSmp.elements.ElementContext;
 import net.saturn.elementSmp.elements.ElementType;
 import net.saturn.elementSmp.elements.abilities.Ability;
-import net.saturn.elementSmp.elements.abilities.impl.metal.MetalChainAbility;
+import net.saturn.elementSmp.elements.abilities.impl.metal.MagneticAccumulationAbility;
 import net.saturn.elementSmp.elements.abilities.impl.metal.MetalDashAbility;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -21,7 +21,7 @@ public class MetalElement extends BaseElement {
         super(plugin);
         this.plugin = plugin;
         this.ability1 = new MetalDashAbility(plugin);
-        this.ability2 = new MetalChainAbility(plugin);
+        this.ability2 = new MagneticAccumulationAbility(plugin);
     }
 
     @Override

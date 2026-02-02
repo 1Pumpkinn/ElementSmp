@@ -96,7 +96,7 @@ public final class ElementInfoRegistry {
                         "Immunity to all arrows (Upgrade II)"
                 ),
                 new ElementInfo.AbilityInfo("Metal Dash", "Swiftly dash through enemies, damaging them", 50, 1),
-                new ElementInfo.AbilityInfo("Metal Chain", "Launch a chain to pull enemies toward you", 75, 2)
+                new ElementInfo.AbilityInfo("Magnetic Accumulation", "Accumulate damage on a target, then deal it all at once after 3s", 75, 2)
         ));
 
         // Frost
