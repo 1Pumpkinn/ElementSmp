@@ -47,14 +47,14 @@ public final class AbilityRegistry {
     private void registerAll() {
         // Air
         register(ElementType.AIR,
-                new AirBlastAbility(plugin),
-                new AirDashAbility(plugin)
+                new AirDashAbility(plugin),
+                new AirBlastAbility(plugin)
         );
 
         // Water
         register(ElementType.WATER,
-                new WaterLeechTridentAbility(plugin),
-                new WaterPrisonAbility(plugin)
+                new WaterPrisonAbility(plugin),
+                new WaterLeechTridentAbility(plugin)
         );
 
         // Fire

@@ -23,8 +23,8 @@ public final class ElementInfoRegistry {
                         "Slow Falling while shifting in air",
                         "No fall damage (except on dripstone) (Upgrade II)"
                 ),
-                new ElementInfo.AbilityInfo("Air Blast", "Launch into the air, then slam down to damage and fling enemies", 50, 1),
-                new ElementInfo.AbilityInfo("Air Dash", "Dash forward swiftly, pushing enemies aside", 75, 2)
+                new ElementInfo.AbilityInfo("Air Dash", "Dash forward swiftly, pushing enemies aside", 75, 1),
+                new ElementInfo.AbilityInfo("Air Blast", "Launch into the air, then slam down to damage and fling enemies", 50, 2)
         ));
 
         // Fire
@@ -47,8 +47,8 @@ public final class ElementInfoRegistry {
                         "Permanent Conduit Power",
                         "Loyalty Tridents pull entities (Upgrade II)"
                 ),
-                new ElementInfo.AbilityInfo("Water Geyser", "Launch enemies upward with water pressure", 50, 1),
-                new ElementInfo.AbilityInfo("Water Beam", "Fire a damaging water beam", 75, 2)
+                new ElementInfo.AbilityInfo("Water Prison", "Trap a target in a drowning water bubble for 3 seconds", 50, 1),
+                new ElementInfo.AbilityInfo("Leeching Trident", "Throw a trident that orbits a target and deals true damage over time", 75, 2)
         ));
 
         // Earth
@@ -84,7 +84,7 @@ public final class ElementInfoRegistry {
                         "Invisibility and equipment hiding at 2 hearts (Upgrade II)"
                 ),
                 new ElementInfo.AbilityInfo("Summon Undead", "Summon a powerful undead ally", 50, 1),
-                new ElementInfo.AbilityInfo("Shadow Step", "Teleport behind your target", 75, 2)
+                new ElementInfo.AbilityInfo("Shadow Step", "Teleport forward to the first surface you aim at", 75, 2)
         ));
 
         // Metal

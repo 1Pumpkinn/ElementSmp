@@ -28,6 +28,8 @@ public class IcicleDropAbility extends BaseAbility {
         long until = System.currentTimeMillis() + 10_000L; // 10 seconds to use it
         player.setMetadata(META_ICICLE_DROP_READY, new FixedMetadataValue(plugin, until));
 
+
+
         // Visual and audio feedback
         player.playSound(player.getLocation(), Sound.BLOCK_GLASS_BREAK, 1.0f, 1.5f);
 

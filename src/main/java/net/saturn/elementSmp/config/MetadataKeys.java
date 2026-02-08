@@ -24,6 +24,9 @@ public final class MetadataKeys {
 
     public static final class Metal {
         public static final String CHAIN_STUN = "metal_chain_stunned";
+        public static final String MAGNETIC_ACCUM_UNTIL = "metal_magnetic_accum_until";
+        public static final String MAGNETIC_ACCUM_OWNER = "metal_magnetic_accum_owner";
+        public static final String MAGNETIC_ACCUM_DAMAGE = "metal_magnetic_accum_damage";
 
         private Metal() {}
     }

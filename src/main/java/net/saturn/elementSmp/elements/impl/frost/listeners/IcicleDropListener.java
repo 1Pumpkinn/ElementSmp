@@ -70,8 +70,7 @@ public class IcicleDropListener implements Listener {
             }
         }));
         
-        // Make it fall slightly faster than natural gravity, but not instant
-        fallingDripstone.setVelocity(new org.bukkit.util.Vector(0, -0.7, 0));
+        fallingDripstone.setVelocity(new org.bukkit.util.Vector(0, -2, 0));
         fallingDripstone.setDropItem(false);
         fallingDripstone.setHurtEntities(true);
         fallingDripstone.setDamagePerBlock(2.0f);
