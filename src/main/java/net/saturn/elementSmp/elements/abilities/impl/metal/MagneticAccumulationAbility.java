@@ -98,9 +98,17 @@ public class MagneticAccumulationAbility extends BaseAbility implements Listener
                         double accumulated = getAccumulated(finalTarget);
                         if (accumulated > 0.0) {
                             double base = accumulated * 0.3;
-                            double finalDamage = Math.min(8.0, base);
-                            double newHealth = Math.max(0.0, finalTarget.getHealth() - finalDamage);
-                            finalTarget.setHealth(newHealth);
+                            double finalDamage = Math.min(base, 8.0);
+
+                            finalTarget.setNoDamageTicks(0);
+                            double oldHealth = finalTarget.getHealth();
+                            finalTarget.damage(0.1);
+
+                            double expectedHealth = oldHealth - finalDamage;
+                            if (finalTarget.getHealth() > expectedHealth) {
+                                finalTarget.setHealth(Math.max(0, expectedHealth));
+                            }
+
                             finalTarget.getWorld().spawnParticle(Particle.LAVA, finalTarget.getLocation().add(0, 1, 0), 1, 0, 0, 0, 0.1, null, true);
                             finalTarget.getWorld().playSound(finalTarget.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 1.0f, 1.2f);
                         }

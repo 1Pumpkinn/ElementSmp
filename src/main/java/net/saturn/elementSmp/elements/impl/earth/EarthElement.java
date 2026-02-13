@@ -15,7 +15,6 @@ import org.bukkit.potion.PotionEffectType;
 
 public class EarthElement extends BaseElement {
     public static final String META_MINE_UNTIL = MetadataKeys.Earth.MINE_UNTIL;
-    public static final String META_CHARM_NEXT_UNTIL = MetadataKeys.Earth.CHARM_NEXT_UNTIL;
     public static final String META_TUNNELING = MetadataKeys.Earth.TUNNELING;
 
     private final ElementSmp plugin;
@@ -63,7 +62,6 @@ public class EarthElement extends BaseElement {
     public void clearEffects(Player player) {
         player.removePotionEffect(PotionEffectType.HERO_OF_THE_VILLAGE);
         player.removeMetadata(META_MINE_UNTIL, plugin);
-        player.removeMetadata(META_CHARM_NEXT_UNTIL, plugin);
         player.removeMetadata(META_TUNNELING, plugin);
         ability1.setActive(player, false);
         ability2.setActive(player, false);

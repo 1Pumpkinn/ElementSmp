@@ -1,18 +1,13 @@
 package net.saturn.elementSmp.elements.impl.frost;
 
 import net.saturn.elementSmp.ElementSmp;
-import net.saturn.elementSmp.config.MetadataKeys;
 import net.saturn.elementSmp.elements.BaseElement;
 import net.saturn.elementSmp.elements.ElementContext;
 import net.saturn.elementSmp.elements.ElementType;
 import net.saturn.elementSmp.elements.abilities.Ability;
-import net.saturn.elementSmp.elements.abilities.impl.frost.FrostCircleAbility;
-import net.saturn.elementSmp.elements.abilities.impl.frost.IcicleDropAbility;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 public class FrostElement extends BaseElement {
-    public static final String META_ICICLE_DROP_READY = MetadataKeys.Frost.ICICLE_DROP_READY;
 
     private final ElementSmp plugin;
     private final Ability ability1;
@@ -21,8 +16,8 @@ public class FrostElement extends BaseElement {
     public FrostElement(ElementSmp plugin) {
         super(plugin);
         this.plugin = plugin;
-        this.ability1 = new FrostCircleAbility(plugin);
-        this.ability2 = new IcicleDropAbility(plugin);
+        this.ability1 = plugin.getAbilityRegistry().getAbility(ElementType.FROST, 1);
+        this.ability2 = plugin.getAbilityRegistry().getAbility(ElementType.FROST, 2);
     }
 
     @Override
@@ -32,9 +27,6 @@ public class FrostElement extends BaseElement {
 
     @Override
     public void applyUpsides(Player player, int upgradeLevel) {
-        // Upsides are handled by FrostPassiveListener
-        // Upside 1: Speed 2 when wearing leather boots (always active)
-        // Upside 2: Speed 3 on ice (requires upgrade level 2)
     }
 
     @Override
@@ -49,7 +41,6 @@ public class FrostElement extends BaseElement {
 
     @Override
     public void clearEffects(Player player) {
-        player.removeMetadata(META_ICICLE_DROP_READY, plugin);
         ability1.setActive(player, false);
         ability2.setActive(player, false);
     }

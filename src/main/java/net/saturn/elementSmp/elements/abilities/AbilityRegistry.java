@@ -8,10 +8,12 @@ import net.saturn.elementSmp.elements.abilities.impl.death.ShadowStepAbility;
 import net.saturn.elementSmp.elements.abilities.impl.earth.EarthTunnelAbility;
 import net.saturn.elementSmp.elements.abilities.impl.earth.EarthquakeAbility;
 import net.saturn.elementSmp.elements.abilities.impl.fire.*;
-import net.saturn.elementSmp.elements.abilities.impl.frost.*;
+import net.saturn.elementSmp.elements.abilities.impl.frost.FrostBombAbility;
+import net.saturn.elementSmp.elements.abilities.impl.frost.FrostCircleAbility;
 import net.saturn.elementSmp.elements.abilities.impl.life.*;
 import net.saturn.elementSmp.elements.abilities.impl.metal.*;
 import net.saturn.elementSmp.elements.abilities.impl.water.*;
+import net.saturn.elementSmp.managers.BlockReversionManager;
 
 import java.util.EnumMap;
 import java.util.Map;
@@ -24,6 +26,7 @@ import java.util.Optional;
  */
 public final class AbilityRegistry {
     private final ElementSmp plugin;
+    private final BlockReversionManager blockReversionManager;
     private final Map<ElementType, AbilitySet> abilities = new EnumMap<>(ElementType.class);
 
     /**
@@ -36,9 +39,16 @@ public final class AbilityRegistry {
         }
     }
 
-    public AbilityRegistry(ElementSmp plugin) {
+    public AbilityRegistry(ElementSmp plugin, BlockReversionManager blockReversionManager) {
         this.plugin = plugin;
+        this.blockReversionManager = blockReversionManager;
         registerAll();
+    }
+
+    public Ability getAbility(ElementType type, int ability) {
+        return Optional.ofNullable(abilities.get(type))
+                .map(set -> ability == 1 ? set.ability1() : set.ability2())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid ability number: " + ability + " for " + type));
     }
 
     /**
@@ -90,7 +100,7 @@ public final class AbilityRegistry {
         // Frost
         register(ElementType.FROST,
                 new FrostCircleAbility(plugin),
-                new IcicleDropAbility(plugin)
+                new FrostBombAbility(plugin)
         );
 
         plugin.getLogger().info("Registered " + abilities.size() + " element ability sets");

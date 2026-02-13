@@ -43,6 +43,7 @@ public final class ElementSmp extends JavaPlugin {
     private ManaManager manaManager;
     private TrustManager trustManager;
     private ItemManager itemManager;
+    private BlockReversionManager blockReversionManager;
     private AbilityRegistry abilityRegistry;
     private EffectService effectService;
     private TaskScheduler taskScheduler;
@@ -90,6 +91,8 @@ public final class ElementSmp extends JavaPlugin {
 
         this.trustManager = new TrustManager(this);
         this.manaManager = new ManaManager(this, dataStore, configManager);
+        this.blockReversionManager = new BlockReversionManager(this);
+        this.abilityRegistry = new AbilityRegistry(this, blockReversionManager);
         this.elementManager = new ElementManager(this, dataStore, manaManager, trustManager, configManager);
         this.itemManager = new ItemManager(this, manaManager, configManager);
 
@@ -100,7 +103,6 @@ public final class ElementSmp extends JavaPlugin {
         getLogger().info("Initializing services...");
 
         this.effectService = elementManager.getEffectService();
-        this.abilityRegistry = new AbilityRegistry(this);
 
         getLogger().info("Services initialized");
     }
@@ -326,7 +328,6 @@ public final class ElementSmp extends JavaPlugin {
         pm.registerEvents(new FrostSpeedPassive(this, elementManager), this);
         pm.registerEvents(new FrostCombatPassive(elementManager, trustManager), this);
         pm.registerEvents(new FrostWaterFreezePassive(elementManager), this);
-        pm.registerEvents(new net.saturn.elementSmp.elements.impl.frost.listeners.IcicleDropListener(this, elementManager, trustManager), this);
     }
 
     private void registerRecipes() {
@@ -349,7 +350,7 @@ public final class ElementSmp extends JavaPlugin {
             manaManager.stop();
         }
     }
-
+    
     private void saveAllData() {
         if (dataStore != null) {
             dataStore.flushAll();
