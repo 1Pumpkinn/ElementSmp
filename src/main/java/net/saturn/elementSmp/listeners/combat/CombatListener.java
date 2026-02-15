@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 public class CombatListener implements Listener {
     private final TrustManager trustManager;
@@ -17,7 +18,7 @@ public class CombatListener implements Listener {
     }
 
     @EventHandler
-    public void onDamage(EntityDamageByEntityEvent e) {
+    public void onDamage(org.bukkit.event.entity.EntityDamageByEntityEvent e) {
         if (!(e.getEntity() instanceof Player victim)) return;
         Player damager = null;
         if (e.getDamager() instanceof Player p) {

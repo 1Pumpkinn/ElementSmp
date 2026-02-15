@@ -107,8 +107,8 @@ public final class ElementInfoRegistry {
                         "Speed II on snow, Speed III on ice",
                         "Freeze water walking (Shift) (Upgrade II)"
                 ),
-                new ElementInfo.AbilityInfo("Freezing Circle", "Create a circle that slows and damages enemies", 50, 1),
-                new ElementInfo.AbilityInfo("Frozen Punch", "Punch an enemy to freeze them solid", 75, 2)
+                new ElementInfo.AbilityInfo("Frozen Punch", "Punch an enemy to freeze them solid", 75, 1),
+                new ElementInfo.AbilityInfo("Frost Nova", "Create a burst of frost, damaging and freezing nearby enemies", 50, 2)
         ));
     }
 

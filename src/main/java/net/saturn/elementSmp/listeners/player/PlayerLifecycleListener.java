@@ -15,8 +15,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityResurrectEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.player.PlayerRespawnEvent;
 
+import org.bukkit.event.player.PlayerRespawnEvent;
 public class PlayerLifecycleListener implements Listener {
     private final ElementSmp plugin;
     private final ElementManager elementManager;
@@ -40,17 +40,11 @@ public class PlayerLifecycleListener implements Listener {
         manaManager.get(player.getUniqueId());
 
         if (pd.getCurrentElement() == null) {
-            scheduler.runAfterPlayerLoad(() -> {
-                if (player.isOnline()) {
-                    new ElementSelectionGUI(plugin, player, false).open();
-                }
-            });
+            scheduler.runAfterPlayerLoad(player, () -> new ElementSelectionGUI(plugin, player, false).open());
         } else {
-            scheduler.runAfterPlayerLoad(() -> {
-                if (player.isOnline()) {
-                    effectService.clearAllElementEffects(player);
-                    effectService.applyPassiveEffects(player);
-                }
+            scheduler.runAfterPlayerLoad(player, () -> {
+                effectService.clearAllElementEffects(player);
+                effectService.applyPassiveEffects(player);
             });
         }
     }

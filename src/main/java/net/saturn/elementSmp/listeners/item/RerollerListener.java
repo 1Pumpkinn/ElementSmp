@@ -69,7 +69,7 @@ public class RerollerListener implements Listener {
                 player.getInventory().removeItem(item);
             }
 
-            new ElementSelectionGUI(plugin, player, true, ItemKeys.KEY_REROLLER).open();
+            new ElementSelectionGUI(plugin, player, true).open();
         }
     }
 

@@ -44,4 +44,4 @@ Ability 2: Magnetic Accumulation: Accumulate damage on a target, then deal it al
 Passive 1: Speed II on snow, Speed III on ice
 Passive 2: Freeze water walking (Shift) (Upgrade II)
 Ability 1: Freezing Circle: Create a circle that slows and damages enemies
-Ability 2: Icicle Drop: Punch an enemy to freeze them solid
+Ability 2: Frost Shuriken: Launch a volley of shurikens that damage and freeze enemies

@@ -28,6 +28,8 @@ public class AirBlastAbility extends BaseAbility {
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BAT_TAKEOFF, 1f, 0.5f);
         player.getWorld().spawnParticle(Particle.CLOUD, player.getLocation(), 10, 0.5, 0.5, 0.5, 0.1);
 
+        setActive(player, true);
+
         // Monitor flight and perform blast on landing
         new BukkitRunnable() {
             int ticks = 0;
@@ -35,6 +37,7 @@ public class AirBlastAbility extends BaseAbility {
             @Override
             public void run() {
                 if (!player.isOnline()) {
+                    setActive(player, false);
                     cancel();
                     return;
                 }
@@ -53,12 +56,14 @@ public class AirBlastAbility extends BaseAbility {
                 // Check for landing (wait a few ticks to ensure they left ground)
                 if (ticks > 5 && player.isOnGround()) {
                     performBlast(context);
+                    setActive(player, false);
                     cancel();
                     return;
                 }
 
                 // Timeout
                 if (ticks > 100) {
+                    setActive(player, false);
                     cancel();
                 }
 

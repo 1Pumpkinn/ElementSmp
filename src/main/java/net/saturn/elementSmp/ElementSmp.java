@@ -1,13 +1,9 @@
 package net.saturn.elementSmp;
 
 import net.saturn.elementSmp.commands.*;
-import net.saturn.elementSmp.config.Constants;
 import net.saturn.elementSmp.data.DataStore;
 import net.saturn.elementSmp.elements.abilities.AbilityRegistry;
-import net.saturn.elementSmp.elements.ElementType;
 import net.saturn.elementSmp.listeners.ability.AbilityListener;
-import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.Material;
 import net.saturn.elementSmp.listeners.combat.CombatListener;
 import net.saturn.elementSmp.listeners.GUIListener;
 import net.saturn.elementSmp.listeners.item.*;
@@ -231,8 +227,7 @@ public final class ElementSmp extends JavaPlugin {
                     @Override
                     public boolean execute(org.bukkit.command.CommandSender sender, String label, String[] args) {
                         if (!(sender instanceof org.bukkit.entity.Player player)) return false;
-                        abilityListener.triggerAbility(player, 1);
-                        return true;
+                        return abilityListener.triggerAbility(player, 1);
                     }
                 };
                 ability1Cmd.setDescription("Use Ability 1");
@@ -241,8 +236,7 @@ public final class ElementSmp extends JavaPlugin {
                     @Override
                     public boolean execute(org.bukkit.command.CommandSender sender, String label, String[] args) {
                         if (!(sender instanceof org.bukkit.entity.Player player)) return false;
-                        abilityListener.triggerAbility(player, 2);
-                        return true;
+                        return abilityListener.triggerAbility(player, 2);
                     }
                 };
                 ability2Cmd.setDescription("Use Ability 2");
@@ -275,7 +269,7 @@ public final class ElementSmp extends JavaPlugin {
         pm.registerEvents(effectService, this);
         pm.registerEvents(new GameModeListener(manaManager, configManager), this);
         pm.registerEvents(new CombatListener(trustManager, elementManager), this);
-        this.abilityListener = new AbilityListener(this, elementManager);
+        this.abilityListener = new AbilityListener(this, elementManager, manaManager, configManager);
         pm.registerEvents(this.abilityListener, this);
         registerItemListeners(pm);
         pm.registerEvents(new GUIListener(this), this);
@@ -365,6 +359,6 @@ public final class ElementSmp extends JavaPlugin {
     public ItemManager getItemManager() { return itemManager; }
     public AbilityRegistry getAbilityRegistry() { return abilityRegistry; }
     public EffectService getEffectService() { return effectService; }
-    public TaskScheduler getTaskScheduler() { return taskScheduler; }
+    public TaskScheduler getScheduler() { return taskScheduler; }
     public MetadataHelper getMetadataHelper() { return metadataHelper; }
 }
