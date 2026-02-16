@@ -11,14 +11,12 @@ public final class MetadataKeys {
     }
 
     public static final class Frost {
-        public static final String FROZEN = "frost_frozen";
         public static final String CIRCLE_FROZEN = "frost_freezing_circle";
 
         private Frost() {}
     }
 
     public static final class Metal {
-        public static final String CHAIN_STUN = "metal_chain_stunned";
         public static final String MAGNETIC_ACCUM_UNTIL = "metal_magnetic_accum_until";
         public static final String MAGNETIC_ACCUM_OWNER = "metal_magnetic_accum_owner";
         public static final String MAGNETIC_ACCUM_DAMAGE = "metal_magnetic_accum_damage";
