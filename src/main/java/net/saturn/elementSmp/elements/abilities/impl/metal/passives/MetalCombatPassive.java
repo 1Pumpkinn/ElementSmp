@@ -35,9 +35,5 @@ public class MetalCombatPassive implements Listener {
             if (trustManager.isTrusted(attacker.getUniqueId(), targetPlayer.getUniqueId())) return;
         }
 
-        // 10% chance to apply Weakness II for 3 seconds
-        if (Math.random() < 0.10) {
-            victim.addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, 60, 1));
-        }
     }
 }

@@ -23,11 +23,9 @@ public class FireballProtectionPassive implements Listener {
             return;
         }
 
-        // Check if the fireball was shot by the victim
         if (fireball.getShooter() instanceof Player shooter) {
             if (shooter.getUniqueId().equals(victim.getUniqueId())) {
-                // Cancel self-damage from own fireball
-                event.setCancelled(true);
+                return;
             }
         }
     }

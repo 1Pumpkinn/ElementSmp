@@ -8,8 +8,8 @@ import net.saturn.elementSmp.elements.abilities.impl.death.ShadowStepAbility;
 import net.saturn.elementSmp.elements.abilities.impl.earth.EarthTunnelAbility;
 import net.saturn.elementSmp.elements.abilities.impl.earth.EarthquakeAbility;
 import net.saturn.elementSmp.elements.abilities.impl.fire.*;
+import net.saturn.elementSmp.elements.abilities.impl.frost.FrostCircleAbility;
 import net.saturn.elementSmp.elements.abilities.impl.frost.FrostNovaAbility;
-import net.saturn.elementSmp.elements.abilities.impl.frost.FrostShurikenAbility;
 import net.saturn.elementSmp.elements.abilities.impl.life.*;
 import net.saturn.elementSmp.elements.abilities.impl.metal.*;
 import net.saturn.elementSmp.elements.abilities.impl.water.*;
@@ -99,7 +99,7 @@ public final class AbilityRegistry {
 
         // Frost
         register(ElementType.FROST,
-                new FrostShurikenAbility(plugin),
+                new FrostCircleAbility(plugin),
                 new FrostNovaAbility(plugin)
         );
 

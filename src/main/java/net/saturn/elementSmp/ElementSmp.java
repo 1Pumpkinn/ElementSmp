@@ -269,7 +269,7 @@ public final class ElementSmp extends JavaPlugin {
         pm.registerEvents(effectService, this);
         pm.registerEvents(new GameModeListener(manaManager, configManager), this);
         pm.registerEvents(new CombatListener(trustManager, elementManager), this);
-        this.abilityListener = new AbilityListener(this, elementManager, manaManager, configManager);
+        this.abilityListener = new AbilityListener(this, elementManager);
         pm.registerEvents(this.abilityListener, this);
         registerItemListeners(pm);
         pm.registerEvents(new GUIListener(this), this);
@@ -325,11 +325,11 @@ public final class ElementSmp extends JavaPlugin {
     }
 
     private void registerRecipes() {
-        taskScheduler.runLaterSeconds(() -> {
+        taskScheduler.runLater(() -> {
             getLogger().info("Registering recipes...");
             UtilRecipes.registerRecipes(this);
             getLogger().info("Recipes registered");
-        }, 1);
+        }, 20);
     }
 
     private void startBackgroundTasks() {

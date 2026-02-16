@@ -1,47 +1,101 @@
-[Air]
-Passive 1: Slow Falling while shifting in air
-Passive 2: No fall damage (except on dripstone) (Upgrade II)
-Ability 1: Air Dash: Dash forward swiftly, pushing enemies aside
-Ability 2: Air Blast: Launch into the air, then slam down to damage and fling enemies
+ElementSmp — Element Abilities & Passives (verified from code)
 
-[Fire]
-Passive 1: Auto smelt ores
-Passive 2: Fire aspect on any tool or fist (4s) (Upgrade II)
-Ability 1: Scorch: The next entity you hit clears their Fire Resistance
-Ability 2: Inferno Blast: Causes an explosion on you dealing 5 hearts to nearby entities
+Notes
+- Mana costs are read from config.yml. Defaults: Ability 1 = 50, Ability 2 = 75.
+- “Upgrade I” is required for Ability 1; “Upgrade II” is required for Ability 2.
+- Trust checks prevent harming trusted players across many abilities.
 
-[Water]
-Passive 1: Permanent Conduit Power
-Passive 2: Loyalty Tridents pull entities (Upgrade II)
-Ability 1: Water Prison: Trap a target in a drowning water bubble for 3 seconds
-Ability 2: Leeching Trident: Throw a trident that orbits a target and deals true damage over time
+AIR
+Passives
+- Slow Falling while sneaking in mid-air (always).
+- No fall damage at Upgrade II, except when landing on pointed dripstone.
 
-[Earth]
-Passive 1: Hero of The Village permanently
-Passive 2: Double ore drops (Upgrade II)
-Ability 1: Earth Tunnel: Dig tunnels through stone and dirt
-Ability 2: Earthquake: Stomp the ground to damage and slow nearby enemies
+Abilities
+- Air Dash [Cost: 50, Upgrade I]
+  • Dash forward (velocity ≈ 2.5× look direction). If not looking down, a small upward boost is applied.
+  • While dashing, knocks nearby entities back every few ticks (radius ≈ 3, slight upward push).
+- Air Blast [Cost: 75, Upgrade II]
+  • Launch upward, steer in air, then slam. On landing, emit a shockwave with expanding cloud ring.
+  • Nearby entities are launched outward and upward and take ~2 hearts true damage.
 
-[Life]
-Passive 1: Crop growth aura around you
-Passive 2: 15 Hearts (30 HP) max health (Upgrade II)
-Ability 1: Nature's Eye: Reveal nearby living entities through walls
-Ability 2: Entangling Roots: Pull enemies into the ground and suffocate them
+WATER
+Passives
+- Permanent Conduit Power.
+- Loyalty Tridents pull hit targets toward the thrower (Upgrade II).
 
-[Death]
-Passive 1: 10% chance to apply Wither effect on hit
-Passive 2: Invisibility and equipment hiding at 2 hearts (Upgrade II)
-Ability 1: Summon Undead: Summon a powerful undead ally
-Ability 2: Shadow Step: Teleport forward to wherever the particle lands (with gravity)
+Abilities
+- Water Prison [Cost: 50, Upgrade I]
+  • Raycast a target within ~15 blocks and trap them in a drowning bubble for ~3 seconds.
+  • Air is reduced each tick; when out of air they take damage. Target’s velocity is zeroed.
+- Leeching Trident [Cost: 75, Upgrade II]
+  • Throw a trident that becomes a visual display orbiting the hit target (~3 block radius at ~2.5 blocks high).
+  • Deals true damage periodically (~0.5 heart per second) while orbiting; plays trident sounds/particles.
 
-[Metal]
-Passive 1: Haste I permanently
-Passive 2: Immunity to all arrows (Upgrade II)
-Ability 1: Metal Dash: Swiftly dash through enemies, damaging them
-Ability 2: Magnetic Accumulation: Accumulate damage on a target, then deal it all at once after 3s
+FIRE
+Passives
+- Auto-smelt ore drops.
+- Apply Fire Aspect (set on fire ~4s) on hit at Upgrade II.
 
-[Frost]
-Passive 1: Speed II on snow, Speed III on ice
-Passive 2: Freeze water walking (Shift) (Upgrade II)
-Ability 1: Freezing Circle: Create a circle that slows and damages enemies
-Ability 2: Frost Shuriken: Launch a volley of shurikens that damage and freeze enemies
+Abilities
+- Scorch [Cost: 50, Upgrade I]
+  • Your next hit removes the victim’s Fire Resistance, with flame/smoke feedback.
+- Inferno Blast [Cost: 75, Upgrade II]
+  • Explosion centered on you; deals ~3.5 hearts true damage in ~6 block radius; ignores armor.
+
+EARTH
+Passives
+- Hero of the Village.
+- Double ore drops at Upgrade II (disabled if Silk Touch is used).
+- 10% chance to apply Slowness II for ~3s on hit.
+
+Abilities
+- Earth Tunnel [Cost: 50, Upgrade I]
+  • Toggle tunneling; breaks a 3×3 tunnel in front of you on a timer for up to ~20s. Press again to cancel.
+- Earthquake [Cost: 75, Upgrade II]
+  • Shockwave around you with dense ground particles; applies Slowness II and Weakness I to nearby enemies (~5s).
+
+LIFE
+Passives
+- Crop growth aura around you (~5 block radius; accelerates crops to max age).
+- Max health becomes 30 HP (15 hearts) at Upgrade II; reverts when not Life.
+
+Abilities
+- Nature’s Eye [Cost: 50, Upgrade I]
+  • Reveal nearby living entities through walls (glowing effect) for ~5s, with supportive particles/sounds.
+- Entangling Roots [Cost: 75, Upgrade II]
+  • Raycast a target within ~15 blocks; sink them slightly below ground while immobilizing for ~5s with frost/root visuals, then return them.
+
+DEATH
+Passives
+- 10% chance to apply Wither (≈5s) on hit.
+- At ≤2 hearts and Upgrade II, gain Invisibility and hide equipment to others; auto-maintained until health rises.
+
+Abilities
+- Summon Undead [Cost: 50, Upgrade I]
+  • Summon a geared Wither Skeleton that follows you across worlds, attacks non‑trusted players, and lasts ~2 minutes.
+- Shadow Step [Cost: 75, Upgrade II]
+  • Fire a shadow “projectile” with gravity; teleport to the first collided surface, preserving look direction.
+
+METAL
+Passives
+- Haste I.
+- Arrow damage immunity at Upgrade II.
+
+Abilities
+- Metal Dash [Cost: 50, Upgrade I]
+  • Dash forward, dealing ~2 hearts true damage and knockback to hit entities.
+  • If you land without hitting anyone, you become briefly stunned (movement suppressed) then recover.
+- Magnetic Accumulation [Cost: 75, Upgrade II]
+  • Tag a target for ~3s; damage you deal to them during this window is accumulated and then released as true damage (≈30% of accumulated, capped at ~8).
+  • Default melee/projectile damage is canceled against the tagged target; the final burst applies at the end.
+
+FROST
+Passives
+- Speed III on ice blocks at Upgrade II (ice, packed/blue/frosted).
+- Freeze surface water while sneaking at Upgrade II (creates temporary frosted ice under/near you).
+
+Abilities
+- Frost Circle [Cost: 50, Upgrade I]
+  • Persistent area around you (~5 block radius, ~10s) that builds Freeze ticks, applies Slowness II, and deals light periodic damage.
+- Frost Nova [Cost: 75, Upgrade II]
+  • Instant frost burst: damages (~3 hearts), applies freeze, and immediately shockwaves entities outward with flat ring particles and upward launch.

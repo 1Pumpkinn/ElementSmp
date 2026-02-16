@@ -44,10 +44,8 @@ public class FrostSpeedPassive implements Listener {
                     var playerData = elementManager.data(player.getUniqueId());
                     int upgradeLevel = playerData.getUpgradeLevel(ElementType.FROST);
 
-                    boolean hasLeatherBoots = isWearingLeatherBoots(player);
                     boolean onIce = upgradeLevel >= 2 && isOnIce(player);
-
-                    int desiredLevel = onIce ? 2 : (hasLeatherBoots ? 1 : -1);
+                    int desiredLevel = onIce ? 2 : -1;
                     PotionEffect current = player.getPotionEffect(PotionEffectType.SPEED);
 
                     if (desiredLevel == -1) {
