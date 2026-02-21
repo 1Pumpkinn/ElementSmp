@@ -77,6 +77,7 @@ public class ElementSelectionGUI {
         ItemMeta meta = border.getItemMeta();
         if (meta != null) {
             meta.setDisplayName(" ");
+            meta.getPersistentDataContainer().set(net.saturn.elementSmp.items.ItemKeys.guiItem(plugin), org.bukkit.persistence.PersistentDataType.BYTE, (byte)1);
             border.setItemMeta(meta);
         }
         return border;
@@ -140,6 +141,7 @@ public class ElementSelectionGUI {
             meta.setDisplayName(color + name);
             List<String> lore = new ArrayList<>();
             lore.add(ChatColor.GRAY + "Rolling...");
+            meta.getPersistentDataContainer().set(net.saturn.elementSmp.items.ItemKeys.guiItem(plugin), org.bukkit.persistence.PersistentDataType.BYTE, (byte)1);
             meta.setLore(lore);
             item.setItemMeta(meta);
         }
@@ -147,7 +149,7 @@ public class ElementSelectionGUI {
     }
     
     private void startAnimation() {
-        if (isAnimating) return;
+        if (isAnimating || isFinished) return;
         
         isAnimating = true;
         Random random = new Random();
@@ -215,6 +217,7 @@ public class ElementSelectionGUI {
     }
     
     private void finishAnimation() {
+        if (isFinished) return;
         isAnimating = false;
         isFinished = true;
         
@@ -226,7 +229,6 @@ public class ElementSelectionGUI {
             meta.setLore(lore);
             finalItem.setItemMeta(meta);
         }
-        
         inventory.setItem(13, finalItem);
         
         new BukkitRunnable() {
@@ -260,9 +262,7 @@ public class ElementSelectionGUI {
     }
     
     public void handleClick(int slot) {
-        if (slot == 13 && !isAnimating) {
-            startAnimation();
-        }
+        // Intentionally left blank to prevent re-triggering animations via clicks
     }
     
     public void cleanup() {

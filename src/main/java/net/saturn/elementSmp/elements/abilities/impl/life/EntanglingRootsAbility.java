@@ -104,7 +104,31 @@ public class EntanglingRootsAbility extends BaseAbility {
         }
 
         Location originalLoc = target.getLocation().clone();
-        Location sinkLoc = originalLoc.clone().subtract(0, 1.2, 0);
+        Location sinkLoc;
+        Location tmpReleaseLoc = originalLoc.clone();
+        double sinkDepth = Math.max(0.3, Math.min(0.7, target.getHeight() * 0.35));
+        boolean startedInAir = !target.isOnGround();
+        if (startedInAir) {
+            org.bukkit.util.RayTraceResult groundHit = target.getWorld().rayTraceBlocks(
+                    target.getLocation().add(0, 1, 0),
+                    new Vector(0, -1, 0),
+                    256,
+                    FluidCollisionMode.NEVER,
+                    true
+            );
+            if (groundHit != null && groundHit.getHitBlock() != null) {
+                double groundY = groundHit.getHitPosition().getY();
+                sinkLoc = new Location(originalLoc.getWorld(), originalLoc.getX(), groundY - sinkDepth, originalLoc.getZ());
+                tmpReleaseLoc = new Location(originalLoc.getWorld(), originalLoc.getX(), groundY + 0.1, originalLoc.getZ());
+            } else {
+                sinkLoc = originalLoc.clone().subtract(0, sinkDepth, 0);
+                tmpReleaseLoc = originalLoc.clone();
+            }
+        } else {
+            sinkLoc = originalLoc.clone().subtract(0, sinkDepth, 0);
+            tmpReleaseLoc = originalLoc.clone();
+        }
+        final Location releaseLoc = tmpReleaseLoc;
         
         originalLoc.getWorld().playSound(originalLoc, Sound.BLOCK_ROOTS_BREAK, 1.5f, 0.5f);
         originalLoc.getWorld().spawnParticle(Particle.BLOCK, originalLoc, 50, 0.5, 0.5, 0.5, 0.1, org.bukkit.Material.MANGROVE_ROOTS.createBlockData());
@@ -117,6 +141,10 @@ public class EntanglingRootsAbility extends BaseAbility {
         target.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, 100, 10, false, false, true));
 
         final LivingEntity finalTarget = target;
+        final boolean wasAllowFlight = (target instanceof Player p) ? p.getAllowFlight() : false;
+        if (target instanceof Player p) {
+            p.setAllowFlight(true);
+        }
 
         new BukkitRunnable() {
             int ticks = 0;
@@ -128,8 +156,13 @@ public class EntanglingRootsAbility extends BaseAbility {
                         if (finalTarget instanceof Mob mob) {
                             mob.setAware(true);
                         }
-                        // Teleport back up safely
-                        finalTarget.teleport(originalLoc);
+                        // Teleport to safe ground if started in air; otherwise, back to the original spot
+                        finalTarget.teleport(releaseLoc);
+                        if (finalTarget instanceof Player p) {
+                            if (!wasAllowFlight && p.getGameMode() != org.bukkit.GameMode.CREATIVE && p.getGameMode() != org.bukkit.GameMode.SPECTATOR) {
+                                p.setAllowFlight(false);
+                            }
+                        }
                     }
                     cancel();
                     return;

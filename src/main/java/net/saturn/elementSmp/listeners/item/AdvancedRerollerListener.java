@@ -16,11 +16,16 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 
+import java.util.Map;
 import java.util.Random;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class AdvancedRerollerListener implements Listener {
     private final ElementSmp plugin;
     private final Random random = new Random();
+    private static final Map<UUID, Long> lastWarnAt = new ConcurrentHashMap<>();
+    private static final long WARN_COOLDOWN_MS = 1000L;
 
     public AdvancedRerollerListener(ElementSmp plugin) {
         this.plugin = plugin;
@@ -50,12 +55,16 @@ public class AdvancedRerollerListener implements Listener {
         ItemStack offHand = player.getInventory().getItemInOffHand();
 
         if (isAnyReroller(mainHand) && isAnyReroller(offHand)) {
-            player.sendMessage(ChatColor.RED + "You cannot use rerollers while holding one in each hand!");
+            if (shouldWarn(player)) {
+                player.sendMessage(ChatColor.RED + "You cannot use rerollers while holding one in each hand!");
+            }
             return;
         }
 
         if (plugin.getElementManager().isCurrentlyRolling(player)) {
-            player.sendMessage(ChatColor.RED + "You are already rerolling your element!");
+            if (shouldWarn(player)) {
+                player.sendMessage(ChatColor.RED + "You are already rerolling your element!");
+            }
             return;
         }
 
@@ -65,7 +74,7 @@ public class AdvancedRerollerListener implements Listener {
         item.setAmount(item.getAmount() - 1);
         if (item.getAmount() <= 0) player.getInventory().removeItem(item);
 
-        ElementType[] pool = {ElementType.METAL, ElementType.FROST};
+        ElementType[] pool = {ElementType.METAL, ElementType.FROST, ElementType.LIFE, ElementType.DEATH};
         new ElementSelectionGUI(plugin, player, true, ItemKeys.KEY_ADVANCED_REROLLER, pool).open();
     }
 
@@ -74,6 +83,17 @@ public class AdvancedRerollerListener implements Listener {
         var container = item.getItemMeta().getPersistentDataContainer();
         return container.has(ItemKeys.reroller(plugin), PersistentDataType.BYTE) ||
                container.has(ItemKeys.advancedReroller(plugin), PersistentDataType.BYTE);
+    }
+
+    private boolean shouldWarn(Player player) {
+        long now = System.currentTimeMillis();
+        UUID id = player.getUniqueId();
+        Long last = lastWarnAt.get(id);
+        if (last == null || now - last > WARN_COOLDOWN_MS) {
+            lastWarnAt.put(id, now);
+            return true;
+        }
+        return false;
     }
 
     private void clearOldElementEffects(Player player, PlayerData pd) {

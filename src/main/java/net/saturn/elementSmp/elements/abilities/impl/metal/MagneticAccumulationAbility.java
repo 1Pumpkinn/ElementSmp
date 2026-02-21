@@ -102,11 +102,17 @@ public class MagneticAccumulationAbility extends BaseAbility implements Listener
 
                             finalTarget.setNoDamageTicks(0);
                             double oldHealth = finalTarget.getHealth();
-                            finalTarget.damage(0.1);
+                            if (!(finalTarget instanceof Player pp && (pp.getGameMode() == org.bukkit.GameMode.CREATIVE || pp.getGameMode() == org.bukkit.GameMode.SPECTATOR))) {
+                                finalTarget.damage(0.1);
+                            }
 
                             double expectedHealth = oldHealth - finalDamage;
                             if (finalTarget.getHealth() > expectedHealth) {
-                                finalTarget.setHealth(Math.max(0, expectedHealth));
+                                if (finalTarget instanceof Player p && (p.getGameMode() == org.bukkit.GameMode.CREATIVE || p.getGameMode() == org.bukkit.GameMode.SPECTATOR)) {
+                                    // Skip true damage reduction for creative/spectator players
+                                } else {
+                                    finalTarget.setHealth(Math.max(0, expectedHealth));
+                                }
                             }
 
                             finalTarget.getWorld().spawnParticle(Particle.LAVA, finalTarget.getLocation().add(0, 1, 0), 1, 0, 0, 0, 0.1, null, true);

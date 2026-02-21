@@ -10,6 +10,7 @@ public final class ItemKeys {
 
     public static final String KEY_REROLLER = "element_reroller";
     public static final String KEY_ADVANCED_REROLLER = "advanced_reroller";
+    public static final String KEY_GUI_ITEM = "rolling_gui_item";
 
     public static NamespacedKey namespaced(ElementSmp plugin, String key) {
         return new NamespacedKey(plugin, key);
@@ -18,4 +19,5 @@ public final class ItemKeys {
     public static NamespacedKey upgraderLevel(ElementSmp plugin) { return namespaced(plugin, KEY_UPGRADER_LEVEL); }
     public static NamespacedKey reroller(ElementSmp plugin) { return namespaced(plugin, KEY_REROLLER); }
     public static NamespacedKey advancedReroller(ElementSmp plugin) { return namespaced(plugin, KEY_ADVANCED_REROLLER); }
+    public static NamespacedKey guiItem(ElementSmp plugin) { return namespaced(plugin, KEY_GUI_ITEM); }
 }

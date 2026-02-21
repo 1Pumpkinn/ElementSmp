@@ -15,6 +15,8 @@ import org.bukkit.persistence.PersistentDataType;
 
 public class RerollerListener implements Listener {
     private final ElementSmp plugin;
+    private static final java.util.Map<java.util.UUID, Long> lastWarnAt = new java.util.concurrent.ConcurrentHashMap<>();
+    private static final long WARN_COOLDOWN_MS = 1000L;
 
     public RerollerListener(ElementSmp plugin) {
         this.plugin = plugin;
@@ -45,12 +47,16 @@ public class RerollerListener implements Listener {
             ItemStack offHand = player.getInventory().getItemInOffHand();
 
             if (isAnyReroller(mainHand) && isAnyReroller(offHand)) {
-                player.sendMessage(net.kyori.adventure.text.Component.text("You cannot use rerollers while holding one in each hand!").color(net.kyori.adventure.text.format.NamedTextColor.RED));
+                if (shouldWarn(player)) {
+                    player.sendMessage(net.kyori.adventure.text.Component.text("You cannot use rerollers while holding one in each hand!").color(net.kyori.adventure.text.format.NamedTextColor.RED));
+                }
                 return;
             }
 
             if (plugin.getElementManager().isCurrentlyRolling(player)) {
-                player.sendMessage(net.kyori.adventure.text.Component.text("You are already rerolling your element!").color(net.kyori.adventure.text.format.NamedTextColor.RED));
+                if (shouldWarn(player)) {
+                    player.sendMessage(net.kyori.adventure.text.Component.text("You are already rerolling your element!").color(net.kyori.adventure.text.format.NamedTextColor.RED));
+                }
                 return;
             }
 
@@ -78,6 +84,17 @@ public class RerollerListener implements Listener {
         var container = item.getItemMeta().getPersistentDataContainer();
         return container.has(ItemKeys.reroller(plugin), PersistentDataType.BYTE) ||
                container.has(ItemKeys.advancedReroller(plugin), PersistentDataType.BYTE);
+    }
+
+    private boolean shouldWarn(Player player) {
+        long now = System.currentTimeMillis();
+        java.util.UUID id = player.getUniqueId();
+        Long last = lastWarnAt.get(id);
+        if (last == null || now - last > WARN_COOLDOWN_MS) {
+            lastWarnAt.put(id, now);
+            return true;
+        }
+        return false;
     }
 
     private void clearOldElementEffects(Player player, ElementType oldElement) {

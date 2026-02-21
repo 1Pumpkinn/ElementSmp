@@ -121,7 +121,11 @@ public class WaterLeechTridentAbility extends BaseAbility implements Listener {
                         // True Damage Correction: If armor reduced the damage, force the rest of the health loss
                         double expectedHealth = oldHealth - trueDamage;
                         if (target.getHealth() > expectedHealth) {
-                            target.setHealth(Math.max(0, expectedHealth));
+                            if (target instanceof Player p && (p.getGameMode() == org.bukkit.GameMode.CREATIVE || p.getGameMode() == org.bukkit.GameMode.SPECTATOR)) {
+                                // Skip health reduction for creative/spectator players
+                            } else {
+                                target.setHealth(Math.max(0, expectedHealth));
+                            }
                         }
                         
                         target.getWorld().playSound(target.getLocation(), Sound.ITEM_TRIDENT_RETURN, 0.5f, 1.0f);

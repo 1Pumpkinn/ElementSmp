@@ -52,12 +52,18 @@ public class InfernoBlastAbility extends BaseAbility {
                 double damage = Constants.Damage.FIRE_EXPLOSION_DAMAGE;
                 
                 // Set health directly for true damage, but ensure we don't go below 0
-                double newHealth = Math.max(0, victim.getHealth() - damage);
-                victim.setHealth(newHealth);
+                if (victim instanceof Player p && (p.getGameMode() == org.bukkit.GameMode.CREATIVE || p.getGameMode() == org.bukkit.GameMode.SPECTATOR)) {
+                    // Do not apply true damage to creative/spectator players
+                } else {
+                    double newHealth = Math.max(0, victim.getHealth() - damage);
+                    victim.setHealth(newHealth);
+                }
 
                 // Trigger hurt animation and attribute damage to the player
                 // We use a tiny amount of damage to trigger the damage event for death attribution
-                victim.damage(0.01, player);
+                if (!(victim instanceof Player p2 && (p2.getGameMode() == org.bukkit.GameMode.CREATIVE || p2.getGameMode() == org.bukkit.GameMode.SPECTATOR))) {
+                    victim.damage(0.01, player);
+                }
             }
         }
         

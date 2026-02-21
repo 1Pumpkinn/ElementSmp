@@ -88,7 +88,11 @@ public class MetalDashAbility extends BaseAbility implements Listener {
                         damagedEntities.add(entity.getUniqueId());
 
                         // Deal TRUE DAMAGE
-                        entity.setHealth(Math.max(0, entity.getHealth() - 4.0));
+                        if (entity instanceof Player p && (p.getGameMode() == org.bukkit.GameMode.CREATIVE || p.getGameMode() == org.bukkit.GameMode.SPECTATOR)) {
+                            // Skip true damage reduction for creative/spectator players
+                        } else {
+                            entity.setHealth(Math.max(0, entity.getHealth() - 4.0));
+                        }
 
                         // Effects
                         Vector knockback = entity.getLocation().toVector().subtract(loc.toVector()).normalize();

@@ -28,6 +28,9 @@ public class AirBlastAbility extends BaseAbility {
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BAT_TAKEOFF, 1f, 0.5f);
         player.getWorld().spawnParticle(Particle.CLOUD, player.getLocation(), 10, 0.5, 0.5, 0.5, 0.1);
 
+        final boolean wasAllowFlight = player.getAllowFlight();
+        player.setAllowFlight(true);
+
         setActive(player, true);
 
         // Monitor flight and perform blast on landing
@@ -57,6 +60,9 @@ public class AirBlastAbility extends BaseAbility {
                 if (ticks > 5 && player.isOnGround()) {
                     performBlast(context);
                     setActive(player, false);
+                    if (!wasAllowFlight && player.getGameMode() != org.bukkit.GameMode.CREATIVE && player.getGameMode() != org.bukkit.GameMode.SPECTATOR) {
+                        player.setAllowFlight(false);
+                    }
                     cancel();
                     return;
                 }
@@ -64,6 +70,9 @@ public class AirBlastAbility extends BaseAbility {
                 // Timeout
                 if (ticks > 100) {
                     setActive(player, false);
+                    if (!wasAllowFlight && player.getGameMode() != org.bukkit.GameMode.CREATIVE && player.getGameMode() != org.bukkit.GameMode.SPECTATOR) {
+                        player.setAllowFlight(false);
+                    }
                     cancel();
                 }
 
@@ -136,7 +145,11 @@ public class AirBlastAbility extends BaseAbility {
             // True Damage Correction
             double expectedHealth = oldHealth - trueDamage;
             if (e.getHealth() > expectedHealth) {
-                e.setHealth(Math.max(0, expectedHealth));
+                if (e instanceof Player p && (p.getGameMode() == org.bukkit.GameMode.CREATIVE || p.getGameMode() == org.bukkit.GameMode.SPECTATOR)) {
+                    // Do not reduce creative/spectator player health with true damage correction
+                } else {
+                    e.setHealth(Math.max(0, expectedHealth));
+                }
             }
         }
 
