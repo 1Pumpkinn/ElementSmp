@@ -4,8 +4,13 @@ main: net.saturn.elementSmp.ElementSmp
 api-version: '1.21'
 load: STARTUP
 authors: [ ___Pumpkinn ]
-
-depend: []
+softdepend:
+  - ProtocolLib
+  - ProtocolSupport
+  - ViaVersion
+  - ViaBackwards
+  - ViaRewind
+  - Geyser-Spigot
 commands:
   elements:
     description: View element info

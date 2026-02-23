@@ -45,7 +45,7 @@ public final class Constants {
     public static final class Duration {
         public static final long EARTH_TUNNEL_MS = 20_000L;
         public static final long EARTH_CHARM_MS = 30_000L;
-        public static final long DEATH_SUMMON_MS = 120_000L;
+        public static final long DEATH_SUMMON_MS = 20_000L;
         public static final long FROST_PUNCH_READY_MS = 10_000L;
         public static final long FROST_FREEZE_MS = 5_000L;
         public static final long FROST_CIRCLE_MS = 10_000L;

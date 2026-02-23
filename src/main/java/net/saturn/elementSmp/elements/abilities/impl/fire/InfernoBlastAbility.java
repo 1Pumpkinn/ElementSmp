@@ -66,7 +66,5 @@ public class InfernoBlastAbility extends BaseAbility {
                 }
             }
         }
-        
-        player.sendMessage(ChatColor.GOLD + "BOOM!");
     }
 }

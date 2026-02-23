@@ -16,7 +16,6 @@ import net.saturn.elementSmp.elements.abilities.impl.air.passives.*;
 import net.saturn.elementSmp.elements.abilities.impl.water.passives.WaterCombatPassive;
 import net.saturn.elementSmp.elements.abilities.impl.fire.passives.FireAutoSmeltPassive;
 import net.saturn.elementSmp.elements.abilities.impl.fire.passives.FireCombatPassive;
-import net.saturn.elementSmp.elements.abilities.impl.fire.passives.FireballProtectionPassive;
 import net.saturn.elementSmp.elements.abilities.impl.earth.passives.*;
 import net.saturn.elementSmp.elements.abilities.impl.life.passives.*;
 import net.saturn.elementSmp.elements.abilities.impl.death.passives.*;
@@ -297,7 +296,6 @@ public final class ElementSmp extends JavaPlugin {
         
         // Fire
         pm.registerEvents(new FireCombatPassive(elementManager, trustManager), this);
-        pm.registerEvents(new FireballProtectionPassive(), this);
         pm.registerEvents(new FireAutoSmeltPassive(elementManager), this);
         
         // Earth

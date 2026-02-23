@@ -23,8 +23,8 @@ public final class ElementInfoRegistry {
                         "Slow Falling while shifting in air",
                         "No fall damage (except on dripstone) (Upgrade II)"
                 ),
-                new ElementInfo.AbilityInfo("Air Dash", "Dash forward swiftly, pushing enemies aside", 75, 1),
-                new ElementInfo.AbilityInfo("Air Blast", "Launch into the air, then slam down to damage and fling enemies", 50, 2)
+                new ElementInfo.AbilityInfo("Air Dash", "Dash forward swiftly, pushing enemies aside", 50, 1),
+                new ElementInfo.AbilityInfo("Air Blast", "Launch into the air, then slam down to damage and fling enemies", 75, 2)
         ));
 
         // Fire
@@ -107,8 +107,8 @@ public final class ElementInfoRegistry {
                         "Speed II on snow, Speed III on ice",
                         "Freeze water walking (Shift) (Upgrade II)"
                 ),
-                new ElementInfo.AbilityInfo("Frozen Punch", "Punch an enemy to freeze them solid", 75, 1),
-                new ElementInfo.AbilityInfo("Frost Nova", "Create a burst of frost, damaging and freezing nearby enemies", 50, 2)
+                new ElementInfo.AbilityInfo("Frozen Punch", "Punch an enemy to freeze them solid", 50, 1),
+                new ElementInfo.AbilityInfo("Frost Nova", "Create a burst of frost, damaging and freezing nearby enemies", 75, 2)
         ));
     }
 

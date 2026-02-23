@@ -98,7 +98,7 @@ public class MagneticAccumulationAbility extends BaseAbility implements Listener
                         double accumulated = getAccumulated(finalTarget);
                         if (accumulated > 0.0) {
                             double base = accumulated * 0.3;
-                            double finalDamage = Math.min(base, 8.0);
+                            double finalDamage = Math.min(base, 10.0);
 
                             finalTarget.setNoDamageTicks(0);
                             double oldHealth = finalTarget.getHealth();
