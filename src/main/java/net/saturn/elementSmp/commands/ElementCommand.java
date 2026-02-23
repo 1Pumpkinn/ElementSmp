@@ -1,6 +1,13 @@
 package net.saturn.elementSmp.commands;
 
 import net.saturn.elementSmp.ElementSmp;
+import net.saturn.elementSmp.config.Constants;
+import net.saturn.elementSmp.elements.ElementInfo;
+import net.saturn.elementSmp.elements.ElementInfoRegistry;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import net.saturn.elementSmp.data.DataStore;
 import net.saturn.elementSmp.elements.ElementType;
 import net.saturn.elementSmp.gui.ElementSelectionGUI;
@@ -34,23 +41,25 @@ public class ElementCommand implements CommandExecutor, TabCompleter {
         commands.put("set", new SetCommand());
         commands.put("debug", new DebugCommand());
         commands.put("roll", new RollCommand());
+        commands.put("info", new InfoCommand());
         return commands;
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!sender.hasPermission("element.admin")) {
-            sender.sendMessage(ChatColor.RED + "You don't have permission to use this command.");
-            return true;
-        }
-
         if (args.length == 0) {
             sendHelp(sender);
             return true;
         }
 
-        SubCommand subCommand = subCommands.get(args[0].toLowerCase());
+        String sub = args[0].toLowerCase();
+        SubCommand subCommand = subCommands.get(sub);
         if (subCommand != null) {
+            // Allow '/element info' for all players; other subcommands require admin
+            if (!sub.equals("info") && !sender.hasPermission("element.admin")) {
+                sender.sendMessage(ChatColor.RED + "You don't have permission to use this command.");
+                return true;
+            }
             return subCommand.execute(sender, args);
         }
 
@@ -63,31 +72,41 @@ public class ElementCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage(ChatColor.YELLOW + "/element set <player> <element> - Set player's element");
         sender.sendMessage(ChatColor.YELLOW + "/element debug <player> - Debug player's element data");
         sender.sendMessage(ChatColor.YELLOW + "/element roll - Roll for a new element (OP only)");
+        sender.sendMessage(ChatColor.YELLOW + "/element info <element> - View element details");
     }
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
-        if (!sender.hasPermission("element.admin")) {
-            return Collections.emptyList();
-        }
-
-        return switch (args.length) {
-            case 1 -> filterStartingWith(subCommands.keySet(), args[0]);
-            case 2 -> {
-                String subCmd = args[0].toLowerCase();
-                if (subCommands.containsKey(subCmd)) {
-                    if (subCmd.equals("roll")) {
-                        yield Collections.emptyList();
-                    }
-                    yield getOnlinePlayerNames(args[1]);
+        boolean isAdmin = sender.hasPermission("element.admin");
+        switch (args.length) {
+            case 1:
+                Set<String> base = new HashSet<>();
+                base.add("info");
+                if (isAdmin) {
+                    base.addAll(subCommands.keySet());
                 }
-                yield Collections.emptyList();
+                return filterStartingWith(base, args[0]);
+            case 2: {
+                String subCmd = args[0].toLowerCase();
+                if (subCmd.equals("info")) {
+                    return filterStartingWith(getElementNames(), args[1]);
+                }
+                if (isAdmin && subCommands.containsKey(subCmd)) {
+                    if (subCmd.equals("roll")) {
+                        return Collections.emptyList();
+                    }
+                    return getOnlinePlayerNames(args[1]);
+                }
+                return Collections.emptyList();
             }
-            case 3 -> args[0].equalsIgnoreCase("set") ?
-                    filterStartingWith(getElementNames(), args[2]) :
-                    Collections.emptyList();
-            default -> Collections.emptyList();
-        };
+            case 3:
+                if (isAdmin && args[0].equalsIgnoreCase("set")) {
+                    return filterStartingWith(getElementNames(), args[2]);
+                }
+                return Collections.emptyList();
+            default:
+                return Collections.emptyList();
+        }
     }
 
     private List<String> filterStartingWith(Collection<String> options, String prefix) {
@@ -206,6 +225,99 @@ public class ElementCommand implements CommandExecutor, TabCompleter {
             player.sendMessage(ChatColor.GREEN + "Rolling for a new element...");
 
             return true;
+        }
+    }
+
+    private class InfoCommand implements SubCommand {
+        @Override
+        public boolean execute(CommandSender sender, String[] args) {
+            if (!(sender instanceof Player player)) {
+                sender.sendMessage(ChatColor.RED + "Only players can use this command!");
+                return true;
+            }
+            if (args.length < 2) {
+                player.sendMessage(Component.text("Usage: /element info <element>")
+                        .color(NamedTextColor.YELLOW));
+                return true;
+            }
+            showElementDetails(player, args[1]);
+            return true;
+        }
+
+        private void showElementDetails(Player player, String elementName) {
+            ElementType type;
+            try {
+                type = ElementType.valueOf(elementName.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                player.sendMessage(Component.text("❌ Unknown element: " + elementName)
+                        .color(NamedTextColor.RED));
+                player.sendMessage(Component.text("Use /element info <element>")
+                        .color(NamedTextColor.GRAY));
+                return;
+            }
+
+            Optional<ElementInfo> infoOpt = ElementInfoRegistry.getInfo(type);
+            if (infoOpt.isEmpty()) {
+                player.sendMessage(Component.text("❌ No information available for " + type.name())
+                        .color(NamedTextColor.RED));
+                return;
+            }
+
+            ElementInfo info = infoOpt.get();
+            TextColor elementColor = TextColor.color(info.color().asBungee().getColor().getRGB());
+
+            player.sendMessage(Component.empty());
+            player.sendMessage(Component.text("✦ ")
+                    .color(NamedTextColor.GOLD)
+                    .append(Component.text(type.name() + " ELEMENT")
+                            .color(elementColor)
+                            .decorate(TextDecoration.BOLD))
+                    .append(Component.text(" ✦")
+                            .color(NamedTextColor.GOLD)));
+            player.sendMessage(Component.empty());
+
+            player.sendMessage(Component.text("⭐ Passives")
+                    .color(NamedTextColor.GOLD)
+                    .decorate(TextDecoration.BOLD));
+            for (String benefit : info.passiveBenefits()) {
+                player.sendMessage(Component.text("  • ")
+                        .color(NamedTextColor.DARK_GRAY)
+                        .append(Component.text(benefit)
+                                .color(NamedTextColor.GRAY)));
+            }
+            player.sendMessage(Component.empty());
+
+            player.sendMessage(Component.text("⚡ Abilities")
+                    .color(NamedTextColor.GOLD)
+                    .decorate(TextDecoration.BOLD));
+
+            displayAbility(player, info.ability1(), 1, NamedTextColor.AQUA);
+            displayAbility(player, info.ability2(), 2, NamedTextColor.LIGHT_PURPLE);
+
+            player.sendMessage(Component.empty());
+        }
+
+        private void displayAbility(Player player, ElementInfo.AbilityInfo ability, int index, TextColor nameColor) {
+            String numIcon = index == 1 ? "①" : "②";
+            String upgradeTag = ability.requiredUpgradeLevel() == 1 ? "Upgrade I" : "Upgrade II";
+
+            player.sendMessage(Component.text("  " + numIcon + " ")
+                    .color(nameColor)
+                    .append(Component.text(ability.name())
+                            .color(nameColor)
+                            .decorate(TextDecoration.BOLD))
+                    .append(Component.text(" [" + upgradeTag + "]")
+                            .color(NamedTextColor.DARK_GRAY)
+                            .decorate(TextDecoration.ITALIC)));
+
+            player.sendMessage(Component.text("     " + ability.description())
+                    .color(NamedTextColor.GRAY));
+
+            player.sendMessage(Component.text("     " + Constants.Mana.ICON + " Mana: ")
+                    .color(NamedTextColor.DARK_AQUA)
+                    .append(Component.text(ability.manaCost())
+                            .color(NamedTextColor.AQUA)));
+            player.sendMessage(Component.empty());
         }
     }
 }

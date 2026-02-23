@@ -75,8 +75,7 @@ public class ElementInfoCommand implements CommandExecutor, TabCompleter {
                         .color(NamedTextColor.GOLD)));
         player.sendMessage(Component.empty());
 
-        // Passive Benefits
-        player.sendMessage(Component.text("⭐ Passive Benefits")
+        player.sendMessage(Component.text("⭐ Passives")
                 .color(NamedTextColor.GOLD)
                 .decorate(TextDecoration.BOLD));
         for (String benefit : info.passiveBenefits()) {

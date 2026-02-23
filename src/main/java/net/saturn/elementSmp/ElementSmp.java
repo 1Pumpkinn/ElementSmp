@@ -142,20 +142,6 @@ public final class ElementSmp extends JavaPlugin {
                 };
                 elementsCmd.setDescription("View element info");
 
-                var elementInfoCmd = new org.bukkit.command.defaults.BukkitCommand("elementinfo") {
-                    private final ElementInfoCommand executor = new ElementInfoCommand(ElementSmp.this);
-
-                    @Override
-                    public boolean execute(org.bukkit.command.CommandSender sender, String label, String[] args) {
-                        return executor.onCommand(sender, this, label, args);
-                    }
-
-                    @Override
-                    public java.util.List<String> tabComplete(org.bukkit.command.CommandSender sender, String alias, String[] args) {
-                        return executor.onTabComplete(sender, this, alias, args);
-                    }
-                };
-                elementInfoCmd.setDescription("View detailed information about an element");
 
                 var trustCmd = new org.bukkit.command.defaults.BukkitCommand("trust") {
                     private final TrustCommand executor = new TrustCommand(ElementSmp.this, trustManager);
@@ -242,7 +228,6 @@ public final class ElementSmp extends JavaPlugin {
 
                 // Register all commands
                 commandMap.register("elementsmp", elementsCmd);
-                commandMap.register("elementsmp", elementInfoCmd);
                 commandMap.register("elementsmp", trustCmd);
                 commandMap.register("elementsmp", elementCmd);
                 commandMap.register("elementsmp", manaCmd);
