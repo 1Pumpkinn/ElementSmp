@@ -70,7 +70,7 @@ public class EarthTunnelAbility extends BaseAbility {
 
         // Start the tunneling ability
         player.setMetadata(EarthElement.META_TUNNELING, new FixedMetadataValue(plugin, System.currentTimeMillis() + 20_000L));
-        player.getWorld().playSound(player.getLocation(), Sound.BLOCK_STONE_BREAK, 1f, 0.8f);
+        player.getWorld().playSound(player.getLocation(), Sound.BLOCK_STONE_BREAK, 1f, 0);
         player.sendMessage(ChatColor.GOLD + "Tunneling started Press again to cancel.");
 
         setActive(player, true);

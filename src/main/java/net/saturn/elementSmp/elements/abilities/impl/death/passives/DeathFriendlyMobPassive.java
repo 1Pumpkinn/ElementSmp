@@ -29,7 +29,6 @@ public class DeathFriendlyMobPassive implements Listener {
         startFollowTask();
     }
 
-
     private void startFollowTask() {
         new BukkitRunnable() {
             @Override
@@ -53,12 +52,10 @@ public class DeathFriendlyMobPassive implements Listener {
                             Player owner = Bukkit.getPlayer(ownerId);
 
                             if (owner != null && owner.isOnline()) {
-                                // NEW: Make the mob swim if it's in water
                                 if (mob.getLocation().getBlock().isLiquid()) {
                                     mob.setVelocity(mob.getVelocity().add(new org.bukkit.util.Vector(0, 0.1, 0)));
                                 }
 
-                                // Handle cross-world following
                                 if (!mob.getWorld().equals(owner.getWorld())) {
                                     mob.teleport(owner.getLocation());
                                     continue;
@@ -66,7 +63,6 @@ public class DeathFriendlyMobPassive implements Listener {
 
                                 double distance = mob.getLocation().distance(owner.getLocation());
 
-                                // If too far, teleport closer (but ONLY if owner is on ground)
                                 if (distance > Constants.Distance.MOB_TELEPORT_DISTANCE) {
                                     if (owner.isOnGround()) {
                                         mob.teleport(owner.getLocation());
@@ -74,10 +70,15 @@ public class DeathFriendlyMobPassive implements Listener {
                                     continue;
                                 }
 
-                                // If mob has no target or target is dead/invalid, look for enemies
                                 LivingEntity currentTarget = mob.getTarget();
+
+                                // Clear target if it's another summoned mob (prevents skeleton-vs-skeleton)
+                                if (currentTarget instanceof Mob targetMob && targetMob.hasMetadata(MetadataKeys.Death.SUMMONED_OWNER)) {
+                                    mob.setTarget(null);
+                                    currentTarget = null;
+                                }
+
                                 if (currentTarget == null || !currentTarget.isValid() || currentTarget.isDead()) {
-                                    // Look for nearest enemy to attack
                                     Player nearestEnemy = null;
                                     double bestDistance = Double.MAX_VALUE;
 
@@ -96,7 +97,6 @@ public class DeathFriendlyMobPassive implements Listener {
                                         mob.setTarget(nearestEnemy);
                                         mob.setAware(true);
                                     } else if (distance > Constants.Distance.MOB_FOLLOW_DISTANCE) {
-                                        // No enemies, follow owner
                                         mob.getPathfinder().moveTo(owner.getLocation(), 1.2);
                                     }
                                 }
@@ -117,8 +117,23 @@ public class DeathFriendlyMobPassive implements Listener {
             String ownerStr = mob.getMetadata(MetadataKeys.Death.SUMMONED_OWNER).get(0).asString();
             UUID ownerId = UUID.fromString(ownerStr);
 
-            // Don't target owner or trusted players
-            if (event.getTarget().getUniqueId().equals(ownerId) || (event.getTarget() instanceof Player targetPlayer && trustManager.isTrusted(ownerId, targetPlayer.getUniqueId()))) {
+            // Don't target owner, trusted players, or other summoned mobs
+            if (event.getTarget().getUniqueId().equals(ownerId)) {
+                event.setCancelled(true);
+                event.setTarget(null);
+                return;
+            }
+
+            if (event.getTarget() instanceof Player targetPlayer
+                    && trustManager.isTrusted(ownerId, targetPlayer.getUniqueId())) {
+                event.setCancelled(true);
+                event.setTarget(null);
+                return;
+            }
+
+            // Prevent summoned mobs from targeting each other — this was causing the "slain by own servant" log
+            if (event.getTarget() instanceof Mob targetMob
+                    && targetMob.hasMetadata(MetadataKeys.Death.SUMMONED_OWNER)) {
                 event.setCancelled(true);
                 event.setTarget(null);
             }
@@ -139,19 +154,19 @@ public class DeathFriendlyMobPassive implements Listener {
         final Player finalAttacker = attacker;
         final LivingEntity victim = (LivingEntity) event.getEntity();
 
-        // If a player attacks someone, make their summoned mobs attack that person
         for (Mob mob : victim.getWorld().getEntitiesByClass(Mob.class)) {
             if (mob.hasMetadata(MetadataKeys.Death.SUMMONED_OWNER)) {
                 String ownerStr = mob.getMetadata(MetadataKeys.Death.SUMMONED_OWNER).get(0).asString();
                 UUID ownerId = UUID.fromString(ownerStr);
 
                 if (victim.getUniqueId().equals(ownerId)) {
-                    // Owner was attacked, target the attacker
                     mob.setTarget(finalAttacker);
                 } else if (finalAttacker.getUniqueId().equals(ownerId)) {
-                    // Owner attacked someone, target the victim
                     if (!(victim instanceof Player targetPlayer && trustManager.isTrusted(ownerId, targetPlayer.getUniqueId()))) {
-                        mob.setTarget(victim);
+                        // Don't target other summoned mobs even via this path
+                        if (!(victim instanceof Mob victimMob && victimMob.hasMetadata(MetadataKeys.Death.SUMMONED_OWNER))) {
+                            mob.setTarget(victim);
+                        }
                     }
                 }
             }
