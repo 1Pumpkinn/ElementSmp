@@ -93,20 +93,20 @@ public class EarthTunnelAbility extends BaseAbility {
                     return;
                 }
 
-                Vector direction = player.getLocation().getDirection().normalize();
-
-                // Adjust mine location based on look direction
+                Location eyeLocation = player.getEyeLocation();
+                Block targetBlock = player.getTargetBlockExact(6);
                 Location mineLocation;
-                if (direction.getY() < -0.5) {
-                    mineLocation = player.getLocation().add(direction.multiply(1.0));
+                if (targetBlock != null) {
+                    mineLocation = targetBlock.getLocation().add(0.5, 0.5, 0.5);
                 } else {
-                    mineLocation = player.getEyeLocation().add(direction.multiply(1.5));
+                    Vector direction = eyeLocation.getDirection().normalize();
+                    mineLocation = eyeLocation.clone().add(direction.multiply(2.5));
                 }
                 breakTunnel(mineLocation, player);
 
-                player.getWorld().spawnParticle(Particle.BLOCK, mineLocation, 10, 0.5, 0.5, 0.5, 0.1, Material.TUFF.createBlockData(), true);
+                player.getWorld().spawnParticle(Particle.BLOCK, mineLocation, 10, 0.5, 0.5, 0.5, 0.1, Material.ANDESITE.createBlockData(), true);
             }
-        }.runTaskTimer(plugin, 0L, 2L);
+        }.runTaskTimer(plugin, 0L, 1L);
 
         return true;
     }
@@ -115,18 +115,30 @@ public class EarthTunnelAbility extends BaseAbility {
         World world = center.getWorld();
         if (world == null) return;
 
+        boolean brokeAny = false;
+
+        int baseX = center.getBlockX();
+        int baseY = center.getBlockY();
+        int baseZ = center.getBlockZ();
+
         for (int x = -1; x <= 1; x++) {
+            int bx = baseX + x;
             for (int y = -1; y <= 1; y++) {
+                int by = baseY + y;
                 for (int z = -1; z <= 1; z++) {
-                    Location blockLoc = center.clone().add(x, y, z);
-                    Block block = blockLoc.getBlock();
+                    int bz = baseZ + z;
+                    Block block = world.getBlockAt(bx, by, bz);
 
                     if (TUNNELABLE.contains(block.getType())) {
                         block.breakNaturally();
-                        world.playSound(blockLoc, Sound.BLOCK_DEEPSLATE_BREAK, 0.3f, 1.0f);
+                        brokeAny = true;
                     }
                 }
             }
+        }
+
+        if (brokeAny) {
+            world.playSound(center, Sound.BLOCK_TUFF_BREAK, 0.5f, 0.6f);
         }
     }
 }
