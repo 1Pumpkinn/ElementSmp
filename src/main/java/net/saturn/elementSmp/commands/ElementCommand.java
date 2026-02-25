@@ -12,6 +12,7 @@ import net.saturn.elementSmp.data.DataStore;
 import net.saturn.elementSmp.elements.ElementType;
 import net.saturn.elementSmp.gui.ElementSelectionGUI;
 import net.saturn.elementSmp.managers.ElementManager;
+import net.saturn.elementSmp.managers.ConfigManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -27,12 +28,14 @@ public class ElementCommand implements CommandExecutor, TabCompleter {
     private final ElementSmp plugin;
     private final DataStore dataStore;
     private final ElementManager elementManager;
+    private final ConfigManager configManager;
     private final Map<String, SubCommand> subCommands;
 
     public ElementCommand(ElementSmp plugin) {
         this.plugin = plugin;
         this.dataStore = plugin.getDataStore();
         this.elementManager = plugin.getElementManager();
+        this.configManager = plugin.getConfigManager();
         this.subCommands = initializeSubCommands();
     }
 
@@ -42,6 +45,8 @@ public class ElementCommand implements CommandExecutor, TabCompleter {
         commands.put("debug", new DebugCommand());
         commands.put("roll", new RollCommand());
         commands.put("info", new InfoCommand());
+        commands.put("upgrade", new UpgradeCommand());
+        commands.put("reset", new ResetCommand());
         return commands;
     }
 
@@ -72,6 +77,8 @@ public class ElementCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage(ChatColor.YELLOW + "/element set <player> <element> - Set player's element");
         sender.sendMessage(ChatColor.YELLOW + "/element debug <player> - Debug player's element data");
         sender.sendMessage(ChatColor.YELLOW + "/element roll - Roll for a new element (OP only)");
+        sender.sendMessage(ChatColor.YELLOW + "/element upgrade <player> <level> - Set upgrade level (0-2)");
+        sender.sendMessage(ChatColor.YELLOW + "/element reset <player> - Reset player's element data");
         sender.sendMessage(ChatColor.YELLOW + "/element info <element> - View element details");
     }
 
@@ -102,6 +109,9 @@ public class ElementCommand implements CommandExecutor, TabCompleter {
             case 3:
                 if (isAdmin && args[0].equalsIgnoreCase("set")) {
                     return filterStartingWith(getElementNames(), args[2]);
+                }
+                if (isAdmin && args[0].equalsIgnoreCase("upgrade")) {
+                    return filterStartingWith(Arrays.asList("0", "1", "2"), args[2]);
                 }
                 return Collections.emptyList();
             default:
@@ -216,6 +226,11 @@ public class ElementCommand implements CommandExecutor, TabCompleter {
                 return true;
             }
 
+            if (!dataStore.isElementRollEnabled()) {
+                player.sendMessage(ChatColor.RED + "Element rolling is currently disabled by the server.");
+                return true;
+            }
+
             if (elementManager.isCurrentlyRolling(player)) {
                 player.sendMessage(ChatColor.RED + "You are already rolling for an element!");
                 return true;
@@ -224,6 +239,64 @@ public class ElementCommand implements CommandExecutor, TabCompleter {
             new ElementSelectionGUI(plugin, player, true).open();
             player.sendMessage(ChatColor.GREEN + "Rolling for a new element...");
 
+            return true;
+        }
+    }
+
+    private class UpgradeCommand implements SubCommand {
+        @Override
+        public boolean execute(CommandSender sender, String[] args) {
+            if (args.length < 3) {
+                sender.sendMessage(ChatColor.RED + "Usage: /element upgrade <player> <level>");
+                return true;
+            }
+            Player target = Bukkit.getPlayer(args[1]);
+            if (target == null) {
+                sender.sendMessage(ChatColor.RED + "Player '" + args[1] + "' not found.");
+                return true;
+            }
+            int level;
+            try {
+                level = Integer.parseInt(args[2]);
+            } catch (NumberFormatException e) {
+                sender.sendMessage(ChatColor.RED + "Invalid level. Use 0, 1, or 2.");
+                return true;
+            }
+            level = Math.max(0, Math.min(2, level));
+            net.saturn.elementSmp.data.PlayerData pd = dataStore.getPlayerData(target.getUniqueId());
+            pd.setCurrentElementUpgradeLevel(level);
+            dataStore.save(pd);
+            sender.sendMessage(ChatColor.GREEN + "Set upgrade level to " + level + " for " + target.getName());
+            if (!target.equals(sender)) {
+                target.sendMessage(ChatColor.GREEN + "Your element upgrade level has been set to " + level);
+            }
+            return true;
+        }
+    }
+
+    private class ResetCommand implements SubCommand {
+        @Override
+        public boolean execute(CommandSender sender, String[] args) {
+            if (args.length < 2) {
+                sender.sendMessage(ChatColor.RED + "Usage: /element reset <player>");
+                return true;
+            }
+            Player target = Bukkit.getPlayer(args[1]);
+            if (target == null) {
+                sender.sendMessage(ChatColor.RED + "Player '" + args[1] + "' not found.");
+                return true;
+            }
+            net.saturn.elementSmp.data.PlayerData pd = dataStore.getPlayerData(target.getUniqueId());
+            pd.setCurrentElement(null);
+            pd.setCurrentElementUpgradeLevel(0);
+            pd.setTrustedPlayers(Collections.emptySet());
+            int maxMana = configManager.getMaxMana();
+            pd.setMana(maxMana);
+            dataStore.save(pd);
+            sender.sendMessage(ChatColor.GREEN + "Reset element data for " + target.getName());
+            if (!target.equals(sender)) {
+                target.sendMessage(ChatColor.GREEN + "Your element data has been reset by an admin.");
+            }
             return true;
         }
     }

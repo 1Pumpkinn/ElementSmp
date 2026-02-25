@@ -36,92 +36,12 @@ public class ElementItemCraftListener implements Listener {
 
         Integer level = meta.getPersistentDataContainer().get(ItemKeys.upgraderLevel(plugin), PersistentDataType.INTEGER);
         if (level != null) {
-            handleUpgraderCrafting(e, p, level);
             return;
         }
     }
 
     private void handleUpgraderCrafting(CraftItemEvent e, org.bukkit.entity.Player p, Integer level) {
-        PlayerData pd = elements.data(p.getUniqueId());
-        ElementType type = pd.getCurrentElement();
-        if (type == null) {
-            e.setCancelled(true);
-            p.sendMessage(ChatColor.RED + "You don't have an element yet.");
-            return;
-        }
-        
-        if (level == 2) {
-            int currentLevel = pd.getUpgradeLevel(type);
-            if (currentLevel < 1) {
-                e.setCancelled(true);
-                p.sendMessage(ChatColor.RED + "You must craft and possess Upgrader I before crafting Upgrader II.");
-                return;
-            }
-        }
-        
-        int current = pd.getUpgradeLevel(type);
-        if (level <= current) {
-            e.setCancelled(true);
-            p.sendMessage(ChatColor.YELLOW + "You already have this upgrade.");
-            return;
-        }
-
-        CraftingInventory craftingInv = e.getInventory();
-        ItemStack[] matrix = craftingInv.getMatrix();
-        
-        org.bukkit.inventory.Recipe recipe = e.getRecipe();
-        if (recipe instanceof org.bukkit.inventory.ShapedRecipe shapedRecipe) {
-            String[] shape = shapedRecipe.getShape();
-            java.util.Map<Character, org.bukkit.inventory.RecipeChoice> ingredients = shapedRecipe.getChoiceMap();
-            
-            for (int i = 0; i < matrix.length; i++) {
-                ItemStack item = matrix[i];
-                if (item == null || item.getType() == Material.AIR) continue;
-                
-                int row = i / 3;
-                int col = i % 3;
-                
-                boolean isPartOfRecipe = false;
-                if (row < shape.length && col < shape[row].length()) {
-                    char ingredientChar = shape[row].charAt(col);
-                    isPartOfRecipe = ingredients.containsKey(ingredientChar);
-                }
-                
-                if (isPartOfRecipe) {
-                    if (item.getAmount() > 1) {
-                        item.setAmount(item.getAmount() - 1);
-                        matrix[i] = item;
-                    } else {
-                        matrix[i] = null;
-                    }
-                }
-            }
-            
-            craftingInv.setMatrix(matrix);
-        } else {
-            for (int i = 0; i < matrix.length; i++) {
-                if (matrix[i] != null && matrix[i].getType() != Material.AIR) {
-                    if (matrix[i].getAmount() > 1) {
-                        matrix[i].setAmount(matrix[i].getAmount() - 1);
-                    } else {
-                        matrix[i] = null;
-                    }
-                }
-            }
-            craftingInv.setMatrix(matrix);
-        }
-        
-        e.getInventory().setResult(null);
-        
-        pd.setUpgradeLevel(type, level);
-        plugin.getDataStore().save(pd);
-        p.playSound(p.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1f, 1f);
-        if (level == 1) {
-            p.sendMessage(ChatColor.GREEN + "Unlocked Ability 1 for " + ChatColor.AQUA + type.name());
-        } else if (level == 2) {
-            p.sendMessage(ChatColor.AQUA + "Unlocked Ability 2 and Upside 2 for " + ChatColor.GOLD + type.name());
-            elements.applyUpsides(p);
-        }
+        return;
     }
 
 }

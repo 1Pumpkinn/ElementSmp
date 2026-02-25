@@ -46,5 +46,4 @@ costs:
     item_use: 75
     item_throw: 25
 
-recipes:
-  advanced_reroller_enabled: true
+# recipes moved to server.yml flags (features.recipes.*)

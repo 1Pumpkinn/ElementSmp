@@ -21,7 +21,6 @@ import net.saturn.elementSmp.elements.abilities.impl.life.passives.*;
 import net.saturn.elementSmp.elements.abilities.impl.death.passives.*;
 import net.saturn.elementSmp.elements.abilities.impl.metal.passives.MetalArrowImmunityPassive;
 import net.saturn.elementSmp.elements.abilities.impl.metal.passives.MetalCombatPassive;
-import net.saturn.elementSmp.elements.abilities.impl.frost.passives.FrostCombatPassive;
 import net.saturn.elementSmp.elements.abilities.impl.frost.passives.FrostSpeedPassive;
 import net.saturn.elementSmp.elements.abilities.impl.frost.passives.FrostWaterFreezePassive;
 import net.saturn.elementSmp.recipes.UtilRecipes;
@@ -193,25 +192,16 @@ public final class ElementSmp extends JavaPlugin {
                 };
                 utilCmd.setDescription("Utility commands");
 
-                var toggleRecipeCmd = new org.bukkit.command.defaults.BukkitCommand("togglerecipe") {
-                    private final ToggleRecipeCommand executor = new ToggleRecipeCommand(ElementSmp.this);
-
-                    @Override
-                    public boolean execute(org.bukkit.command.CommandSender sender, String label, String[] args) {
-                        return executor.onCommand(sender, this, label, args);
-                    }
-
-                    @Override
-                    public java.util.List<String> tabComplete(org.bukkit.command.CommandSender sender, String alias, String[] args) {
-                        return executor.onTabComplete(sender, this, alias, args);
-                    }
-                };
-                toggleRecipeCmd.setDescription("Toggle recipes");
+                // Removed: togglerecipe command (use /servercfg instead)
 
                 var ability1Cmd = new org.bukkit.command.defaults.BukkitCommand("ability1") {
                     @Override
                     public boolean execute(org.bukkit.command.CommandSender sender, String label, String[] args) {
                         if (!(sender instanceof org.bukkit.entity.Player player)) return false;
+                        if (!dataStore.areAbilitiesEnabled()) {
+                            player.sendMessage("§cAbilities are currently disabled by the server.");
+                            return true;
+                        }
                         return abilityListener.triggerAbility(player, 1);
                     }
                 };
@@ -221,10 +211,27 @@ public final class ElementSmp extends JavaPlugin {
                     @Override
                     public boolean execute(org.bukkit.command.CommandSender sender, String label, String[] args) {
                         if (!(sender instanceof org.bukkit.entity.Player player)) return false;
+                        if (!dataStore.areAbilitiesEnabled()) {
+                            player.sendMessage("§cAbilities are currently disabled by the server.");
+                            return true;
+                        }
                         return abilityListener.triggerAbility(player, 2);
                     }
                 };
                 ability2Cmd.setDescription("Use Ability 2");
+
+                var serverCfgCmd = new org.bukkit.command.defaults.BukkitCommand("servercfg") {
+                    private final ServerConfigCommand executor = new ServerConfigCommand(ElementSmp.this);
+                    @Override
+                    public boolean execute(org.bukkit.command.CommandSender sender, String label, String[] args) {
+                        return executor.onCommand(sender, this, label, args);
+                    }
+                    @Override
+                    public java.util.List<String> tabComplete(org.bukkit.command.CommandSender sender, String alias, String[] args) {
+                        return executor.onTabComplete(sender, this, alias, args);
+                    }
+                };
+                serverCfgCmd.setDescription("Manage server flags");
 
                 // Register all commands
                 commandMap.register("elementsmp", elementsCmd);
@@ -232,9 +239,9 @@ public final class ElementSmp extends JavaPlugin {
                 commandMap.register("elementsmp", elementCmd);
                 commandMap.register("elementsmp", manaCmd);
                 commandMap.register("elementsmp", utilCmd);
-                commandMap.register("elementsmp", toggleRecipeCmd);
                 commandMap.register("elementsmp", ability1Cmd);
                 commandMap.register("elementsmp", ability2Cmd);
+                commandMap.register("elementsmp", serverCfgCmd);
 
                 getLogger().info("Commands registered successfully");
             } catch (Exception e) {
@@ -289,12 +296,13 @@ public final class ElementSmp extends JavaPlugin {
         
         // Life
         pm.registerEvents(new LifeCropPassive(this, elementManager), this);
+        pm.registerEvents(new LifeHeartsPassive(this, elementManager), this);
         pm.registerEvents(new net.saturn.elementSmp.elements.impl.life.listeners.LifeListener(this, elementManager), this);
         
         // Death
         pm.registerEvents(new DeathWitherPassive(elementManager, trustManager), this);
-        pm.registerEvents(new DeathInvisibilityPassive(this, elementManager), this);
         pm.registerEvents(new DeathFriendlyMobPassive(this, trustManager, elementManager), this);
+        pm.registerEvents(new DeathInvisibilityPassive(this, elementManager), this);
         
         // Metal
         pm.registerEvents(new MetalCombatPassive(elementManager, trustManager), this);
@@ -303,7 +311,6 @@ public final class ElementSmp extends JavaPlugin {
         
         // Frost
         pm.registerEvents(new FrostSpeedPassive(this, elementManager), this);
-        pm.registerEvents(new FrostCombatPassive(elementManager, trustManager), this);
         pm.registerEvents(new FrostWaterFreezePassive(elementManager), this);
     }
 

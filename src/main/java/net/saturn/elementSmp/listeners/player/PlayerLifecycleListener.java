@@ -47,6 +47,15 @@ public class PlayerLifecycleListener implements Listener {
                 effectService.applyPassiveEffects(player);
             });
         }
+
+        scheduler.runAfterPlayerLoad(player, () -> {
+            try {
+                player.discoverRecipe(new org.bukkit.NamespacedKey(plugin, net.saturn.elementSmp.items.Upgrader1Item.KEY));
+                player.discoverRecipe(new org.bukkit.NamespacedKey(plugin, net.saturn.elementSmp.items.Upgrader2Item.KEY));
+                player.discoverRecipe(new org.bukkit.NamespacedKey(plugin, net.saturn.elementSmp.items.RerollerItem.KEY));
+                player.discoverRecipe(new org.bukkit.NamespacedKey(plugin, net.saturn.elementSmp.items.AdvancedRerollerItem.KEY));
+            } catch (Exception ignored) {}
+        });
     }
 
     @EventHandler(priority = EventPriority.MONITOR)

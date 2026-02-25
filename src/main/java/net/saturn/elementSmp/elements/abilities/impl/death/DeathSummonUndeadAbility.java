@@ -15,6 +15,9 @@ import org.bukkit.entity.WitherSkeleton;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -41,9 +44,23 @@ public class DeathSummonUndeadAbility extends BaseAbility implements Listener {
     public boolean execute(ElementContext context) {
         Player player = context.getPlayer();
 
-        // Prevent double-summoning — primary fix for the ghost/invisible skeleton bug.
-        // Slot is reserved BEFORE spawning so same-tick double calls are also blocked.
-        if (activeSummons.contains(player.getUniqueId())) {
+        boolean hasExistingServant = activeSummons.contains(player.getUniqueId());
+        if (!hasExistingServant) {
+            for (org.bukkit.World world : plugin.getServer().getWorlds()) {
+                for (org.bukkit.entity.Entity e : world.getEntitiesByClass(WitherSkeleton.class)) {
+                    if (e.hasMetadata(MetadataKeys.Death.SUMMONED_OWNER)) {
+                        String ownerStr = e.getMetadata(MetadataKeys.Death.SUMMONED_OWNER).get(0).asString();
+                        if (ownerStr.equals(player.getUniqueId().toString())) {
+                            hasExistingServant = true;
+                            break;
+                        }
+                    }
+                }
+                if (hasExistingServant) break;
+            }
+        }
+
+        if (hasExistingServant) {
             player.sendMessage(ChatColor.RED + "You already have an Undead Servant active!");
             return false;
         }
@@ -90,7 +107,7 @@ public class DeathSummonUndeadAbility extends BaseAbility implements Listener {
 
         player.getWorld().spawnParticle(Particle.SQUID_INK, skeleton.getLocation().add(0, 1, 0), 50, 0.5, 0.5, 0.5, 0.1);
         player.getWorld().playSound(skeleton.getLocation(), Sound.ENTITY_WITHER_SKELETON_AMBIENT, 1.0f, 0.5f);
-        player.sendMessage(ChatColor.DARK_PURPLE + "Summoned an Undead Servant for " + (Constants.Duration.DEATH_SUMMON_MS / 60000) + " minutes!");
+        player.sendMessage(ChatColor.DARK_PURPLE + "Summoned an Undead Servant");
 
         // Remove after duration — also clears the activeSummons slot
         new BukkitRunnable() {
@@ -125,6 +142,47 @@ public class DeathSummonUndeadAbility extends BaseAbility implements Listener {
             UUID ownerId = UUID.fromString(ownerStr);
             activeSummons.remove(ownerId);
         } catch (IllegalArgumentException ignored) {}
+    }
+
+    @EventHandler
+    public void onServantTarget(EntityTargetLivingEntityEvent event) {
+        if (!(event.getEntity() instanceof WitherSkeleton skeleton)) return;
+        if (!skeleton.hasMetadata(MetadataKeys.Death.SUMMONED_OWNER)) return;
+        var target = event.getTarget();
+        if (!(target instanceof Player player)) return;
+        String ownerStr = skeleton.getMetadata(MetadataKeys.Death.SUMMONED_OWNER).get(0).asString();
+        if (player.getUniqueId().toString().equals(ownerStr)) {
+            event.setCancelled(true);
+            skeleton.setTarget(null);
+        }
+    }
+
+    @EventHandler
+    public void onServantDamage(EntityDamageByEntityEvent event) {
+        if (!(event.getDamager() instanceof WitherSkeleton skeleton)) return;
+        if (!skeleton.hasMetadata(MetadataKeys.Death.SUMMONED_OWNER)) return;
+        if (!(event.getEntity() instanceof Player player)) return;
+        String ownerStr = skeleton.getMetadata(MetadataKeys.Death.SUMMONED_OWNER).get(0).asString();
+        if (player.getUniqueId().toString().equals(ownerStr)) {
+            event.setCancelled(true);
+            skeleton.setTarget(null);
+        }
+    }
+
+    @EventHandler
+    public void onOwnerDeath(PlayerDeathEvent event) {
+        UUID ownerId = event.getEntity().getUniqueId();
+        activeSummons.remove(ownerId);
+        for (org.bukkit.World world : plugin.getServer().getWorlds()) {
+            for (WitherSkeleton s : world.getEntitiesByClass(WitherSkeleton.class)) {
+                if (s.hasMetadata(MetadataKeys.Death.SUMMONED_OWNER)) {
+                    String ownerStr = s.getMetadata(MetadataKeys.Death.SUMMONED_OWNER).get(0).asString();
+                    if (ownerStr.equals(ownerId.toString())) {
+                        s.remove();
+                    }
+                }
+            }
+        }
     }
 
     private ItemStack createEnchantedItem(Material material, Enchantment enchantment, int level) {

@@ -8,11 +8,17 @@ import net.saturn.elementSmp.items.Upgrader2Item;
 
 public class UtilRecipes {
     public static void registerRecipes(ElementSmp plugin) {
-        Upgrader1Item.registerRecipe(plugin);
-        Upgrader2Item.registerRecipe(plugin);
-        RerollerItem.registerRecipe(plugin);
-        
-        if (plugin.getConfigManager().isAdvancedRerollerRecipeEnabled()) {
+        var store = plugin.getDataStore();
+        if (store.isRecipeEnabled("upgrader1")) {
+            Upgrader1Item.registerRecipe(plugin);
+        }
+        if (store.isRecipeEnabled("upgrader2")) {
+            Upgrader2Item.registerRecipe(plugin);
+        }
+        if (store.isRecipeEnabled("reroller")) {
+            RerollerItem.registerRecipe(plugin);
+        }
+        if (store.isRecipeEnabled("advanced_reroller")) {
             AdvancedRerollerItem.registerRecipe(plugin);
         }
     }

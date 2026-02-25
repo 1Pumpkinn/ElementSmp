@@ -116,6 +116,10 @@ public class ElementManager {
     }
 
     private void assignElementInternal(Player player, ElementType type, String titleText, boolean resetLevel) {
+        if (type != null && !store.isElementEnabled(type)) {
+            player.sendMessage(org.bukkit.ChatColor.RED + "This element is disabled by the server.");
+            return;
+        }
         PlayerData pd = data(player.getUniqueId());
         ElementType old = pd.getCurrentElement();
 
@@ -153,8 +157,14 @@ public class ElementManager {
     }
 
     private boolean useAbility(Player player, int number) {
+        if (!store.areAbilitiesEnabled()) {
+            return false;
+        }
         PlayerData pd = data(player.getUniqueId());
         ElementType type = pd.getCurrentElement();
+        if (type == null || !store.isElementEnabled(type)) {
+            return false;
+        }
         Element element = registry.get(type);
 
         if (element == null) return false;

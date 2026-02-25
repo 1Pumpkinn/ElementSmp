@@ -72,19 +72,7 @@ public class ConfigManager {
         }
     }
 
-    public boolean isAdvancedRerollerRecipeEnabled() {
-        try {
-            return config.getBoolean("recipes.advanced_reroller_enabled", Constants.Default.ADVANCED_REROLLER_ENABLED);
-        } catch (Exception e) {
-            plugin.getLogger().log(Level.WARNING, "Error reading advanced_reroller_enabled from config, using default value " + Constants.Default.ADVANCED_REROLLER_ENABLED, e);
-            return Constants.Default.ADVANCED_REROLLER_ENABLED;
-        }
-    }
-
-    public void setAdvancedRerollerRecipeEnabled(boolean enabled) {
-        config.set("recipes.advanced_reroller_enabled", enabled);
-        plugin.saveConfig();
-    }
+    // Advanced reroller recipe is controlled via server.yml flags now
 
     // Resource pack settings
     public boolean isResourcePackEnabled() {

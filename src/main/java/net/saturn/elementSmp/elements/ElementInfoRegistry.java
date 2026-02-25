@@ -15,100 +15,92 @@ public final class ElementInfoRegistry {
     private static final Map<ElementType, ElementInfo> INFO = new EnumMap<>(ElementType.class);
 
     static {
-        // Air
         INFO.put(ElementType.AIR, new ElementInfo(
                 "Air",
                 ChatColor.WHITE,
                 List.of(
-                        "Slow Falling while shifting in air",
-                        "No fall damage (except on dripstone) (Upgrade II)"
+                        "Slow Falling while sneaking",
+                        "No fall damage at Upgrade II (except pointed dripstone)"
                 ),
-                new ElementInfo.AbilityInfo("Air Dash", "Dash forward swiftly, pushing enemies aside", 50, 1),
-                new ElementInfo.AbilityInfo("Air Blast", "Launch into the air, then slam down to damage and fling enemies", 75, 2)
+                new ElementInfo.AbilityInfo("Air Dash", "Dash forward and knock back nearby entities", 50, 1),
+                new ElementInfo.AbilityInfo("Air Blast", "Leap and slam, launching nearby entities and dealing true damage", 75, 2)
         ));
 
-        // Fire
         INFO.put(ElementType.FIRE, new ElementInfo(
                 "Fire",
                 ChatColor.RED,
                 List.of(
-                        "Auto smelt ores",
-                        "Fire aspect on any tool or fist (4s) (Upgrade II)"
+                        "Auto-smelt ore drops",
+                        "Set targets on fire on hit (Upgrade II)"
                 ),
-                new ElementInfo.AbilityInfo("Scorch", "The next entity you hit clears their Fire Resistance", 50, 1),
-                new ElementInfo.AbilityInfo("Inferno Blast", "Causes an explosion on you dealing 5 hearts to nearby entities", 75, 2)
+                new ElementInfo.AbilityInfo("Scorch", "Your next hit removes Fire Resistance", 50, 1),
+                new ElementInfo.AbilityInfo("Inferno Blast", "Explosion around you that deals true damage", 75, 2)
         ));
 
-        // Water
         INFO.put(ElementType.WATER, new ElementInfo(
                 "Water",
                 ChatColor.BLUE,
                 List.of(
-                        "Permanent Conduit Power",
-                        "Loyalty Tridents pull entities (Upgrade II)"
+                        "Conduit Power",
+                        "Tridents pull hit targets toward you (Upgrade II)"
                 ),
-                new ElementInfo.AbilityInfo("Water Prison", "Trap a target in a drowning water bubble for 3 seconds", 50, 1),
-                new ElementInfo.AbilityInfo("Leeching Trident", "Throw a trident that orbits a target and deals true damage over time", 75, 2)
+                new ElementInfo.AbilityInfo("Water Prison", "Trap a nearby target in a suffocating bubble for a short time", 50, 1),
+                new ElementInfo.AbilityInfo("Leeching Trident", "A trident orbits a hit target and deals periodic true damage", 75, 2)
         ));
 
-        // Earth
         INFO.put(ElementType.EARTH, new ElementInfo(
                 "Earth",
                 ChatColor.YELLOW,
                 List.of(
-                        "Hero of The Village permanently",
-                        "Double ore drops (Upgrade II)"
+                        "Hero of the Village",
+                        "Double ore drops (Upgrade II; no Silk Touch)"
                 ),
-                new ElementInfo.AbilityInfo("Earth Tunnel", "Dig tunnels through stone and dirt", 50, 1),
-                new ElementInfo.AbilityInfo("Earthquake", "Stomp the ground to damage and slow nearby enemies", 75, 2)
+                new ElementInfo.AbilityInfo("Earth Tunnel", "Create a short 3×3 tunnel ahead of you", 50, 1),
+                new ElementInfo.AbilityInfo("Earthquake", "Shockwave that slows and weakens nearby enemies", 75, 2)
         ));
 
-        // Life
         INFO.put(ElementType.LIFE, new ElementInfo(
                 "Life",
                 ChatColor.GREEN,
                 List.of(
                         "Crop growth aura around you",
-                        "15 Hearts (30 HP) max health (Upgrade II)"
+                        "Increased max health at Upgrade II"
                 ),
-                new ElementInfo.AbilityInfo("Nature's Eye", "Reveal nearby living entities through walls", 50, 1),
-                new ElementInfo.AbilityInfo("Entangling Roots", "Pull enemies into the ground and suffocate them", 75, 2)
+                new ElementInfo.AbilityInfo("Nature's Eye", "Highlight nearby creatures through walls for a short duration", 50, 1),
+                new ElementInfo.AbilityInfo("Entangling Roots", "Immobilize a nearby target briefly", 75, 2)
         ));
 
-        // Death
         INFO.put(ElementType.DEATH, new ElementInfo(
                 "Death",
                 ChatColor.DARK_PURPLE,
                 List.of(
-                        "10% chance to apply Wither effect on hit",
-                        "Invisibility and equipment hiding at 2 hearts (Upgrade II)"
+                        "Chance to apply Wither on hit",
+                        "Become invisible at low health (Upgrade II)"
                 ),
-                new ElementInfo.AbilityInfo("Summon Undead", "Summon a powerful undead ally", 50, 1),
-                new ElementInfo.AbilityInfo("Shadow Step", "Teleport forward to the first surface you aim at", 75, 2)
+                new ElementInfo.AbilityInfo("Summon Undead", "Summon a Wither Skeleton ally for a short time", 50, 1),
+                new ElementInfo.AbilityInfo("Shadow Step", "Teleport to the surface your shadow reaches", 75, 2)
         ));
 
-        // Metal
         INFO.put(ElementType.METAL, new ElementInfo(
                 "Metal",
                 ChatColor.GRAY,
                 List.of(
-                        "Haste I permanently",
-                        "Immunity to all arrows (Upgrade II)"
+                        "Haste",
+                        "Arrow damage immunity (Upgrade II)"
                 ),
-                new ElementInfo.AbilityInfo("Metal Dash", "Swiftly dash through enemies, damaging them", 50, 1),
-                new ElementInfo.AbilityInfo("Magnetic Accumulation", "Accumulate damage on a target, then deal it all at once after 3s", 75, 2)
+                new ElementInfo.AbilityInfo("Metal Dash", "Dash forward, damaging and knocking back what you hit; missing briefly stuns you", 50, 1),
+                new ElementInfo.AbilityInfo("Magnetic Accumulation", "Tag a target; your damage is stored then released as a burst", 75, 2)
         ));
 
-        // Frost
         INFO.put(ElementType.FROST, new ElementInfo(
                 "Frost",
                 ChatColor.AQUA,
                 List.of(
-                        "Speed II on snow, Speed III on ice",
-                        "Freeze water walking (Shift) (Upgrade II)"
+                        "Speed boost on ice (Upgrade II)",
+                        "Freeze nearby surface water while sneaking (Upgrade II)"
                 ),
-                new ElementInfo.AbilityInfo("Frozen Punch", "Punch an enemy to freeze them solid", 50, 1),
-                new ElementInfo.AbilityInfo("Frost Nova", "Create a burst of frost, damaging and freezing nearby enemies", 75, 2)
+                new ElementInfo.AbilityInfo("Frost Circle", "Chilling area around you that slows and harms nearby enemies over time", 50, 1),
+                new ElementInfo.AbilityInfo("Frost Nova", "Instant frost blast that damages and launches nearby enemies", 75, 2)
         ));
     }
 

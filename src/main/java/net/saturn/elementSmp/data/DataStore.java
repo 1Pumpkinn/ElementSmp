@@ -34,34 +34,47 @@ public class DataStore {
     }
 
     private PlayerData loadPlayerDataFromFile(UUID uuid) {
-        try {
-            playerCfg = YamlConfiguration.loadConfiguration(playerFile);
-        } catch (Exception e) {
-            plugin.getLogger().log(Level.SEVERE, "Failed to reload player configuration", e);
-            return new PlayerData(uuid);
-        }
-
         String uuidString = uuid.toString();
         ConfigurationSection section = null;
-
-        // CRITICAL: Try "players.<uuid>" format FIRST (this is the primary location)
-        section = playerCfg.getConfigurationSection("players." + uuidString);
-
-        // Fallback: Try root level (legacy format)
-        if (section == null) {
-            section = playerCfg.getConfigurationSection(uuidString);
-
-            // If found at root level, log a warning
-            if (section != null) {
-                plugin.getLogger().warning("Found player data for " + uuidString + " at root level. Consider migrating to 'players.' format.");
+        ConfigurationSection playersSec = playerCfg.getConfigurationSection("players");
+        if (playersSec != null) {
+            for (String key : playersSec.getKeys(false)) {
+                ConfigurationSection s = playersSec.getConfigurationSection(key);
+                if (s == null) continue;
+                String stored = s.getString("uuid");
+                if (uuidString.equalsIgnoreCase(stored)) {
+                    section = s;
+                    break;
+                }
             }
         }
-
+        if (section == null) {
+            section = playerCfg.getConfigurationSection("players." + uuidString);
+        }
+        if (section == null) {
+            section = playerCfg.getConfigurationSection(uuidString);
+        }
         if (section == null) {
             return new PlayerData(uuid);
         }
 
-        return new PlayerData(uuid, section);
+        PlayerData pd = new PlayerData(uuid, section);
+        ConfigurationSection trustSection = section.getConfigurationSection("trust");
+        if (trustSection != null) {
+            Set<UUID> resolved = new HashSet<>(pd.getTrustedPlayers());
+            for (String key : trustSection.getKeys(false)) {
+                try {
+                    resolved.add(UUID.fromString(key));
+                } catch (IllegalArgumentException ex) {
+                    org.bukkit.OfflinePlayer off = plugin.getServer().getOfflinePlayer(key);
+                    if (off != null && off.getUniqueId() != null) {
+                        resolved.add(off.getUniqueId());
+                    }
+                }
+            }
+            pd.setTrustedPlayers(resolved);
+        }
+        return pd;
     }
 
     public DataStore(ElementSmp plugin) {
@@ -121,11 +134,17 @@ public class DataStore {
 
     public synchronized void save(PlayerData pd) {
         try {
-            // ALWAYS use "players.<uuid>" format for consistency
-            String key = "players." + pd.getUuid().toString();
+            String name = null;
+            org.bukkit.OfflinePlayer off = plugin.getServer().getOfflinePlayer(pd.getUuid());
+            if (off != null) {
+                name = off.getName();
+            }
+            String keyName = name != null && !name.isEmpty() ? name : pd.getUuid().toString();
+            String key = "players." + keyName;
             ConfigurationSection sec = playerCfg.getConfigurationSection(key);
             if (sec == null) sec = playerCfg.createSection(key);
 
+            sec.set("uuid", pd.getUuid().toString());
             sec.set("element", pd.getCurrentElement() == null ? null : pd.getCurrentElement().name());
             sec.set("mana", pd.getMana());
             sec.set("currentUpgradeLevel", pd.getCurrentElementUpgradeLevel());
@@ -135,7 +154,10 @@ public class DataStore {
             if (!pd.getTrustedPlayers().isEmpty()) {
                 ConfigurationSection trustSec = sec.createSection("trust");
                 for (UUID trustedUuid : pd.getTrustedPlayers()) {
-                    trustSec.set(trustedUuid.toString(), true);
+                    org.bukkit.OfflinePlayer t = plugin.getServer().getOfflinePlayer(trustedUuid);
+                    String tName = t != null ? t.getName() : null;
+                    String trustKey = tName != null && !tName.isEmpty() ? tName : trustedUuid.toString();
+                    trustSec.set(trustKey, true);
                 }
             }
 
@@ -184,5 +206,50 @@ public class DataStore {
         } catch (IOException e) {
             plugin.getLogger().log(Level.SEVERE, "Failed to save server.yml to disk", e);
         }
+    }
+
+    public synchronized boolean getServerBoolean(String path, boolean def) {
+        return serverCfg.getBoolean(path, def);
+    }
+
+    public synchronized void setServerBoolean(String path, boolean value) {
+        serverCfg.set(path, value);
+        flushServerData();
+    }
+
+    public synchronized boolean areAbilitiesEnabled() {
+        return getServerBoolean("features.abilities_enabled", true);
+    }
+
+    public synchronized void setAbilitiesEnabled(boolean enabled) {
+        setServerBoolean("features.abilities_enabled", enabled);
+    }
+
+    public synchronized boolean isElementRollEnabled() {
+        return getServerBoolean("features.element_roll_enabled", true);
+    }
+
+    public synchronized void setElementRollEnabled(boolean enabled) {
+        setServerBoolean("features.element_roll_enabled", enabled);
+    }
+
+    public synchronized boolean isElementEnabled(net.saturn.elementSmp.elements.ElementType type) {
+        String path = "features.elements." + type.name().toLowerCase() + ".enabled";
+        return getServerBoolean(path, true);
+    }
+
+    public synchronized void setElementEnabled(net.saturn.elementSmp.elements.ElementType type, boolean enabled) {
+        String path = "features.elements." + type.name().toLowerCase() + ".enabled";
+        setServerBoolean(path, enabled);
+    }
+
+    public synchronized boolean isRecipeEnabled(String name) {
+        String path = "features.recipes." + name + ".enabled";
+        return getServerBoolean(path, true);
+    }
+
+    public synchronized void setRecipeEnabled(String name, boolean enabled) {
+        String path = "features.recipes." + name + ".enabled";
+        setServerBoolean(path, enabled);
     }
 }

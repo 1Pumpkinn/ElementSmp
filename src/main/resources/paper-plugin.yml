@@ -22,9 +22,9 @@ commands:
     description: Manage mana
   util:
     description: Utility commands
-  togglerecipe:
-    description: Toggle recipes
   ability1:
     description: Use Ability 1
   ability2:
     description: Use Ability 2
+  servercfg:
+    description: Manage server flags
