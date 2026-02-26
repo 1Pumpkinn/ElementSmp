@@ -69,7 +69,7 @@ public class EarthTunnelAbility extends BaseAbility {
         }
 
         // Start the tunneling ability
-        player.setMetadata(EarthElement.META_TUNNELING, new FixedMetadataValue(plugin, System.currentTimeMillis() + 20_000L));
+        player.setMetadata(EarthElement.META_TUNNELING, new FixedMetadataValue(plugin, System.currentTimeMillis() + 30_000L));
         player.getWorld().playSound(player.getLocation(), Sound.BLOCK_STONE_BREAK, 1f, 0);
         player.sendMessage(ChatColor.GOLD + "Tunneling started Press again to cancel.");
 
@@ -94,19 +94,19 @@ public class EarthTunnelAbility extends BaseAbility {
                 }
 
                 Location eyeLocation = player.getEyeLocation();
-                Block targetBlock = player.getTargetBlockExact(6);
+                Block targetBlock = player.getTargetBlockExact(4);
                 Location mineLocation;
                 if (targetBlock != null) {
                     mineLocation = targetBlock.getLocation().add(0.5, 0.5, 0.5);
                 } else {
                     Vector direction = eyeLocation.getDirection().normalize();
-                    mineLocation = eyeLocation.clone().add(direction.multiply(2.5));
+                    mineLocation = eyeLocation.clone().add(direction.multiply(2.0));
                 }
                 breakTunnel(mineLocation, player);
 
                 player.getWorld().spawnParticle(Particle.BLOCK, mineLocation, 10, 0.5, 0.5, 0.5, 0.1, Material.ANDESITE.createBlockData(), true);
             }
-        }.runTaskTimer(plugin, 0L, 1L);
+        }.runTaskTimer(plugin, 0L, 5L);
 
         return true;
     }
