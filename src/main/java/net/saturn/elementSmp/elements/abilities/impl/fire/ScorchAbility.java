@@ -13,16 +13,22 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
 public class ScorchAbility extends BaseAbility implements Listener {
     private final ElementSmp plugin;
     private final Set<UUID> activeScorches = new HashSet<>();
+    private final Set<UUID> suppressedFireRes = new HashSet<>();
+    private final Map<UUID, PotionEffect> storedFireRes = new HashMap<>();
     private static final String META_SCORCH = MetadataKeys.Fire.SCORCH_ACTIVE;
 
     public ScorchAbility(ElementSmp plugin) {
@@ -54,12 +60,38 @@ public class ScorchAbility extends BaseAbility implements Listener {
             activeScorches.remove(attacker.getUniqueId());
 
             if (victim.hasPotionEffect(PotionEffectType.FIRE_RESISTANCE)) {
+                PotionEffect current = victim.getPotionEffect(PotionEffectType.FIRE_RESISTANCE);
+                if (current != null) {
+                    storedFireRes.put(victim.getUniqueId(), current);
+                }
+
                 victim.removePotionEffect(PotionEffectType.FIRE_RESISTANCE);
+                suppressedFireRes.add(victim.getUniqueId());
+                plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
+                    suppressedFireRes.remove(victim.getUniqueId());
+                    PotionEffect effect = storedFireRes.remove(victim.getUniqueId());
+                    if (effect != null && victim.isValid() && !victim.isDead()) {
+                        victim.addPotionEffect(effect);
+                    }
+                }, 15 * 20L);
                 victim.getWorld().playSound(victim.getLocation(), Sound.BLOCK_FIRE_EXTINGUISH, 1.0f, 0.8f);
                 victim.getWorld().spawnParticle(Particle.LARGE_SMOKE, victim.getLocation().add(0, 1, 0), 30, 0.5, 0.5, 0.5, 0.05);
                 attacker.sendMessage(ChatColor.GOLD + "You cleared " + victim.getName() + "'s Fire Resistance!");
             } else {
                 attacker.sendMessage(ChatColor.GRAY + victim.getName() + " didn't have Fire Resistance.");
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onPotionSplash(PotionSplashEvent event) {
+        boolean hasFireRes = event.getPotion().getEffects().stream()
+                .anyMatch(effect -> effect.getType().equals(PotionEffectType.FIRE_RESISTANCE));
+        if (!hasFireRes) return;
+
+        for (LivingEntity entity : event.getAffectedEntities()) {
+            if (suppressedFireRes.contains(entity.getUniqueId())) {
+                event.setIntensity(entity, 0.0);
             }
         }
     }
