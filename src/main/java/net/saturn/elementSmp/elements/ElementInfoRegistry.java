@@ -31,7 +31,7 @@ public final class ElementInfoRegistry {
                 ChatColor.RED,
                 List.of(
                         "Auto-smelt ore drops",
-                        "Set targets on fire on hit (Upgrade II)"
+                        "10% chance to set targets on fire on hit (Upgrade II)"
                 ),
                 new ElementInfo.AbilityInfo("Scorch", "Your next hit removes Fire Resistance", 50, 1),
                 new ElementInfo.AbilityInfo("Inferno Blast", "Explosion around you that deals true damage", 75, 2)

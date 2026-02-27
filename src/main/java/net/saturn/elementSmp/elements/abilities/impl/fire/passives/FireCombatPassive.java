@@ -9,10 +9,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
-/**
- * Handles Fire element combat interactions
- * Fire Upside 2: Apply fire aspect when hitting enemies
- */
 public class FireCombatPassive implements Listener {
     private final ElementManager elementManager;
     private final TrustManager trustManager;
@@ -48,7 +44,8 @@ public class FireCombatPassive implements Listener {
             return;
         }
 
-        // Apply fire aspect (set entity on fire for 4 seconds)
-        event.getEntity().setFireTicks(80); // 80 ticks = 4 seconds
+        if (Math.random() < 0.10) {
+            event.getEntity().setFireTicks(100);
+        }
     }
 }
