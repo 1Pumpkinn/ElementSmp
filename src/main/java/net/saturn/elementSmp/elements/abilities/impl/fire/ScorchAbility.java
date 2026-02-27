@@ -3,6 +3,7 @@ package net.saturn.elementSmp.elements.abilities.impl.fire;
 import net.saturn.elementSmp.ElementSmp;
 import net.saturn.elementSmp.config.MetadataKeys;
 import net.saturn.elementSmp.elements.ElementContext;
+import net.saturn.elementSmp.elements.ElementType;
 import net.saturn.elementSmp.elements.abilities.BaseAbility;
 import org.bukkit.ChatColor;
 import org.bukkit.Particle;
@@ -14,6 +15,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PotionSplashEvent;
+import org.bukkit.event.entity.EntityPotionEffectEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -67,11 +69,21 @@ public class ScorchAbility extends BaseAbility implements Listener {
 
                 victim.removePotionEffect(PotionEffectType.FIRE_RESISTANCE);
                 suppressedFireRes.add(victim.getUniqueId());
+                if (victim instanceof Player victimPlayer) {
+                    plugin.getEffectService().suppressEffect(victimPlayer, PotionEffectType.FIRE_RESISTANCE, 15 * 20L);
+                }
                 plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
                     suppressedFireRes.remove(victim.getUniqueId());
                     PotionEffect effect = storedFireRes.remove(victim.getUniqueId());
                     if (effect != null && victim.isValid() && !victim.isDead()) {
-                        victim.addPotionEffect(effect);
+                        if (victim instanceof Player victimPlayer) {
+                            var pd = plugin.getElementManager().data(victimPlayer.getUniqueId());
+                            if (pd.getCurrentElement() == ElementType.FIRE) {
+                                victim.addPotionEffect(effect);
+                            }
+                        } else {
+                            victim.addPotionEffect(effect);
+                        }
                     }
                 }, 15 * 20L);
                 victim.getWorld().playSound(victim.getLocation(), Sound.BLOCK_FIRE_EXTINGUISH, 1.0f, 0.8f);
@@ -94,5 +106,17 @@ public class ScorchAbility extends BaseAbility implements Listener {
                 event.setIntensity(entity, 0.0);
             }
         }
+    }
+
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onPotionEffect(EntityPotionEffectEvent event) {
+        if (!(event.getEntity() instanceof LivingEntity entity)) return;
+        PotionEffect newEffect = event.getNewEffect();
+        if (newEffect == null) return;
+        if (!newEffect.getType().equals(PotionEffectType.FIRE_RESISTANCE)) return;
+        if (!suppressedFireRes.contains(entity.getUniqueId())) return;
+        EntityPotionEffectEvent.Cause cause = event.getCause();
+        if (cause == EntityPotionEffectEvent.Cause.COMMAND || cause == EntityPotionEffectEvent.Cause.PLUGIN) return;
+        event.setCancelled(true);
     }
 }

@@ -19,7 +19,11 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 /**
  * Centralized service for managing element passive effects.
@@ -31,6 +35,7 @@ public class EffectService implements Listener {
 
     // Cache of required effects per element
     private final Map<ElementType, EffectRequirement[]> requiredEffects = new EnumMap<>(ElementType.class);
+    private final Map<UUID, Set<PotionEffectType>> suppressedEffects = new HashMap<>();
 
     public EffectService(ElementSmp plugin, ElementManager elementManager) {
         this.plugin = plugin;
@@ -126,11 +131,13 @@ public class EffectService implements Listener {
 
         int upgradeLevel = pd.getUpgradeLevel(currentElement);
 
-        // Check required effects
         EffectRequirement[] requirements = requiredEffects.get(currentElement);
         if (requirements != null) {
             for (EffectRequirement req : requirements) {
                 if (!req.upgradeRequired || upgradeLevel >= 2) {
+                    if (isEffectSuppressed(player, req.type)) {
+                        continue;
+                    }
                     if (!hasValidEffect(player, req.type, req.level)) {
                         player.addPotionEffect(new PotionEffect(
                                 req.type, PotionEffect.INFINITE_DURATION, req.level, true, false
@@ -148,6 +155,29 @@ public class EffectService implements Listener {
         if (dolphinsGrace != null && isElementEffect(dolphinsGrace)) {
             player.removePotionEffect(PotionEffectType.DOLPHINS_GRACE);
         }
+    }
+
+    public void suppressEffect(Player player, PotionEffectType type, long durationTicks) {
+        UUID id = player.getUniqueId();
+        suppressedEffects.computeIfAbsent(id, k -> new HashSet<>()).add(type);
+        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+            Set<PotionEffectType> set = suppressedEffects.get(id);
+            if (set != null) {
+                set.remove(type);
+                if (set.isEmpty()) {
+                    suppressedEffects.remove(id);
+                }
+            }
+            Player online = Bukkit.getPlayer(id);
+            if (online != null && online.isOnline()) {
+                validateEffects(online);
+            }
+        }, durationTicks);
+    }
+
+    private boolean isEffectSuppressed(Player player, PotionEffectType type) {
+        Set<PotionEffectType> set = suppressedEffects.get(player.getUniqueId());
+        return set != null && set.contains(type);
     }
 
     private boolean hasValidEffect(Player player, PotionEffectType type, int requiredLevel) {

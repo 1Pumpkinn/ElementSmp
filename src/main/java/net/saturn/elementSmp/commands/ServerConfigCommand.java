@@ -37,10 +37,10 @@ public class ServerConfigCommand implements CommandExecutor, TabCompleter {
             sender.sendMessage(ChatColor.YELLOW + "/" + label + " set <key> <true|false>");
             sender.sendMessage(ChatColor.YELLOW + "/" + label + " reset [key]");
             sender.sendMessage(ChatColor.GRAY + "Keys:");
-            sender.sendMessage(ChatColor.GRAY + "  features.abilities_enabled");
-            sender.sendMessage(ChatColor.GRAY + "  features.element_roll_enabled");
-            sender.sendMessage(ChatColor.GRAY + "  features.elements.<air|water|fire|earth|life|death|metal|frost>.enabled");
-            sender.sendMessage(ChatColor.GRAY + "  features.recipes.<upgrader1|upgrader2|reroller|advanced_reroller>.enabled");
+            sender.sendMessage(ChatColor.GRAY + "  abilities_enabled");
+            sender.sendMessage(ChatColor.GRAY + "  element_roll_enabled");
+            sender.sendMessage(ChatColor.GRAY + "  element_<air|water|fire|earth|life|death|metal|frost>");
+            sender.sendMessage(ChatColor.GRAY + "  recipe_<upgrader1|upgrader2|reroller|advanced_reroller>");
             return true;
         }
         if (args.length < 2 && !args[0].equalsIgnoreCase("list") && !args[0].equalsIgnoreCase("reset")) {
@@ -54,14 +54,15 @@ public class ServerConfigCommand implements CommandExecutor, TabCompleter {
         switch (action) {
             case "list": {
                 sender.sendMessage(ChatColor.GOLD + "=== Server Flags ===");
-                sender.sendMessage(colorFlag("features.abilities_enabled", store.areAbilitiesEnabled()));
-                sender.sendMessage(colorFlag("features.element_roll_enabled", store.isElementRollEnabled()));
+                sender.sendMessage(colorFlag("abilities_enabled", store.areAbilitiesEnabled()));
+                sender.sendMessage(colorFlag("element_roll_enabled", store.isElementRollEnabled()));
                 for (ElementType t : ElementType.values()) {
-                    sender.sendMessage(colorFlag("features.elements." + t.name().toLowerCase() + ".enabled", store.isElementEnabled(t)));
+                    String el = t.name().toLowerCase();
+                    sender.sendMessage(colorFlag("element_" + el, store.isElementEnabled(t)));
                 }
                 String[] recipes = {"upgrader1", "upgrader2", "reroller", "advanced_reroller"};
                 for (String r : recipes) {
-                    sender.sendMessage(colorFlag("features.recipes." + r + ".enabled", store.isRecipeEnabled(r)));
+                    sender.sendMessage(colorFlag("recipe_" + r, store.isRecipeEnabled(r)));
                 }
                 return true;
             }
@@ -121,16 +122,20 @@ public class ServerConfigCommand implements CommandExecutor, TabCompleter {
                 List<String> keys = new ArrayList<>();
                 keys.add("abilities");
                 keys.add("roll");
+                keys.add("abilities_enabled");
+                keys.add("element_roll_enabled");
                 keys.add("features.abilities_enabled");
                 keys.add("features.element_roll_enabled");
                 String[] recipes = {"upgrader1", "upgrader2", "reroller", "advanced_reroller"};
                 for (String r : recipes) {
                     keys.add("recipes." + r);
+                    keys.add("recipe_" + r);
                     keys.add("features.recipes." + r + ".enabled");
                 }
                 for (ElementType t : ElementType.values()) {
                     String el = t.name().toLowerCase();
                     keys.add("elements." + el);
+                    keys.add("element_" + el);
                     keys.add("features.elements." + el + ".enabled");
                 }
                 return filter(keys, args[1]);
@@ -196,13 +201,23 @@ public class ServerConfigCommand implements CommandExecutor, TabCompleter {
     private String resolveKey(String input) {
         String s = input.toLowerCase();
         if (s.equals("abilities")) return "features.abilities_enabled";
+        if (s.equals("abilities_enabled")) return "features.abilities_enabled";
         if (s.equals("roll")) return "features.element_roll_enabled";
+        if (s.equals("element_roll_enabled")) return "features.element_roll_enabled";
+        if (s.startsWith("element_")) {
+            String el = s.substring("element_".length());
+            return "features.elements." + el + ".enabled";
+        }
         if (s.startsWith("elements.")) {
             String el = s.substring("elements.".length());
             return "features.elements." + el + ".enabled";
         }
         if (s.startsWith("recipes.")) {
             String r = s.substring("recipes.".length());
+            return "features.recipes." + r + ".enabled";
+        }
+        if (s.startsWith("recipe_")) {
+            String r = s.substring("recipe_".length());
             return "features.recipes." + r + ".enabled";
         }
         return input;
