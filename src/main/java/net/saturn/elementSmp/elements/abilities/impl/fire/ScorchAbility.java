@@ -57,6 +57,8 @@ public class ScorchAbility extends BaseAbility implements Listener {
         if (!(event.getDamager() instanceof Player attacker)) return;
         if (!(event.getEntity() instanceof LivingEntity victim)) return;
 
+        if (victim.hasMetadata(MetadataKeys.Fire.INFERNO_BLAST_HIT)) return;
+
         if (attacker.hasMetadata(META_SCORCH)) {
             attacker.removeMetadata(META_SCORCH, plugin);
             activeScorches.remove(attacker.getUniqueId());

@@ -43,6 +43,7 @@ public final class MetadataKeys {
 
     public static final class Fire {
         public static final String SCORCH_ACTIVE = "fire_scorch_active";
+        public static final String INFERNO_BLAST_HIT = "fire_inferno_blast_hit";
         private Fire() {}
     }
 

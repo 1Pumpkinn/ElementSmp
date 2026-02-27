@@ -2,6 +2,7 @@ package net.saturn.elementSmp.elements.abilities.impl.fire;
 
 import net.saturn.elementSmp.ElementSmp;
 import net.saturn.elementSmp.config.Constants;
+import net.saturn.elementSmp.config.MetadataKeys;
 import net.saturn.elementSmp.elements.ElementContext;
 import net.saturn.elementSmp.elements.abilities.BaseAbility;
 import org.bukkit.ChatColor;
@@ -11,6 +12,7 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.metadata.FixedMetadataValue;
 
 public class InfernoBlastAbility extends BaseAbility {
     private final ElementSmp plugin;
@@ -62,7 +64,9 @@ public class InfernoBlastAbility extends BaseAbility {
                 // Trigger hurt animation and attribute damage to the player
                 // We use a tiny amount of damage to trigger the damage event for death attribution
                 if (!(victim instanceof Player p2 && (p2.getGameMode() == org.bukkit.GameMode.CREATIVE || p2.getGameMode() == org.bukkit.GameMode.SPECTATOR))) {
+                    victim.setMetadata(MetadataKeys.Fire.INFERNO_BLAST_HIT, new FixedMetadataValue(plugin, true));
                     victim.damage(0.01, player);
+                    victim.removeMetadata(MetadataKeys.Fire.INFERNO_BLAST_HIT, plugin);
                 }
             }
         }
