@@ -162,7 +162,11 @@ public class ElementManager {
         }
         PlayerData pd = data(player.getUniqueId());
         ElementType type = pd.getCurrentElement();
-        if (type == null || !store.isElementEnabled(type)) {
+        if (type == null) {
+            return false;
+        }
+        if (!store.isElementEnabled(type)) {
+            player.sendMessage(ChatColor.RED + "Your element " + type.name().toLowerCase() + " is disabled by the server.");
             return false;
         }
         Element element = registry.get(type);

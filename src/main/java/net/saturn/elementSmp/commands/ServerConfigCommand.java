@@ -30,84 +30,68 @@ public class ServerConfigCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        if (args.length == 0 || args[0].equalsIgnoreCase("help")) {
+        if (args.length == 0) {
             sender.sendMessage(ChatColor.GOLD + "=== Server Config ===");
-            sender.sendMessage(ChatColor.YELLOW + "/" + label + " list");
-            sender.sendMessage(ChatColor.YELLOW + "/" + label + " get <key>");
-            sender.sendMessage(ChatColor.YELLOW + "/" + label + " set <key> <true|false>");
-            sender.sendMessage(ChatColor.YELLOW + "/" + label + " reset [key]");
-            sender.sendMessage(ChatColor.GRAY + "Keys:");
-            sender.sendMessage(ChatColor.GRAY + "  abilities_enabled");
-            sender.sendMessage(ChatColor.GRAY + "  element_roll_enabled");
-            sender.sendMessage(ChatColor.GRAY + "  element_<air|water|fire|earth|life|death|metal|frost>");
-            sender.sendMessage(ChatColor.GRAY + "  recipe_<upgrader1|upgrader2|reroller|advanced_reroller>");
-            return true;
-        }
-        if (args.length < 2 && !args[0].equalsIgnoreCase("list") && !args[0].equalsIgnoreCase("reset")) {
-            sender.sendMessage(ChatColor.YELLOW + "Usage: /" + label + " <help|list|get|set|reset> ...");
+            sender.sendMessage(ChatColor.YELLOW + "/" + label + " element <air|water|fire|earth|life|death|metal|frost> <true|false>");
+            sender.sendMessage(ChatColor.YELLOW + "/" + label + " abilities <true|false>");
+            sender.sendMessage(ChatColor.YELLOW + "/" + label + " upgrader1 <true|false>");
+            sender.sendMessage(ChatColor.YELLOW + "/" + label + " upgrader2 <true|false>");
+            sender.sendMessage(ChatColor.YELLOW + "/" + label + " reroller <true|false>");
+            sender.sendMessage(ChatColor.YELLOW + "/" + label + " advanced_reroller <true|false>");
             return true;
         }
 
-        String action = args[0].toLowerCase();
-        String keyInput = args.length > 1 ? args[1] : "";
-        String key = resolveKey(keyInput);
-        switch (action) {
-            case "list": {
-                sender.sendMessage(ChatColor.GOLD + "=== Server Flags ===");
-                sender.sendMessage(colorFlag("abilities_enabled", store.areAbilitiesEnabled()));
-                sender.sendMessage(colorFlag("element_roll_enabled", store.isElementRollEnabled()));
-                for (ElementType t : ElementType.values()) {
-                    String el = t.name().toLowerCase();
-                    sender.sendMessage(colorFlag("element_" + el, store.isElementEnabled(t)));
-                }
-                String[] recipes = {"upgrader1", "upgrader2", "reroller", "advanced_reroller"};
-                for (String r : recipes) {
-                    sender.sendMessage(colorFlag("recipe_" + r, store.isRecipeEnabled(r)));
-                }
-                return true;
-            }
-            case "get": {
-                boolean val = store.getServerBoolean(key, false);
-                sender.sendMessage(ChatColor.GREEN + keyInput + " = " + val);
-                return true;
-            }
-            case "set": {
-                if (args.length < 3) {
-                    sender.sendMessage(ChatColor.YELLOW + "Usage: /" + label + " set <key> <true|false>");
+        String sub = args[0].toLowerCase();
+
+        switch (sub) {
+            case "element": {
+                if (args.length != 3) {
+                    sender.sendMessage(ChatColor.YELLOW + "Usage: /" + label + " element <air|water|fire|earth|life|death|metal|frost> <true|false>");
                     return true;
                 }
-                String valStr = args[2].toLowerCase();
-                if (!valStr.equals("true") && !valStr.equals("false")) {
-                    sender.sendMessage(ChatColor.RED + "Value must be true or false");
+
+                String elementName = args[1].toUpperCase();
+                ElementType type;
+                try {
+                    type = ElementType.valueOf(elementName);
+                } catch (IllegalArgumentException ex) {
+                    sender.sendMessage(ChatColor.RED + "Unknown element: " + args[1]);
                     return true;
                 }
-                boolean val = Boolean.parseBoolean(valStr);
-                store.setServerBoolean(key, val);
-                sender.sendMessage(ChatColor.GREEN + "Set " + keyInput + " = " + val);
-                
-                if (key.startsWith("features.recipes.") && key.endsWith(".enabled")) {
-                    String name = key.substring("features.recipes.".length(), key.length() - ".enabled".length());
-                    applyRecipeToggle(name, val, sender);
-                }
+
+                Boolean val = parseBooleanArg(args[2], sender);
+                if (val == null) return true;
+
+                store.setElementEnabled(type, val);
+                sender.sendMessage(ChatColor.GREEN + "element_" + type.name().toLowerCase() + " set to " + val);
                 return true;
             }
-            case "reset": {
-                if (args.length == 1) {
-                    resetAll(sender);
+            case "abilities": {
+                if (args.length != 2) {
+                    sender.sendMessage(ChatColor.YELLOW + "Usage: /" + label + " abilities <true|false>");
                     return true;
                 }
-                String keyToResetInput = args[1];
-                String keyToReset = resolveKey(keyToResetInput);
-                store.setServerBoolean(keyToReset, true);
-                sender.sendMessage(ChatColor.GREEN + "Reset " + keyToResetInput + " to default (true)");
-                if (keyToReset.startsWith("features.recipes.") && keyToReset.endsWith(".enabled")) {
-                    String name = keyToReset.substring("features.recipes.".length(), keyToReset.length() - ".enabled".length());
-                    applyRecipeToggle(name, true, sender);
+                Boolean val = parseBooleanArg(args[1], sender);
+                if (val == null) return true;
+                store.setAbilitiesEnabled(val);
+                sender.sendMessage(ChatColor.GREEN + "abilities_enabled set to " + val);
+                return true;
+            }
+            case "upgrader1":
+            case "upgrader2":
+            case "reroller":
+            case "advanced_reroller": {
+                if (args.length != 2) {
+                    sender.sendMessage(ChatColor.YELLOW + "Usage: /" + label + " " + sub + " <true|false>");
+                    return true;
                 }
+                Boolean val = parseBooleanArg(args[1], sender);
+                if (val == null) return true;
+                handleRecipeToggle(sub, val, sender);
                 return true;
             }
             default:
-                sender.sendMessage(ChatColor.YELLOW + "Usage: /" + label + " <help|list|get|set|reset> ...");
+                sender.sendMessage(ChatColor.YELLOW + "Unknown subcommand. Use /" + label + " for help.");
                 return true;
         }
     }
@@ -117,30 +101,24 @@ public class ServerConfigCommand implements CommandExecutor, TabCompleter {
         if (!sender.hasPermission("element.admin")) return new ArrayList<>();
         switch (args.length) {
             case 1:
-                return filter(Arrays.asList("get", "set", "reset", "help", "list"), args[0]);
+                return filter(Arrays.asList("element", "abilities", "upgrader1", "upgrader2", "reroller", "advanced_reroller"), args[0]);
             case 2:
-                List<String> keys = new ArrayList<>();
-                keys.add("abilities");
-                keys.add("roll");
-                keys.add("abilities_enabled");
-                keys.add("element_roll_enabled");
-                keys.add("features.abilities_enabled");
-                keys.add("features.element_roll_enabled");
-                String[] recipes = {"upgrader1", "upgrader2", "reroller", "advanced_reroller"};
-                for (String r : recipes) {
-                    keys.add("recipes." + r);
-                    keys.add("recipe_" + r);
-                    keys.add("features.recipes." + r + ".enabled");
+                if (args[0].equalsIgnoreCase("element")) {
+                    List<String> elements = new ArrayList<>();
+                    for (ElementType t : ElementType.values()) {
+                        elements.add(t.name().toLowerCase());
+                    }
+                    return filter(elements, args[1]);
+                } else if (args[0].equalsIgnoreCase("abilities")
+                        || args[0].equalsIgnoreCase("upgrader1")
+                        || args[0].equalsIgnoreCase("upgrader2")
+                        || args[0].equalsIgnoreCase("reroller")
+                        || args[0].equalsIgnoreCase("advanced_reroller")) {
+                    return filter(Arrays.asList("true", "false"), args[1]);
                 }
-                for (ElementType t : ElementType.values()) {
-                    String el = t.name().toLowerCase();
-                    keys.add("elements." + el);
-                    keys.add("element_" + el);
-                    keys.add("features.elements." + el + ".enabled");
-                }
-                return filter(keys, args[1]);
+                return new ArrayList<>();
             case 3:
-                if (args[0].equalsIgnoreCase("set")) {
+                if (args[0].equalsIgnoreCase("element")) {
                     return filter(Arrays.asList("true", "false"), args[2]);
                 }
                 return new ArrayList<>();
@@ -155,71 +133,41 @@ public class ServerConfigCommand implements CommandExecutor, TabCompleter {
                 .collect(Collectors.toList());
     }
 
-    private void applyRecipeToggle(String name, boolean val, CommandSender sender) {
+    private Boolean parseBooleanArg(String raw, CommandSender sender) {
+        String valStr = raw.toLowerCase();
+        if (!valStr.equals("true") && !valStr.equals("false")) {
+            sender.sendMessage(ChatColor.RED + "Value must be true or false");
+            return null;
+        }
+        return Boolean.parseBoolean(valStr);
+    }
+
+    private void handleRecipeToggle(String name, boolean enabled, CommandSender sender) {
+        store.setRecipeEnabled(name, enabled);
+
         switch (name) {
             case "upgrader1" -> {
                 org.bukkit.NamespacedKey k = new org.bukkit.NamespacedKey(plugin, net.saturn.elementSmp.items.Upgrader1Item.KEY);
-                if (val) net.saturn.elementSmp.items.Upgrader1Item.registerRecipe(plugin);
+                if (enabled) net.saturn.elementSmp.items.Upgrader1Item.registerRecipe(plugin);
                 else plugin.getServer().removeRecipe(k);
             }
             case "upgrader2" -> {
                 org.bukkit.NamespacedKey k = new org.bukkit.NamespacedKey(plugin, net.saturn.elementSmp.items.Upgrader2Item.KEY);
-                if (val) net.saturn.elementSmp.items.Upgrader2Item.registerRecipe(plugin);
+                if (enabled) net.saturn.elementSmp.items.Upgrader2Item.registerRecipe(plugin);
                 else plugin.getServer().removeRecipe(k);
             }
             case "reroller" -> {
                 org.bukkit.NamespacedKey k = new org.bukkit.NamespacedKey(plugin, net.saturn.elementSmp.items.RerollerItem.KEY);
-                if (val) net.saturn.elementSmp.items.RerollerItem.registerRecipe(plugin);
+                if (enabled) net.saturn.elementSmp.items.RerollerItem.registerRecipe(plugin);
                 else plugin.getServer().removeRecipe(k);
             }
             case "advanced_reroller" -> {
                 org.bukkit.NamespacedKey k = new org.bukkit.NamespacedKey(plugin, net.saturn.elementSmp.items.AdvancedRerollerItem.KEY);
-                if (val) net.saturn.elementSmp.items.AdvancedRerollerItem.registerRecipe(plugin);
+                if (enabled) net.saturn.elementSmp.items.AdvancedRerollerItem.registerRecipe(plugin);
                 else plugin.getServer().removeRecipe(k);
             }
         }
-    }
 
-    private void resetAll(CommandSender sender) {
-        store.setAbilitiesEnabled(true);
-        store.setElementRollEnabled(true);
-        for (ElementType type : ElementType.values()) {
-            store.setElementEnabled(type, true);
-        }
-        String[] recipes = {"upgrader1", "upgrader2", "reroller", "advanced_reroller"};
-        for (String r : recipes) {
-            store.setRecipeEnabled(r, true);
-            applyRecipeToggle(r, true, sender);
-        }
-        sender.sendMessage(ChatColor.GREEN + "All server flags reset to defaults.");
-    }
-
-    private String colorFlag(String name, boolean val) {
-        return (val ? ChatColor.GREEN : ChatColor.RED) + name + " = " + val;
-    }
-
-    private String resolveKey(String input) {
-        String s = input.toLowerCase();
-        if (s.equals("abilities")) return "features.abilities_enabled";
-        if (s.equals("abilities_enabled")) return "features.abilities_enabled";
-        if (s.equals("roll")) return "features.element_roll_enabled";
-        if (s.equals("element_roll_enabled")) return "features.element_roll_enabled";
-        if (s.startsWith("element_")) {
-            String el = s.substring("element_".length());
-            return "features.elements." + el + ".enabled";
-        }
-        if (s.startsWith("elements.")) {
-            String el = s.substring("elements.".length());
-            return "features.elements." + el + ".enabled";
-        }
-        if (s.startsWith("recipes.")) {
-            String r = s.substring("recipes.".length());
-            return "features.recipes." + r + ".enabled";
-        }
-        if (s.startsWith("recipe_")) {
-            String r = s.substring("recipe_".length());
-            return "features.recipes." + r + ".enabled";
-        }
-        return input;
+        sender.sendMessage(ChatColor.GREEN + "recipe_" + name + " set to " + enabled);
     }
 }

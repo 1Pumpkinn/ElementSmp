@@ -46,4 +46,4 @@ costs:
     item_use: 75
     item_throw: 25
 
-# recipes moved to server.yml flags (features.recipes.*)
+# recipes moved to server.yml flags (recipe_* booleans)

@@ -31,7 +31,8 @@ public class NaturesEyeAbility extends BaseAbility {
     public boolean execute(ElementContext context) {
         Player player = context.getPlayer();
         int radius = 25;
-        int duration = 5 * 20; // 5 seconds in ticks
+        int duration = 10 * 20;
+        var trustManager = context.getTrustManager();
 
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ALLAY_AMBIENT_WITH_ITEM, 1.0f, 1.0f);
         player.getWorld().spawnParticle(Particle.HAPPY_VILLAGER, player.getEyeLocation(), 30, 0.5, 0.5, 0.5, 0.1);
@@ -42,36 +43,38 @@ public class NaturesEyeAbility extends BaseAbility {
         if (natureTeam == null) {
             natureTeam = mainScoreboard.registerNewTeam("NatureEyeGlobal");
         }
-        natureTeam.setColor(ChatColor.GREEN);
+        natureTeam.setColor(ChatColor.WHITE);
 
-        // Track entities we made glow
         Set<UUID> glowingEntities = new HashSet<>();
 
-        // Capture for lambda
         Team finalNatureTeam = natureTeam;
+        var finalTrustManager = trustManager;
+        Player finalPlayer = player;
 
         new BukkitRunnable() {
             int ticks = 0;
 
             @Override
             public void run() {
-                if (ticks >= duration || !player.isOnline()) {
-                    // Cleanup
+                if (ticks >= duration || !finalPlayer.isOnline()) {
                     cleanup(mainScoreboard, glowingEntities);
                     this.cancel();
                     return;
                 }
 
-                // Scan for nearby entities
-                List<Entity> nearby = player.getNearbyEntities(radius, radius, radius);
+                List<Entity> nearby = finalPlayer.getNearbyEntities(radius, radius, radius);
                 Set<UUID> currentNearbyUUIDs = new HashSet<>();
 
                 for (Entity entity : nearby) {
-                    if (entity instanceof LivingEntity livingEntity && !entity.equals(player)) {
+                    if (entity instanceof LivingEntity livingEntity && !entity.equals(finalPlayer)) {
+                        if (livingEntity instanceof Player targetPlayer) {
+                            if (finalTrustManager.isTrusted(finalPlayer.getUniqueId(), targetPlayer.getUniqueId())) {
+                                continue;
+                            }
+                        }
                         UUID uuid = entity.getUniqueId();
                         currentNearbyUUIDs.add(uuid);
 
-                        // Make them glow if not already handled
                         if (!glowingEntities.contains(uuid)) {
                             livingEntity.setGlowing(true);
                             String entry = entity instanceof Player ? entity.getName() : uuid.toString();
@@ -81,32 +84,42 @@ public class NaturesEyeAbility extends BaseAbility {
                             glowingEntities.add(uuid);
                         }
 
-                        // Use particles to highlight entity (additional visual aid)
-                        player.spawnParticle(
+                        finalPlayer.spawnParticle(
                             Particle.HAPPY_VILLAGER, 
                             livingEntity.getEyeLocation().add(0, 0.5, 0), 
                             1, 0.2, 0.2, 0.2, 0
                         );
 
-                        // Tracking sprinting for players
+                        for (double y = livingEntity.getLocation().getY(); y <= livingEntity.getLocation().getY() + 20; y += 1.0) {
+                            finalPlayer.spawnParticle(
+                                    Particle.END_ROD,
+                                    livingEntity.getLocation().getX(),
+                                    y,
+                                    livingEntity.getLocation().getZ(),
+                                    1,
+                                    0.02,
+                                    0.02,
+                                    0.02,
+                                    0
+                            );
+                        }
+
                         if (livingEntity instanceof Player targetPlayer) {
                             if (targetPlayer.isSprinting()) {
-                                player.spawnParticle(
+                                finalPlayer.spawnParticle(
                                         Particle.FALLING_SPORE_BLOSSOM,
                                         targetPlayer.getLocation().add(0, 1.5, 0),
                                         5, 0.3, 0.5, 0.3, 0.05
                                 );
                                 
                                 if (ticks % 10 == 0) {
-                                    player.playSound(targetPlayer.getLocation(), Sound.BLOCK_MOSS_STEP, 0.6f, 1.2f);
+                                    finalPlayer.playSound(targetPlayer.getLocation(), Sound.BLOCK_MOSS_STEP, 0.6f, 1.2f);
                                 }
                             }
                         }
                     }
                 }
 
-                // Restore entities that are no longer nearby
-                // We use a safe copy or iterator removal
                 glowingEntities.removeIf(uuid -> {
                     if (!currentNearbyUUIDs.contains(uuid)) {
                         Entity entity = Bukkit.getEntity(uuid);

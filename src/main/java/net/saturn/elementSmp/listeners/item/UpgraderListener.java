@@ -50,6 +50,17 @@ public class UpgraderListener implements Listener {
         }
 
         int upgraderLevel = pdc.get(upgraderKey, PersistentDataType.INTEGER);
+        var store = plugin.getDataStore();
+        if (upgraderLevel == 1 && !store.isRecipeEnabled("upgrader1")) {
+            event.setCancelled(true);
+            player.sendMessage(ChatColor.RED + "Upgrader I is disabled by the server.");
+            return;
+        }
+        if (upgraderLevel == 2 && !store.isRecipeEnabled("upgrader2")) {
+            event.setCancelled(true);
+            player.sendMessage(ChatColor.RED + "Upgrader II is disabled by the server.");
+            return;
+        }
         
         var playerData = elementManager.data(player.getUniqueId());
         var currentElement = playerData.getCurrentElement();

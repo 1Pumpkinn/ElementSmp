@@ -50,7 +50,13 @@ public class AdvancedRerollerListener implements Listener {
 
         event.setCancelled(true);
 
-        // Check if holding any reroller in BOTH hands
+        if (isAdvancedReroller && !plugin.getDataStore().isRecipeEnabled("advanced_reroller")) {
+            if (shouldWarn(player)) {
+                player.sendMessage(ChatColor.RED + "Advanced Reroller is disabled by the server.");
+            }
+            return;
+        }
+
         ItemStack mainHand = player.getInventory().getItemInMainHand();
         ItemStack offHand = player.getInventory().getItemInOffHand();
 

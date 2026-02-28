@@ -218,38 +218,38 @@ public class DataStore {
     }
 
     public synchronized boolean areAbilitiesEnabled() {
-        return getServerBoolean("features.abilities_enabled", true);
+        return getServerBoolean("abilities_enabled", true);
     }
 
     public synchronized void setAbilitiesEnabled(boolean enabled) {
-        setServerBoolean("features.abilities_enabled", enabled);
+        setServerBoolean("abilities_enabled", enabled);
     }
 
     public synchronized boolean isElementRollEnabled() {
-        return getServerBoolean("features.element_roll_enabled", true);
+        return getServerBoolean("element_roll_enabled", true);
     }
 
     public synchronized void setElementRollEnabled(boolean enabled) {
-        setServerBoolean("features.element_roll_enabled", enabled);
+        setServerBoolean("element_roll_enabled", enabled);
     }
 
     public synchronized boolean isElementEnabled(net.saturn.elementSmp.elements.ElementType type) {
-        String path = "features.elements." + type.name().toLowerCase() + ".enabled";
+        String path = "element_" + type.name().toLowerCase();
         return getServerBoolean(path, true);
     }
 
     public synchronized void setElementEnabled(net.saturn.elementSmp.elements.ElementType type, boolean enabled) {
-        String path = "features.elements." + type.name().toLowerCase() + ".enabled";
+        String path = "element_" + type.name().toLowerCase();
         setServerBoolean(path, enabled);
     }
 
     public synchronized boolean isRecipeEnabled(String name) {
-        String path = "features.recipes." + name + ".enabled";
+        String path = "recipe_" + name;
         return getServerBoolean(path, true);
     }
 
     public synchronized void setRecipeEnabled(String name, boolean enabled) {
-        String path = "features.recipes." + name + ".enabled";
+        String path = "recipe_" + name;
         setServerBoolean(path, enabled);
     }
 }

@@ -42,6 +42,20 @@ public class RerollerListener implements Listener {
 
             event.setCancelled(true);
 
+            var store = plugin.getDataStore();
+            if (isReroller && !store.isRecipeEnabled("reroller")) {
+                if (shouldWarn(player)) {
+                    player.sendMessage(net.kyori.adventure.text.Component.text("Reroller is disabled by the server.").color(net.kyori.adventure.text.format.NamedTextColor.RED));
+                }
+                return;
+            }
+            if (isAdvancedReroller && !store.isRecipeEnabled("advanced_reroller")) {
+                if (shouldWarn(player)) {
+                    player.sendMessage(net.kyori.adventure.text.Component.text("Advanced Reroller is disabled by the server.").color(net.kyori.adventure.text.format.NamedTextColor.RED));
+                }
+                return;
+            }
+
             // Check if holding any reroller in BOTH hands
             ItemStack mainHand = player.getInventory().getItemInMainHand();
             ItemStack offHand = player.getInventory().getItemInOffHand();
