@@ -46,7 +46,7 @@ public final class RerollerItem {
             recipe.setIngredient('G', Material.GOLD_BLOCK);
             recipe.setIngredient('D', Material.DIAMOND_BLOCK);
             recipe.setIngredient('M', Material.EMERALD_BLOCK);
-            recipe.setIngredient('E', Material.NETHERITE_SCRAP);
+            recipe.setIngredient('E', Material.AMETHYST_SHARD);
             recipe.setIngredient('T', Material.TOTEM_OF_UNDYING);
             
             boolean success = plugin.getServer().addRecipe(recipe);
