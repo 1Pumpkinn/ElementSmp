@@ -3,7 +3,9 @@ package net.saturn.elementSmp.elements.abilities.impl.metal;
 import net.saturn.elementSmp.ElementSmp;
 import net.saturn.elementSmp.elements.ElementContext;
 import net.saturn.elementSmp.elements.abilities.BaseAbility;
+import net.saturn.elementSmp.util.DamageUtil;
 import org.bukkit.ChatColor;
+import org.bukkit.EntityEffect;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
@@ -91,7 +93,9 @@ public class MetalDashAbility extends BaseAbility implements Listener {
                         if (entity instanceof Player p && (p.getGameMode() == org.bukkit.GameMode.CREATIVE || p.getGameMode() == org.bukkit.GameMode.SPECTATOR)) {
                             // Skip true damage reduction for creative/spectator players
                         } else {
-                            entity.setHealth(Math.max(0, entity.getHealth() - 4.0));
+                            entity.playEffect(EntityEffect.HURT);
+                            double newHealth = entity.getHealth() - 4.0;
+                            DamageUtil.setHealthWithTotemCheck(entity, newHealth);
                         }
 
                         // Effects

@@ -5,6 +5,7 @@ import net.saturn.elementSmp.elements.ElementContext;
 import net.saturn.elementSmp.elements.abilities.BaseAbility;
 import net.saturn.elementSmp.managers.ManaManager;
 import net.saturn.elementSmp.managers.TrustManager;
+import net.saturn.elementSmp.util.DamageUtil;
 import org.bukkit.*;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -139,17 +140,12 @@ public class AirBlastAbility extends BaseAbility {
             double oldHealth = e.getHealth();
             double trueDamage = 4.0;
 
-            e.setNoDamageTicks(0);
-            e.damage(trueDamage); // Visuals
-
-            // True Damage Correction
-            double expectedHealth = oldHealth - trueDamage;
-            if (e.getHealth() > expectedHealth) {
-                if (e instanceof Player p && (p.getGameMode() == org.bukkit.GameMode.CREATIVE || p.getGameMode() == org.bukkit.GameMode.SPECTATOR)) {
-                    // Do not reduce creative/spectator player health with true damage correction
-                } else {
-                    e.setHealth(Math.max(0, expectedHealth));
-                }
+            if (e instanceof Player p && (p.getGameMode() == org.bukkit.GameMode.CREATIVE || p.getGameMode() == org.bukkit.GameMode.SPECTATOR)) {
+                // Do not reduce creative/spectator player health with true damage correction
+            } else {
+                e.playEffect(EntityEffect.HURT);
+                double newHealth = e.getHealth() - trueDamage;
+                DamageUtil.setHealthWithTotemCheck(e, newHealth);
             }
         }
 

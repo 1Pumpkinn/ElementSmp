@@ -5,7 +5,9 @@ import net.saturn.elementSmp.config.Constants;
 import net.saturn.elementSmp.config.MetadataKeys;
 import net.saturn.elementSmp.elements.ElementContext;
 import net.saturn.elementSmp.elements.abilities.BaseAbility;
+import net.saturn.elementSmp.util.DamageUtil;
 import org.bukkit.ChatColor;
+import org.bukkit.EntityEffect;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
@@ -52,21 +54,11 @@ public class InfernoBlastAbility extends BaseAbility {
                 // Deal TRUE damage
                 // True damage ignores armor, enchantments, and effects
                 double damage = Constants.Damage.FIRE_EXPLOSION_DAMAGE;
-                
-                // Set health directly for true damage, but ensure we don't go below 0
-                if (victim instanceof Player p && (p.getGameMode() == org.bukkit.GameMode.CREATIVE || p.getGameMode() == org.bukkit.GameMode.SPECTATOR)) {
-                    // Do not apply true damage to creative/spectator players
-                } else {
-                    double newHealth = Math.max(0, victim.getHealth() - damage);
-                    victim.setHealth(newHealth);
-                }
 
-                // Trigger hurt animation and attribute damage to the player
-                // We use a tiny amount of damage to trigger the damage event for death attribution
-                if (!(victim instanceof Player p2 && (p2.getGameMode() == org.bukkit.GameMode.CREATIVE || p2.getGameMode() == org.bukkit.GameMode.SPECTATOR))) {
-                    victim.setMetadata(MetadataKeys.Fire.INFERNO_BLAST_HIT, new FixedMetadataValue(plugin, true));
-                    victim.damage(0.01, player);
-                    victim.removeMetadata(MetadataKeys.Fire.INFERNO_BLAST_HIT, plugin);
+                if (!(victim instanceof Player p && (p.getGameMode() == org.bukkit.GameMode.CREATIVE || p.getGameMode() == org.bukkit.GameMode.SPECTATOR))) {
+                    victim.playEffect(EntityEffect.HURT);
+                    double newHealth = victim.getHealth() - damage;
+                    DamageUtil.setHealthWithTotemCheck(victim, newHealth);
                 }
             }
         }

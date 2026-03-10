@@ -4,25 +4,34 @@ main: net.saturn.elementSmp.ElementSmp
 api-version: '1.21'
 load: STARTUP
 authors: [ ___Pumpkinn ]
-
-depend: []
+softdepend:
+  - ProtocolLib
+  - ProtocolSupport
+  - ViaVersion
+  - ViaBackwards
+  - ViaRewind
+  - Geyser-Spigot
 commands:
   elements:
     description: View element info
-  elementinfo:
-    description: View detailed information about an element
-    usage: /elementinfo <element>
   trust:
     description: Manage trust list
   element:
     description: Admin element commands
   mana:
     description: Manage mana
+    permission: element.admin
   util:
     description: Utility commands
-  togglerecipe:
-    description: Toggle recipes
+    permission: element.admin
   ability1:
     description: Use Ability 1
   ability2:
     description: Use Ability 2
+  servercfg:
+    description: Manage server flags
+    permission: element.admin
+permissions:
+  element.admin:
+    description: Grants access to admin commands for ElementSmp
+    default: op

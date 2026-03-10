@@ -5,7 +5,9 @@ import net.saturn.elementSmp.config.Constants;
 import net.saturn.elementSmp.config.MetadataKeys;
 import net.saturn.elementSmp.elements.ElementContext;
 import net.saturn.elementSmp.elements.abilities.BaseAbility;
+import net.saturn.elementSmp.util.DamageUtil;
 import org.bukkit.ChatColor;
+import org.bukkit.EntityEffect;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.LivingEntity;
@@ -100,19 +102,10 @@ public class MagneticAccumulationAbility extends BaseAbility implements Listener
                             double base = accumulated * 0.3;
                             double finalDamage = Math.min(base, 10.0);
 
-                            finalTarget.setNoDamageTicks(0);
-                            double oldHealth = finalTarget.getHealth();
                             if (!(finalTarget instanceof Player pp && (pp.getGameMode() == org.bukkit.GameMode.CREATIVE || pp.getGameMode() == org.bukkit.GameMode.SPECTATOR))) {
-                                finalTarget.damage(0.1);
-                            }
-
-                            double expectedHealth = oldHealth - finalDamage;
-                            if (finalTarget.getHealth() > expectedHealth) {
-                                if (finalTarget instanceof Player p && (p.getGameMode() == org.bukkit.GameMode.CREATIVE || p.getGameMode() == org.bukkit.GameMode.SPECTATOR)) {
-                                    // Skip true damage reduction for creative/spectator players
-                                } else {
-                                    finalTarget.setHealth(Math.max(0, expectedHealth));
-                                }
+                                finalTarget.playEffect(EntityEffect.HURT);
+                                double newHealth = finalTarget.getHealth() - finalDamage;
+                                DamageUtil.setHealthWithTotemCheck(finalTarget, newHealth);
                             }
 
                             finalTarget.getWorld().spawnParticle(Particle.LAVA, finalTarget.getLocation().add(0, 1, 0), 1, 0, 0, 0, 0.1, null, true);

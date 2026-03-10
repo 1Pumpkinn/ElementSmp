@@ -4,6 +4,7 @@ import net.saturn.elementSmp.ElementSmp;
 import net.saturn.elementSmp.config.MetadataKeys;
 import net.saturn.elementSmp.elements.ElementContext;
 import net.saturn.elementSmp.elements.abilities.BaseAbility;
+import net.saturn.elementSmp.util.DamageUtil;
 import org.bukkit.EntityEffect;
 import org.bukkit.Material;
 import org.bukkit.Particle;
@@ -111,21 +112,12 @@ public class WaterLeechTridentAbility extends BaseAbility implements Listener {
                     visualDisplay.teleport(newLoc);
 
                     if (ticks % 20 == 0) { // Every second
-                        target.setNoDamageTicks(0); // Ensure they can take damage immediately
-                        double oldHealth = target.getHealth();
                         double trueDamage = 1.0; // 0.5 hearts
 
-                        // Apply normal damage to trigger visual effects (knockback, red flash, sound)
-                        target.damage(trueDamage);
-
-                        // True Damage Correction: If armor reduced the damage, force the rest of the health loss
-                        double expectedHealth = oldHealth - trueDamage;
-                        if (target.getHealth() > expectedHealth) {
-                            if (target instanceof Player p && (p.getGameMode() == org.bukkit.GameMode.CREATIVE || p.getGameMode() == org.bukkit.GameMode.SPECTATOR)) {
-                                // Skip health reduction for creative/spectator players
-                            } else {
-                                target.setHealth(Math.max(0, expectedHealth));
-                            }
+                        if (!(target instanceof Player p && (p.getGameMode() == org.bukkit.GameMode.CREATIVE || p.getGameMode() == org.bukkit.GameMode.SPECTATOR))) {
+                            target.playEffect(EntityEffect.HURT);
+                            double newHealth = target.getHealth() - trueDamage;
+                            DamageUtil.setHealthWithTotemCheck(target, newHealth);
                         }
                         
                         target.getWorld().playSound(target.getLocation(), Sound.ITEM_TRIDENT_RETURN, 0.5f, 1.0f);
