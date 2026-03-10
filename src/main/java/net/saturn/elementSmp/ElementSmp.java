@@ -181,6 +181,8 @@ public final class ElementSmp extends JavaPlugin {
                     }
                 };
                 manaCmd.setDescription("Manage mana");
+                manaCmd.setPermission("element.admin");
+                manaCmd.setPermissionMessage("You don't have permission to use this command.");
 
                 var utilCmd = new org.bukkit.command.defaults.BukkitCommand("util") {
                     private final UtilCommand executor = new UtilCommand(ElementSmp.this);
@@ -191,6 +193,8 @@ public final class ElementSmp extends JavaPlugin {
                     }
                 };
                 utilCmd.setDescription("Utility commands");
+                utilCmd.setPermission("element.admin");
+                utilCmd.setPermissionMessage("You don't have permission to use this command.");
 
                 // Removed: togglerecipe command (use /servercfg instead)
 
@@ -232,6 +236,8 @@ public final class ElementSmp extends JavaPlugin {
                     }
                 };
                 serverCfgCmd.setDescription("Manage server flags");
+                serverCfgCmd.setPermission("element.admin");
+                serverCfgCmd.setPermissionMessage("You don't have permission to use this command.");
 
                 // Register all commands
                 commandMap.register("elementsmp", elementsCmd);

@@ -33,6 +33,10 @@ public class ManaCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        if (!sender.hasPermission("element.admin")) {
+            sender.sendMessage(ChatColor.RED + "You don't have permission to use this command.");
+            return true;
+        }
         if (args.length == 0) {
             sender.sendMessage(ChatColor.YELLOW + "Usage: /mana <reset|set> [player] [amount]");
             return true;

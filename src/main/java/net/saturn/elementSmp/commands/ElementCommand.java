@@ -221,8 +221,8 @@ public class ElementCommand implements CommandExecutor, TabCompleter {
                 return true;
             }
 
-            if (!player.isOp()) {
-                sender.sendMessage(ChatColor.RED + "You must be OP to use this command.");
+            if (!player.hasPermission("element.admin")) {
+                sender.sendMessage(ChatColor.RED + "You don't have permission to use this command.");
                 return true;
             }
 
