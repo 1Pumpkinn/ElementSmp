@@ -1,5 +1,6 @@
 package net.saturn.elementSmp;
 
+import net.saturn.elementSmp.altar.AltarManager;
 import net.saturn.elementSmp.commands.*;
 import net.saturn.elementSmp.data.DataStore;
 import net.saturn.elementSmp.elements.abilities.AbilityRegistry;
@@ -43,6 +44,7 @@ public final class ElementSmp extends JavaPlugin {
     private TaskScheduler taskScheduler;
     private MetadataHelper metadataHelper;
     private AbilityListener abilityListener;
+    private AltarManager altarManager;
 
     @Override
     public void onEnable() {
@@ -89,6 +91,7 @@ public final class ElementSmp extends JavaPlugin {
         this.abilityRegistry = new AbilityRegistry(this, blockReversionManager);
         this.elementManager = new ElementManager(this, dataStore, manaManager, trustManager, configManager);
         this.itemManager = new ItemManager(this, manaManager, configManager);
+        this.altarManager = new AltarManager(this);
 
         getLogger().info("Managers initialized");
     }
@@ -239,6 +242,21 @@ public final class ElementSmp extends JavaPlugin {
                 serverCfgCmd.setPermission("element.admin");
                 serverCfgCmd.setPermissionMessage("You don't have permission to use this command.");
 
+                var altarCmd = new org.bukkit.command.defaults.BukkitCommand("altar") {
+                    private final AltarCommand executor = new AltarCommand(ElementSmp.this, altarManager);
+                    @Override
+                    public boolean execute(org.bukkit.command.CommandSender sender, String label, String[] args) {
+                        return executor.onCommand(sender, this, label, args);
+                    }
+                    @Override
+                    public java.util.List<String> tabComplete(org.bukkit.command.CommandSender sender, String alias, String[] args) {
+                        return executor.onTabComplete(sender, this, alias, args);
+                    }
+                };
+                altarCmd.setDescription("Altar management commands");
+                altarCmd.setPermission("element.admin");
+                altarCmd.setPermissionMessage("You don't have permission to use this command.");
+
                 // Register all commands
                 commandMap.register("elementsmp", elementsCmd);
                 commandMap.register("elementsmp", trustCmd);
@@ -248,6 +266,7 @@ public final class ElementSmp extends JavaPlugin {
                 commandMap.register("elementsmp", ability1Cmd);
                 commandMap.register("elementsmp", ability2Cmd);
                 commandMap.register("elementsmp", serverCfgCmd);
+                commandMap.register("elementsmp", altarCmd);
 
                 getLogger().info("Commands registered successfully");
             } catch (Exception e) {
@@ -280,6 +299,7 @@ public final class ElementSmp extends JavaPlugin {
         pm.registerEvents(new ElementItemDeathListener(this, elementManager), this);
         pm.registerEvents(new RerollerListener(this), this);
         pm.registerEvents(new AdvancedRerollerListener(this), this);
+        pm.registerEvents(new LightningSoulListener(this), this);
         pm.registerEvents(new UpgraderListener(this, elementManager), this);
     }
 

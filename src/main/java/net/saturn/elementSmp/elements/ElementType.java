@@ -8,6 +8,7 @@ public enum ElementType {
     LIFE,
     DEATH,
     METAL,
-    FROST
+    FROST,
+    LIGHTNING
 
 }

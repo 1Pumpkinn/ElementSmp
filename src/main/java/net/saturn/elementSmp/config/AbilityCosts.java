@@ -27,6 +27,7 @@ public final class AbilityCosts {
         DEFAULTS.put(ElementType.DEATH, new ElementCosts(50, 75));
         DEFAULTS.put(ElementType.METAL, new ElementCosts(50, 75));
         DEFAULTS.put(ElementType.FROST, new ElementCosts(50, 75));
+        DEFAULTS.put(ElementType.LIGHTNING, new ElementCosts(50, 75));
     }
 
     public static ElementCosts getDefaults(ElementType type) {

@@ -11,6 +11,7 @@ import net.saturn.elementSmp.elements.impl.earth.EarthElement;
 import net.saturn.elementSmp.elements.impl.fire.FireElement;
 import net.saturn.elementSmp.elements.impl.frost.FrostElement;
 import net.saturn.elementSmp.elements.impl.life.LifeElement;
+import net.saturn.elementSmp.elements.impl.lightning.LightningElement;
 import net.saturn.elementSmp.elements.impl.metal.MetalElement;
 import net.saturn.elementSmp.elements.impl.water.WaterElement;
 import net.saturn.elementSmp.gui.ElementSelectionGUI;
@@ -63,6 +64,7 @@ public class ElementManager {
         registry.put(ElementType.DEATH, new DeathElement(plugin));
         registry.put(ElementType.METAL, new MetalElement(plugin));
         registry.put(ElementType.FROST, new FrostElement(plugin));
+        registry.put(ElementType.LIGHTNING, new LightningElement(plugin));
     }
 
     public PlayerData data(UUID uuid) {

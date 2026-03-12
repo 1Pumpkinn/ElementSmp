@@ -16,6 +16,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
@@ -80,7 +81,12 @@ public class AdvancedRerollerListener implements Listener {
         item.setAmount(item.getAmount() - 1);
         if (item.getAmount() <= 0) player.getInventory().removeItem(item);
 
-        ElementType[] pool = {ElementType.METAL, ElementType.FROST, ElementType.LIFE, ElementType.DEATH};
+        List<ElementType> poolList = new java.util.ArrayList<>(List.of(ElementType.METAL, ElementType.FROST, ElementType.LIFE, ElementType.DEATH));
+        if (plugin.getDataStore().isElementUnlocked(ElementType.LIGHTNING)) {
+            poolList.add(ElementType.LIGHTNING);
+        }
+        
+        ElementType[] pool = poolList.toArray(new ElementType[0]);
         new ElementSelectionGUI(plugin, player, true, ItemKeys.KEY_ADVANCED_REROLLER, pool).open();
     }
 

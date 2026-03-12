@@ -102,6 +102,17 @@ public final class ElementInfoRegistry {
                 new ElementInfo.AbilityInfo("Frost Circle", "Chilling area around you that slows and harms nearby enemies over time", 50, 1),
                 new ElementInfo.AbilityInfo("Frost Nova", "Instant frost blast that damages and launches nearby enemies", 75, 2)
         ));
+
+        INFO.put(ElementType.LIGHTNING, new ElementInfo(
+                "Lightning",
+                ChatColor.YELLOW,
+                List.of(
+                        "Permanent Speed boost",
+                        "Permanent Haste II boost (Upgrade II)"
+                ),
+                new ElementInfo.AbilityInfo("Lightning Speed", "Gain Speed II for 10 seconds", 50, 1),
+                new ElementInfo.AbilityInfo("Thunderstorm", "Strike nearby enemies with lightning; 20% chance for one, 5% for a second strike", 75, 2)
+        ));
     }
 
     public static Optional<ElementInfo> getInfo(ElementType type) {

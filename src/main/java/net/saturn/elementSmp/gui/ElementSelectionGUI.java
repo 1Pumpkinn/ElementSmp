@@ -119,6 +119,11 @@ public class ElementSelectionGUI {
                 color = ChatColor.AQUA;
                 name = "Frost Element";
                 break;
+            case LIGHTNING:
+                material = Material.LIGHTNING_ROD;
+                color = ChatColor.YELLOW;
+                name = "Lightning Element";
+                break;
             case LIFE:
                 material = Material.APPLE;
                 color = ChatColor.LIGHT_PURPLE;

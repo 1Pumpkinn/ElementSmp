@@ -252,4 +252,15 @@ public class DataStore {
         String path = "recipe_" + name;
         setServerBoolean(path, enabled);
     }
+
+    public synchronized boolean isElementUnlocked(ElementType type) {
+        if (type == ElementType.LIGHTNING) {
+            return getServerBoolean("element_unlocked_" + type.name().toLowerCase(), false);
+        }
+        return true; // Default elements are always unlocked
+    }
+
+    public synchronized void setElementUnlocked(ElementType type, boolean unlocked) {
+        setServerBoolean("element_unlocked_" + type.name().toLowerCase(), unlocked);
+    }
 }
