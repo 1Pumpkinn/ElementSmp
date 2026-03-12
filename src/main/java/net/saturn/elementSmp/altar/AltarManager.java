@@ -92,6 +92,13 @@ public class AltarManager implements Listener {
 
         loc.getBlock().setType(Material.LODESTONE);
         
+        // CLEAN UP ANY EXISTING ALTAR ENTITIES FIRST
+        for (Entity entity : loc.getWorld().getNearbyEntities(loc.clone().add(0.5, 1.5, 0.5), 1.0, 2.5, 1.0)) {
+            if (entity.getScoreboardTags().contains("altar_display") || entity.getScoreboardTags().contains("altar_hologram")) {
+                entity.remove();
+            }
+        }
+        
         Location displayLoc = loc.clone().add(0.5, 1.6, 0.5);
         displayLoc.getWorld().spawn(displayLoc, ItemDisplay.class, display -> {
             display.setItemStack(recipe.result());
@@ -138,6 +145,7 @@ public class AltarManager implements Listener {
         if (state == null) {
             // Check if there is an ItemDisplay nearby that indicates which recipe this should be
             // This allows persistent altars across restarts if the blocks remain
+            boolean found = false;
             for (Entity entity : loc.getWorld().getNearbyEntities(loc.clone().add(0.5, 1.2, 0.5), 0.5, 0.5, 0.5)) {
                 if (entity instanceof ItemDisplay display) {
                     for (String tag : display.getScoreboardTags()) {
@@ -147,10 +155,12 @@ public class AltarManager implements Listener {
                             if (recipe != null) {
                                 state = new AltarState(loc, recipe);
                                 activeAltars.put(key, state);
+                                found = true;
                                 break;
                             }
                         }
                     }
+                    if (found) break; // Break outer entity loop
                 }
             }
         }
@@ -342,8 +352,22 @@ public class AltarManager implements Listener {
 
             // If holograms already exist, just update names instead of respawning (less flickering)
             if (!holograms.isEmpty()) {
-                updateHologramTexts();
-                return;
+                // Periodically check if all holograms are still valid
+                if (holograms.stream().allMatch(Entity::isValid)) {
+                    updateHologramTexts();
+                    return;
+                } else {
+                    // One or more holograms were removed externally, clear and recreate
+                    clearHolograms();
+                }
+            }
+
+            // CLEAR LINGERING HOLOGRAMS FROM PREVIOUS SESSIONS
+            // This is the most likely cause for overlaps (entities from before restart)
+            for (Entity nearby : location.getWorld().getNearbyEntities(location.clone().add(0.5, 2.5, 0.5), 1.0, 3.0, 1.0)) {
+                if (nearby instanceof ArmorStand as && as.getScoreboardTags().contains("altar_hologram")) {
+                    as.remove();
+                }
             }
 
             Location spawnLoc = location.clone().add(0.5, 1.6, 0.5);
@@ -354,6 +378,8 @@ public class AltarManager implements Listener {
                     ChatColor.BOLD + recipe.name());
 
             int i = 0;
+            // Use a LinkedHashMap or similar if order matters, but here we just need consistency.
+            // HashMap order is stable after population, and recipes are static.
             for (Map.Entry<Material, Integer> entry : recipe.ingredients().entrySet()) {
                 String line = getIngredientLine(entry.getKey(), entry.getValue());
                 createHologram(spawnLoc.clone().add(0, spacing * (recipe.ingredients().size() - i), 0), line);

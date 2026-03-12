@@ -3,7 +3,9 @@ package net.saturn.elementSmp.elements.abilities.impl.lightning;
 import net.saturn.elementSmp.ElementSmp;
 import net.saturn.elementSmp.elements.ElementContext;
 import net.saturn.elementSmp.elements.abilities.BaseAbility;
+import net.saturn.elementSmp.util.DamageUtil;
 import org.bukkit.Color;
+import org.bukkit.EntityEffect;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.LivingEntity;
@@ -73,7 +75,7 @@ public class ThunderstormAbility extends BaseAbility {
                         // 20% chance to be struck
                         if (random.nextDouble() < 0.20) {
                             struckEntities.add(target.getUniqueId());
-                            strikeTarget(target);
+                            strikeTarget(target, 4.0); // 2 hearts (4.0 damage)
                             
                             // 5% chance to be struck a second time immediately
                             if (random.nextDouble() < 0.05) {
@@ -81,7 +83,7 @@ public class ThunderstormAbility extends BaseAbility {
                                     @Override
                                     public void run() {
                                         if (target.isValid() && !target.isDead()) {
-                                            strikeTarget(target);
+                                            strikeTarget(target, 3.0); // 3 damage (1.5 hearts)
                                         }
                                     }
                                 }.runTaskLater(plugin, 10L); // 0.5 second delay for the second strike
@@ -96,7 +98,7 @@ public class ThunderstormAbility extends BaseAbility {
         return true;
     }
 
-    private void strikeTarget(LivingEntity target) {
+    private void strikeTarget(LivingEntity target, double trueDamage) {
         // Show yellow particles around the player who is about to get struck
         target.getWorld().spawnParticle(Particle.DUST, target.getLocation().add(0, 1, 0), 30, 0.5, 1, 0.5, new Particle.DustOptions(Color.YELLOW, 1.5f));
         target.getWorld().playSound(target.getLocation(), Sound.BLOCK_ANVIL_PLACE, 0.5f, 2.0f);
@@ -106,7 +108,14 @@ public class ThunderstormAbility extends BaseAbility {
             @Override
             public void run() {
                 if (target.isValid() && !target.isDead()) {
-                    target.getWorld().strikeLightning(target.getLocation());
+                    // Visual lightning strike (no damage)
+                    target.getWorld().strikeLightningEffect(target.getLocation());
+                    
+                    if (!(target instanceof Player p && (p.getGameMode() == org.bukkit.GameMode.CREATIVE || p.getGameMode() == org.bukkit.GameMode.SPECTATOR))) {
+                        target.playEffect(EntityEffect.HURT);
+                        double newHealth = target.getHealth() - trueDamage;
+                        DamageUtil.setHealthWithTotemCheck(target, newHealth);
+                    }
                 }
             }
         }.runTaskLater(plugin, 5L); // 0.25 second delay
