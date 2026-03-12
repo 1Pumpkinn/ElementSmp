@@ -111,7 +111,6 @@ public class AltarManager implements Listener {
     private void registerDefaultRecipes() {
         Map<Material, Integer> lightningIngredients = new HashMap<>();
         lightningIngredients.put(Material.REDSTONE_TORCH, 4);
-        lightningIngredients.put(Material.DRAGON_EGG, 1);
         lightningIngredients.put(Material.TNT, 1);
         lightningIngredients.put(Material.REDSTONE_LAMP, 2);
         lightningIngredients.put(Material.LIGHTNING_ROD, 1);
