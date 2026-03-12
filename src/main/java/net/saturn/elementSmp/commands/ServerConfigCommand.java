@@ -3,6 +3,10 @@ package net.saturn.elementSmp.commands;
 import net.saturn.elementSmp.ElementSmp;
 import net.saturn.elementSmp.data.DataStore;
 import net.saturn.elementSmp.elements.ElementType;
+import net.saturn.elementSmp.items.util.AdvancedRerollerItem;
+import net.saturn.elementSmp.items.util.RerollerItem;
+import net.saturn.elementSmp.items.util.Upgrader1Item;
+import net.saturn.elementSmp.items.util.Upgrader2Item;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -147,23 +151,23 @@ public class ServerConfigCommand implements CommandExecutor, TabCompleter {
 
         switch (name) {
             case "upgrader1" -> {
-                org.bukkit.NamespacedKey k = new org.bukkit.NamespacedKey(plugin, net.saturn.elementSmp.items.Upgrader1Item.KEY);
-                if (enabled) net.saturn.elementSmp.items.Upgrader1Item.registerRecipe(plugin);
+                org.bukkit.NamespacedKey k = new org.bukkit.NamespacedKey(plugin, Upgrader1Item.KEY);
+                if (enabled) Upgrader1Item.registerRecipe(plugin);
                 else plugin.getServer().removeRecipe(k);
             }
             case "upgrader2" -> {
-                org.bukkit.NamespacedKey k = new org.bukkit.NamespacedKey(plugin, net.saturn.elementSmp.items.Upgrader2Item.KEY);
-                if (enabled) net.saturn.elementSmp.items.Upgrader2Item.registerRecipe(plugin);
+                org.bukkit.NamespacedKey k = new org.bukkit.NamespacedKey(plugin, Upgrader2Item.KEY);
+                if (enabled) Upgrader2Item.registerRecipe(plugin);
                 else plugin.getServer().removeRecipe(k);
             }
             case "reroller" -> {
-                org.bukkit.NamespacedKey k = new org.bukkit.NamespacedKey(plugin, net.saturn.elementSmp.items.RerollerItem.KEY);
-                if (enabled) net.saturn.elementSmp.items.RerollerItem.registerRecipe(plugin);
+                org.bukkit.NamespacedKey k = new org.bukkit.NamespacedKey(plugin, RerollerItem.KEY);
+                if (enabled) RerollerItem.registerRecipe(plugin);
                 else plugin.getServer().removeRecipe(k);
             }
             case "advanced_reroller" -> {
-                org.bukkit.NamespacedKey k = new org.bukkit.NamespacedKey(plugin, net.saturn.elementSmp.items.AdvancedRerollerItem.KEY);
-                if (enabled) net.saturn.elementSmp.items.AdvancedRerollerItem.registerRecipe(plugin);
+                org.bukkit.NamespacedKey k = new org.bukkit.NamespacedKey(plugin, AdvancedRerollerItem.KEY);
+                if (enabled) AdvancedRerollerItem.registerRecipe(plugin);
                 else plugin.getServer().removeRecipe(k);
             }
         }

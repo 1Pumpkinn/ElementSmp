@@ -1,10 +1,10 @@
 package net.saturn.elementSmp.commands;
 
 import net.saturn.elementSmp.ElementSmp;
-import net.saturn.elementSmp.items.AdvancedRerollerItem;
-import net.saturn.elementSmp.items.RerollerItem;
-import net.saturn.elementSmp.items.Upgrader1Item;
-import net.saturn.elementSmp.items.Upgrader2Item;
+import net.saturn.elementSmp.items.util.AdvancedRerollerItem;
+import net.saturn.elementSmp.items.util.RerollerItem;
+import net.saturn.elementSmp.items.util.Upgrader1Item;
+import net.saturn.elementSmp.items.util.Upgrader2Item;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;

@@ -1,7 +1,7 @@
 package net.saturn.elementSmp.altar;
 
 import net.saturn.elementSmp.ElementSmp;
-import net.saturn.elementSmp.items.LightningSoulItem;
+import net.saturn.elementSmp.items.altar.LightningElementItem;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -117,7 +117,7 @@ public class AltarManager implements Listener {
         lightningIngredients.put(Material.LIGHTNING_ROD, 1);
         lightningIngredients.put(Material.COPPER_BLOCK, 4);
 
-        recipes.put("lightning_element", new AltarRecipe("LIGHTNING ELEMENT", lightningIngredients, LightningSoulItem.make(plugin)));
+        recipes.put("lightning_element", new AltarRecipe("LIGHTNING ELEMENT", lightningIngredients, LightningElementItem.make(plugin)));
     }
 
     @EventHandler

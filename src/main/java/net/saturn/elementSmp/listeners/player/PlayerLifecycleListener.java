@@ -4,6 +4,10 @@ import net.saturn.elementSmp.ElementSmp;
 import net.saturn.elementSmp.config.Constants;
 import net.saturn.elementSmp.data.PlayerData;
 import net.saturn.elementSmp.gui.ElementSelectionGUI;
+import net.saturn.elementSmp.items.util.AdvancedRerollerItem;
+import net.saturn.elementSmp.items.util.RerollerItem;
+import net.saturn.elementSmp.items.util.Upgrader1Item;
+import net.saturn.elementSmp.items.util.Upgrader2Item;
 import net.saturn.elementSmp.managers.ElementManager;
 import net.saturn.elementSmp.managers.ManaManager;
 import net.saturn.elementSmp.services.EffectService;
@@ -50,10 +54,10 @@ public class PlayerLifecycleListener implements Listener {
 
         scheduler.runAfterPlayerLoad(player, () -> {
             try {
-                player.discoverRecipe(new org.bukkit.NamespacedKey(plugin, net.saturn.elementSmp.items.Upgrader1Item.KEY));
-                player.discoverRecipe(new org.bukkit.NamespacedKey(plugin, net.saturn.elementSmp.items.Upgrader2Item.KEY));
-                player.discoverRecipe(new org.bukkit.NamespacedKey(plugin, net.saturn.elementSmp.items.RerollerItem.KEY));
-                player.discoverRecipe(new org.bukkit.NamespacedKey(plugin, net.saturn.elementSmp.items.AdvancedRerollerItem.KEY));
+                player.discoverRecipe(new org.bukkit.NamespacedKey(plugin, Upgrader1Item.KEY));
+                player.discoverRecipe(new org.bukkit.NamespacedKey(plugin, Upgrader2Item.KEY));
+                player.discoverRecipe(new org.bukkit.NamespacedKey(plugin, RerollerItem.KEY));
+                player.discoverRecipe(new org.bukkit.NamespacedKey(plugin, AdvancedRerollerItem.KEY));
             } catch (Exception ignored) {}
         });
     }

@@ -1,10 +1,9 @@
 package net.saturn.elementSmp.listeners.item;
 
 import net.saturn.elementSmp.ElementSmp;
-import net.saturn.elementSmp.data.PlayerData;
 import net.saturn.elementSmp.elements.ElementType;
 import net.saturn.elementSmp.items.ItemKeys;
-import net.saturn.elementSmp.items.LightningSoulItem;
+import net.saturn.elementSmp.items.altar.LightningElementItem;
 import org.bukkit.ChatColor;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
@@ -32,7 +31,7 @@ public class LightningSoulListener implements Listener {
         var meta = item.getItemMeta();
         var container = meta.getPersistentDataContainer();
 
-        if (!container.has(ItemKeys.namespaced(plugin, LightningSoulItem.KEY), PersistentDataType.BYTE)) return;
+        if (!container.has(ItemKeys.namespaced(plugin, LightningElementItem.KEY), PersistentDataType.BYTE)) return;
 
         Action action = event.getAction();
         if (action != Action.RIGHT_CLICK_AIR && action != Action.RIGHT_CLICK_BLOCK) return;

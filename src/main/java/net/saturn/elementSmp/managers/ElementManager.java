@@ -1,7 +1,6 @@
 package net.saturn.elementSmp.managers;
 
 import net.saturn.elementSmp.ElementSmp;
-import net.saturn.elementSmp.config.Constants;
 import net.saturn.elementSmp.data.DataStore;
 import net.saturn.elementSmp.data.PlayerData;
 import net.saturn.elementSmp.elements.*;
@@ -15,13 +14,12 @@ import net.saturn.elementSmp.elements.impl.lightning.LightningElement;
 import net.saturn.elementSmp.elements.impl.metal.MetalElement;
 import net.saturn.elementSmp.elements.impl.water.WaterElement;
 import net.saturn.elementSmp.gui.ElementSelectionGUI;
-import net.saturn.elementSmp.items.AdvancedRerollerItem;
+import net.saturn.elementSmp.items.util.AdvancedRerollerItem;
 import net.saturn.elementSmp.items.ItemKeys;
-import net.saturn.elementSmp.items.RerollerItem;
+import net.saturn.elementSmp.items.util.RerollerItem;
 import net.saturn.elementSmp.services.EffectService;
 import net.saturn.elementSmp.util.scheduling.TaskScheduler;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;

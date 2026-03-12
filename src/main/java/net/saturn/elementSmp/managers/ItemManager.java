@@ -1,6 +1,8 @@
 package net.saturn.elementSmp.managers;
 
 import net.saturn.elementSmp.ElementSmp;
+import net.saturn.elementSmp.items.util.Upgrader1Item;
+import net.saturn.elementSmp.items.util.Upgrader2Item;
 import org.bukkit.inventory.ItemStack;
 
 public class ItemManager {
@@ -15,7 +17,7 @@ public class ItemManager {
      * @return The created ItemStack
      */
     public ItemStack createUpgrader1() {
-        return net.saturn.elementSmp.items.Upgrader1Item.make(plugin);
+        return Upgrader1Item.make(plugin);
     }
     
     /**
@@ -23,6 +25,6 @@ public class ItemManager {
      * @return The created ItemStack
      */
     public ItemStack createUpgrader2() {
-        return net.saturn.elementSmp.items.Upgrader2Item.make(plugin);
+        return Upgrader2Item.make(plugin);
     }
 }

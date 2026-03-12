@@ -1,6 +1,7 @@
-package net.saturn.elementSmp.items;
+package net.saturn.elementSmp.items.util;
 
 import net.saturn.elementSmp.ElementSmp;
+import net.saturn.elementSmp.items.ItemKeys;
 import net.saturn.elementSmp.items.builder.ItemBuilder;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -13,22 +14,22 @@ import org.bukkit.persistence.PersistentDataType;
 
 import java.util.List;
 
-public final class Upgrader2Item {
-    private Upgrader2Item() {}
+public final class Upgrader1Item {
+    private Upgrader1Item() {}
 
-    public static final String KEY = "upgrader_2";
+    public static final String KEY = "upgrader_1";
 
     public static ItemStack make(ElementSmp plugin) {
-        return ItemBuilder.start(Material.ECHO_SHARD)
-                .name(Component.text("Upgrader II")
-                        .color(NamedTextColor.AQUA)
+        return ItemBuilder.start(Material.AMETHYST_SHARD)
+                .name(Component.text("Upgrader I")
+                        .color(NamedTextColor.GREEN)
                         .decoration(TextDecoration.ITALIC, false))
-                .customModelData(2)
+                .customModelData(1)
                 .lore(List.of(
                         Component.text("Use by crafting to unlock").color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false),
-                        Component.text("Ability 2 + Upside 2 for your element").color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false)
+                        Component.text("Ability 1 for your element").color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false)
                 ))
-                .data(ItemKeys.upgraderLevel(plugin), PersistentDataType.INTEGER, 2)
+                .data(ItemKeys.upgraderLevel(plugin), PersistentDataType.INTEGER, 1)
                 .build();
     }
 
@@ -41,21 +42,22 @@ public final class Upgrader2Item {
             plugin.getServer().removeRecipe(key);
             
             ShapedRecipe recipe = new ShapedRecipe(key, result);
-            recipe.shape("DFD", "WNB", "DAD");
+            recipe.shape("GFG", "WDB", "GAG");
+            recipe.setIngredient('G', Material.GOLD_BLOCK);
             recipe.setIngredient('D', Material.DIAMOND_BLOCK);
-            recipe.setIngredient('N', Material.NETHERITE_INGOT);
 
             recipe.setIngredient('F', Material.FIRE_CHARGE);
             recipe.setIngredient('W', Material.WATER_BUCKET);
             recipe.setIngredient('B', Material.GRASS_BLOCK);
             recipe.setIngredient('A', Material.FEATHER);
-            
+
+
             boolean success = plugin.getServer().addRecipe(recipe);
             if (!success) {
-                plugin.getLogger().warning("Failed to register Upgrader II recipe");
+                plugin.getLogger().warning("Failed to register Upgrader I recipe");
             }
         } catch (Exception e) {
-            plugin.getLogger().severe("Error registering Upgrader II recipe: " + e.getMessage());
+            plugin.getLogger().severe("Error registering Upgrader I recipe: " + e.getMessage());
         }
     }
 }
