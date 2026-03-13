@@ -1,0 +1,51 @@
+package net.saturn.elementsmp.elements.passives.fire;
+
+import net.saturn.elementsmp.elements.core.ElementType;
+import net.saturn.elementsmp.managers.ElementManager;
+import net.saturn.elementsmp.managers.TrustManager;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+
+public class FireCombatPassive implements Listener {
+    private final ElementManager elementManager;
+    private final TrustManager trustManager;
+
+    public FireCombatPassive(ElementManager elementManager, TrustManager trustManager) {
+        this.elementManager = elementManager;
+        this.trustManager = trustManager;
+    }
+
+    @EventHandler
+    public void onEntityDamage(EntityDamageByEntityEvent event) {
+        // Check if damager is a Fire element player
+        if (!(event.getDamager() instanceof Player damager)) {
+            return;
+        }
+
+        if (elementManager.getPlayerElement(damager) != ElementType.FIRE) {
+            return;
+        }
+
+        // Check if they have Upgrade 2
+        if (elementManager.data(damager.getUniqueId()).getCurrentElementUpgradeLevel() < 2) {
+            return;
+        }
+
+        // Don't apply to trusted players or self
+        if (event.getEntity() instanceof LivingEntity victim) {
+            if (victim.equals(damager)) return;
+            if (victim instanceof Player targetPlayer) {
+                if (trustManager.isTrusted(damager.getUniqueId(), targetPlayer.getUniqueId())) return;
+            }
+        } else {
+            return;
+        }
+
+        if (Math.random() < 0.10) {
+            event.getEntity().setFireTicks(100);
+        }
+    }
+}

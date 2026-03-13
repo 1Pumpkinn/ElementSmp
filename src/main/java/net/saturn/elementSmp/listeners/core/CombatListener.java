@@ -1,0 +1,37 @@
+package net.saturn.elementsmp.listeners.core;
+
+import net.saturn.elementsmp.managers.ElementManager;
+import net.saturn.elementsmp.managers.TrustManager;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+
+public class CombatListener implements Listener {
+    private final TrustManager trustManager;
+    private final ElementManager elements;
+
+    public CombatListener(TrustManager trustManager, ElementManager elements) {
+        this.trustManager = trustManager;
+        this.elements = elements;
+    }
+
+    @EventHandler
+    public void onDamage(org.bukkit.event.entity.EntityDamageByEntityEvent e) {
+        if (!(e.getEntity() instanceof Player victim)) return;
+        Player damager = null;
+        if (e.getDamager() instanceof Player p) {
+            damager = p;
+        } else if (e.getDamager() instanceof org.bukkit.entity.Projectile proj && proj.getShooter() instanceof Player p) {
+            damager = p;
+        }
+        if (damager == null) return;
+        
+        if (trustManager.isTrusted(damager.getUniqueId(), victim.getUniqueId())) {
+            e.setCancelled(true);
+        }
+    }
+}
+
+
