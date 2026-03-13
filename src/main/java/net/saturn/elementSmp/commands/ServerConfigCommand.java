@@ -7,6 +7,10 @@ import net.saturn.elementsmp.items.util.AdvancedRerollerItem;
 import net.saturn.elementsmp.items.util.RerollerItem;
 import net.saturn.elementsmp.items.util.Upgrader1Item;
 import net.saturn.elementsmp.items.util.Upgrader2Item;
+import net.saturn.elementsmp.recipes.AdvancedRerollerRecipe;
+import net.saturn.elementsmp.recipes.RerollerRecipe;
+import net.saturn.elementsmp.recipes.Upgrader1Recipe;
+import net.saturn.elementsmp.recipes.Upgrader2Recipe;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -152,22 +156,22 @@ public class ServerConfigCommand implements CommandExecutor, TabCompleter {
         switch (name) {
             case "upgrader1" -> {
                 org.bukkit.NamespacedKey k = new org.bukkit.NamespacedKey(plugin, Upgrader1Item.KEY);
-                if (enabled) Upgrader1Item.registerRecipe(plugin);
+                if (enabled) Upgrader1Recipe.register(plugin);
                 else plugin.getServer().removeRecipe(k);
             }
             case "upgrader2" -> {
                 org.bukkit.NamespacedKey k = new org.bukkit.NamespacedKey(plugin, Upgrader2Item.KEY);
-                if (enabled) Upgrader2Item.registerRecipe(plugin);
+                if (enabled) Upgrader2Recipe.register(plugin);
                 else plugin.getServer().removeRecipe(k);
             }
             case "reroller" -> {
                 org.bukkit.NamespacedKey k = new org.bukkit.NamespacedKey(plugin, RerollerItem.KEY);
-                if (enabled) RerollerItem.registerRecipe(plugin);
+                if (enabled) RerollerRecipe.register(plugin);
                 else plugin.getServer().removeRecipe(k);
             }
             case "advanced_reroller" -> {
                 org.bukkit.NamespacedKey k = new org.bukkit.NamespacedKey(plugin, AdvancedRerollerItem.KEY);
-                if (enabled) AdvancedRerollerItem.registerRecipe(plugin);
+                if (enabled) AdvancedRerollerRecipe.register(plugin);
                 else plugin.getServer().removeRecipe(k);
             }
         }
