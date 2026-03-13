@@ -1,9 +1,9 @@
-package net.saturn.elementSmp.managers;
+package net.saturn.elementsmp.managers;
 
-import net.saturn.elementSmp.ElementSmp;
-import net.saturn.elementSmp.config.AbilityCosts;
-import net.saturn.elementSmp.config.Constants;
-import net.saturn.elementSmp.elements.ElementType;
+import net.saturn.elementsmp.ElementSmp;
+import net.saturn.elementsmp.config.AbilityCosts;
+import net.saturn.elementsmp.config.Constants;
+import net.saturn.elementsmp.elements.core.ElementType;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.util.logging.Level;

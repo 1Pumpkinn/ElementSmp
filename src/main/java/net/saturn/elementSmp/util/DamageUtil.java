@@ -1,4 +1,4 @@
-package net.saturn.elementSmp.util;
+package net.saturn.elementsmp.util;
 
 import org.bukkit.EntityEffect;
 import org.bukkit.Material;

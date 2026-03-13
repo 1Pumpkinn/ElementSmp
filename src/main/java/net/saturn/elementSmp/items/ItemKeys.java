@@ -1,6 +1,6 @@
-package net.saturn.elementSmp.items;
+package net.saturn.elementsmp.items;
 
-import net.saturn.elementSmp.ElementSmp;
+import net.saturn.elementsmp.ElementSmp;
 import org.bukkit.NamespacedKey;
 
 public final class ItemKeys {

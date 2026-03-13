@@ -1,13 +1,13 @@
-package net.saturn.elementSmp.elements.impl.life;
+package net.saturn.elementsmp.elements.impl.life;
 
-import net.saturn.elementSmp.ElementSmp;
-import net.saturn.elementSmp.config.Constants;
-import net.saturn.elementSmp.elements.BaseElement;
-import net.saturn.elementSmp.elements.ElementContext;
-import net.saturn.elementSmp.elements.ElementType;
-import net.saturn.elementSmp.elements.abilities.Ability;
-import net.saturn.elementSmp.elements.abilities.impl.life.EntanglingRootsAbility;
-import net.saturn.elementSmp.elements.abilities.impl.life.NaturesEyeAbility;
+import net.saturn.elementsmp.ElementSmp;
+import net.saturn.elementsmp.config.Constants;
+import net.saturn.elementsmp.elements.core.BaseElement;
+import net.saturn.elementsmp.elements.core.ElementContext;
+import net.saturn.elementsmp.elements.core.ElementType;
+import net.saturn.elementsmp.elements.abilities.Ability;
+import net.saturn.elementsmp.elements.abilities.impl.life.EntanglingRootsAbility;
+import net.saturn.elementsmp.elements.abilities.impl.life.NaturesEyeAbility;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 

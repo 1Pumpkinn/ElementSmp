@@ -1,9 +1,9 @@
-package net.saturn.elementSmp.listeners.item;
+package net.saturn.elementsmp.listeners.item.altar;
 
-import net.saturn.elementSmp.ElementSmp;
-import net.saturn.elementSmp.elements.ElementType;
-import net.saturn.elementSmp.items.ItemKeys;
-import net.saturn.elementSmp.items.altar.LightningElementItem;
+import net.saturn.elementsmp.ElementSmp;
+import net.saturn.elementsmp.elements.core.ElementType;
+import net.saturn.elementsmp.items.ItemKeys;
+import net.saturn.elementsmp.items.altar.LightningElementItem;
 import org.bukkit.ChatColor;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
@@ -15,10 +15,10 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 
-public class LightningSoulListener implements Listener {
+public class LightningElementListener implements Listener {
     private final ElementSmp plugin;
 
-    public LightningSoulListener(ElementSmp plugin) {
+    public LightningElementListener(ElementSmp plugin) {
         this.plugin = plugin;
     }
 

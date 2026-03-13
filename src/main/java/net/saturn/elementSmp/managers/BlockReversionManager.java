@@ -1,6 +1,6 @@
-package net.saturn.elementSmp.managers;
+package net.saturn.elementsmp.managers;
 
-import net.saturn.elementSmp.ElementSmp;
+import net.saturn.elementsmp.ElementSmp;
 import org.bukkit.Location;
 import org.bukkit.block.data.BlockData;
 

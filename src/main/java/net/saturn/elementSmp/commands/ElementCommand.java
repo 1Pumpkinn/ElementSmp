@@ -1,18 +1,18 @@
-package net.saturn.elementSmp.commands;
+package net.saturn.elementsmp.commands;
 
-import net.saturn.elementSmp.ElementSmp;
-import net.saturn.elementSmp.config.Constants;
-import net.saturn.elementSmp.elements.ElementInfo;
-import net.saturn.elementSmp.elements.ElementInfoRegistry;
+import net.saturn.elementsmp.ElementSmp;
+import net.saturn.elementsmp.config.Constants;
+import net.saturn.elementsmp.elements.info.ElementInfo;
+import net.saturn.elementsmp.elements.registry.ElementInfoRegistry;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
-import net.saturn.elementSmp.data.DataStore;
-import net.saturn.elementSmp.elements.ElementType;
-import net.saturn.elementSmp.gui.ElementSelectionGUI;
-import net.saturn.elementSmp.managers.ElementManager;
-import net.saturn.elementSmp.managers.ConfigManager;
+import net.saturn.elementsmp.data.DataStore;
+import net.saturn.elementsmp.elements.core.ElementType;
+import net.saturn.elementsmp.gui.ElementSelectionGUI;
+import net.saturn.elementsmp.managers.ElementManager;
+import net.saturn.elementsmp.managers.ConfigManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -263,7 +263,7 @@ public class ElementCommand implements CommandExecutor, TabCompleter {
                 return true;
             }
             level = Math.max(0, Math.min(2, level));
-            net.saturn.elementSmp.data.PlayerData pd = dataStore.getPlayerData(target.getUniqueId());
+            net.saturn.elementsmp.data.PlayerData pd = dataStore.getPlayerData(target.getUniqueId());
             pd.setCurrentElementUpgradeLevel(level);
             dataStore.save(pd);
             sender.sendMessage(ChatColor.GREEN + "Set upgrade level to " + level + " for " + target.getName());
@@ -286,7 +286,7 @@ public class ElementCommand implements CommandExecutor, TabCompleter {
                 sender.sendMessage(ChatColor.RED + "Player '" + args[1] + "' not found.");
                 return true;
             }
-            net.saturn.elementSmp.data.PlayerData pd = dataStore.getPlayerData(target.getUniqueId());
+            net.saturn.elementsmp.data.PlayerData pd = dataStore.getPlayerData(target.getUniqueId());
             pd.setCurrentElement(null);
             pd.setCurrentElementUpgradeLevel(0);
             pd.setTrustedPlayers(Collections.emptySet());

@@ -1,4 +1,4 @@
-package net.saturn.elementSmp.config;
+package net.saturn.elementsmp.config;
 
 public final class MetadataKeys {
     private MetadataKeys() {}

@@ -1,4 +1,4 @@
-package net.saturn.elementSmp.util.time;
+package net.saturn.elementsmp.util.time;
 
 public final class TimeUtils {
     public record Expiration(long expiresAt) {

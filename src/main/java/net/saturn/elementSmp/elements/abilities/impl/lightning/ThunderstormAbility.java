@@ -1,9 +1,9 @@
-package net.saturn.elementSmp.elements.abilities.impl.lightning;
+package net.saturn.elementsmp.elements.abilities.impl.lightning;
 
-import net.saturn.elementSmp.ElementSmp;
-import net.saturn.elementSmp.elements.ElementContext;
-import net.saturn.elementSmp.elements.abilities.BaseAbility;
-import net.saturn.elementSmp.util.DamageUtil;
+import net.saturn.elementsmp.ElementSmp;
+import net.saturn.elementsmp.elements.core.ElementContext;
+import net.saturn.elementsmp.elements.abilities.BaseAbility;
+import net.saturn.elementsmp.util.DamageUtil;
 import org.bukkit.Color;
 import org.bukkit.EntityEffect;
 import org.bukkit.Particle;

@@ -1,10 +1,10 @@
-package net.saturn.elementSmp.elements.abilities.impl.fire;
+package net.saturn.elementsmp.elements.abilities.impl.fire;
 
-import net.saturn.elementSmp.ElementSmp;
-import net.saturn.elementSmp.config.MetadataKeys;
-import net.saturn.elementSmp.elements.ElementContext;
-import net.saturn.elementSmp.elements.ElementType;
-import net.saturn.elementSmp.elements.abilities.BaseAbility;
+import net.saturn.elementsmp.ElementSmp;
+import net.saturn.elementsmp.config.MetadataKeys;
+import net.saturn.elementsmp.elements.core.ElementContext;
+import net.saturn.elementsmp.elements.core.ElementType;
+import net.saturn.elementsmp.elements.abilities.BaseAbility;
 import org.bukkit.ChatColor;
 import org.bukkit.Particle;
 import org.bukkit.Sound;

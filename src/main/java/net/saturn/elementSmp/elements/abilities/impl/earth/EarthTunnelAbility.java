@@ -1,8 +1,8 @@
-package net.saturn.elementSmp.elements.abilities.impl.earth;
+package net.saturn.elementsmp.elements.abilities.impl.earth;
 
-import net.saturn.elementSmp.elements.ElementContext;
-import net.saturn.elementSmp.elements.abilities.BaseAbility;
-import net.saturn.elementSmp.elements.impl.earth.EarthElement;
+import net.saturn.elementsmp.elements.core.ElementContext;
+import net.saturn.elementsmp.elements.abilities.BaseAbility;
+import net.saturn.elementsmp.elements.impl.earth.EarthElement;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -48,9 +48,9 @@ public class EarthTunnelAbility extends BaseAbility {
             Material.COAL_BLOCK
     );
 
-    private final net.saturn.elementSmp.ElementSmp plugin;
+    private final net.saturn.elementsmp.ElementSmp plugin;
 
-    public EarthTunnelAbility(net.saturn.elementSmp.ElementSmp plugin) {
+    public EarthTunnelAbility(net.saturn.elementsmp.ElementSmp plugin) {
         super();
         this.plugin = plugin;
     }

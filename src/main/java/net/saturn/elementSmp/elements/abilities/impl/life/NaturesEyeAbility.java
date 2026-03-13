@@ -1,7 +1,7 @@
-package net.saturn.elementSmp.elements.abilities.impl.life;
+package net.saturn.elementsmp.elements.abilities.impl.life;
 
-import net.saturn.elementSmp.elements.ElementContext;
-import net.saturn.elementSmp.elements.abilities.BaseAbility;
+import net.saturn.elementsmp.elements.core.ElementContext;
+import net.saturn.elementsmp.elements.abilities.BaseAbility;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Particle;
@@ -20,9 +20,9 @@ import java.util.UUID;
 
 public class NaturesEyeAbility extends BaseAbility {
 
-    private final net.saturn.elementSmp.ElementSmp plugin;
+    private final net.saturn.elementsmp.ElementSmp plugin;
 
-    public NaturesEyeAbility(net.saturn.elementSmp.ElementSmp plugin) {
+    public NaturesEyeAbility(net.saturn.elementsmp.ElementSmp plugin) {
         super();
         this.plugin = plugin;
     }

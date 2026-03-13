@@ -1,7 +1,7 @@
-package net.saturn.elementSmp.managers;
+package net.saturn.elementsmp.managers;
 
-import net.saturn.elementSmp.ElementSmp;
-import net.saturn.elementSmp.data.DataStore;
+import net.saturn.elementsmp.ElementSmp;
+import net.saturn.elementsmp.data.DataStore;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 

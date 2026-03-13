@@ -1,9 +1,9 @@
-package net.saturn.elementSmp.elements.abilities.impl.death;
+package net.saturn.elementsmp.elements.abilities.impl.death;
 
-import net.saturn.elementSmp.config.Constants;
-import net.saturn.elementSmp.config.MetadataKeys;
-import net.saturn.elementSmp.elements.ElementContext;
-import net.saturn.elementSmp.elements.abilities.BaseAbility;
+import net.saturn.elementsmp.config.Constants;
+import net.saturn.elementsmp.config.MetadataKeys;
+import net.saturn.elementsmp.elements.core.ElementContext;
+import net.saturn.elementsmp.elements.abilities.BaseAbility;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Particle;
@@ -29,11 +29,11 @@ import java.util.UUID;
 
 public class DeathSummonUndeadAbility extends BaseAbility implements Listener {
 
-    private final net.saturn.elementSmp.ElementSmp plugin;
+    private final net.saturn.elementsmp.ElementSmp plugin;
     // Tracks players who currently have an active summon — prevents double-spawn ghost bug
     private final Set<UUID> activeSummons = new HashSet<>();
 
-    public DeathSummonUndeadAbility(net.saturn.elementSmp.ElementSmp plugin) {
+    public DeathSummonUndeadAbility(net.saturn.elementsmp.ElementSmp plugin) {
         super();
         this.plugin = plugin;
         // Register so we catch skeleton death and free the slot

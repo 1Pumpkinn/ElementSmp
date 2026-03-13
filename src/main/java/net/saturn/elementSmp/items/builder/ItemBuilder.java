@@ -1,4 +1,4 @@
-package net.saturn.elementSmp.items.builder;
+package net.saturn.elementsmp.items.builder;
 
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;

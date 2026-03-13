@@ -1,8 +1,8 @@
-package net.saturn.elementSmp.util.scheduling;
+package net.saturn.elementsmp.util.scheduling;
 
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
-import net.saturn.elementSmp.ElementSmp;
-import net.saturn.elementSmp.config.Constants;
+import net.saturn.elementsmp.ElementSmp;
+import net.saturn.elementsmp.config.Constants;
 
 import org.bukkit.entity.Player;
 

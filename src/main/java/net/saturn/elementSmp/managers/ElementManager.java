@@ -1,24 +1,24 @@
-package net.saturn.elementSmp.managers;
+package net.saturn.elementsmp.managers;
 
-import net.saturn.elementSmp.ElementSmp;
-import net.saturn.elementSmp.data.DataStore;
-import net.saturn.elementSmp.data.PlayerData;
-import net.saturn.elementSmp.elements.*;
-import net.saturn.elementSmp.elements.impl.air.AirElement;
-import net.saturn.elementSmp.elements.impl.death.DeathElement;
-import net.saturn.elementSmp.elements.impl.earth.EarthElement;
-import net.saturn.elementSmp.elements.impl.fire.FireElement;
-import net.saturn.elementSmp.elements.impl.frost.FrostElement;
-import net.saturn.elementSmp.elements.impl.life.LifeElement;
-import net.saturn.elementSmp.elements.impl.lightning.LightningElement;
-import net.saturn.elementSmp.elements.impl.metal.MetalElement;
-import net.saturn.elementSmp.elements.impl.water.WaterElement;
-import net.saturn.elementSmp.gui.ElementSelectionGUI;
-import net.saturn.elementSmp.items.util.AdvancedRerollerItem;
-import net.saturn.elementSmp.items.ItemKeys;
-import net.saturn.elementSmp.items.util.RerollerItem;
-import net.saturn.elementSmp.services.EffectService;
-import net.saturn.elementSmp.util.scheduling.TaskScheduler;
+import net.saturn.elementsmp.ElementSmp;
+import net.saturn.elementsmp.data.DataStore;
+import net.saturn.elementsmp.data.PlayerData;
+import net.saturn.elementsmp.elements.core.*;
+import net.saturn.elementsmp.elements.impl.air.AirElement;
+import net.saturn.elementsmp.elements.impl.death.DeathElement;
+import net.saturn.elementsmp.elements.impl.earth.EarthElement;
+import net.saturn.elementsmp.elements.impl.fire.FireElement;
+import net.saturn.elementsmp.elements.impl.frost.FrostElement;
+import net.saturn.elementsmp.elements.impl.life.LifeElement;
+import net.saturn.elementsmp.elements.impl.lightning.LightningElement;
+import net.saturn.elementsmp.elements.impl.metal.MetalElement;
+import net.saturn.elementsmp.elements.impl.water.WaterElement;
+import net.saturn.elementsmp.gui.ElementSelectionGUI;
+import net.saturn.elementsmp.items.util.AdvancedRerollerItem;
+import net.saturn.elementsmp.items.ItemKeys;
+import net.saturn.elementsmp.items.util.RerollerItem;
+import net.saturn.elementsmp.services.EffectService;
+import net.saturn.elementsmp.util.scheduling.TaskScheduler;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -47,23 +47,28 @@ public class ElementManager {
         this.configManager = configManager;
         this.effectService = new EffectService(plugin, this);
         this.scheduler = new TaskScheduler(plugin);
-        registerAllElements();
+        
+        initializeRegistry();
+    }
+
+    private void initializeRegistry() {
+        register(ElementType.AIR, new AirElement(plugin));
+        register(ElementType.WATER, new WaterElement(plugin));
+        register(ElementType.FIRE, new FireElement(plugin));
+        register(ElementType.EARTH, new EarthElement(plugin));
+        register(ElementType.LIFE, new LifeElement(plugin));
+        register(ElementType.DEATH, new DeathElement(plugin));
+        register(ElementType.METAL, new MetalElement(plugin));
+        register(ElementType.FROST, new FrostElement(plugin));
+        register(ElementType.LIGHTNING, new LightningElement(plugin));
+    }
+
+    private void register(ElementType type, Element element) {
+        registry.put(type, element);
     }
 
     public ElementSmp getPlugin() { return plugin; }
     public EffectService getEffectService() { return effectService; }
-
-    private void registerAllElements() {
-        registry.put(ElementType.AIR, new AirElement(plugin));
-        registry.put(ElementType.WATER, new WaterElement(plugin));
-        registry.put(ElementType.FIRE, new FireElement(plugin));
-        registry.put(ElementType.EARTH, new EarthElement(plugin));
-        registry.put(ElementType.LIFE, new LifeElement(plugin));
-        registry.put(ElementType.DEATH, new DeathElement(plugin));
-        registry.put(ElementType.METAL, new MetalElement(plugin));
-        registry.put(ElementType.FROST, new FrostElement(plugin));
-        registry.put(ElementType.LIGHTNING, new LightningElement(plugin));
-    }
 
     public PlayerData data(UUID uuid) {
         return store.getPlayerData(uuid);

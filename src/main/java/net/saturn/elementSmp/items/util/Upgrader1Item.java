@@ -1,8 +1,8 @@
-package net.saturn.elementSmp.items.util;
+package net.saturn.elementsmp.items.util;
 
-import net.saturn.elementSmp.ElementSmp;
-import net.saturn.elementSmp.items.ItemKeys;
-import net.saturn.elementSmp.items.builder.ItemBuilder;
+import net.saturn.elementsmp.ElementSmp;
+import net.saturn.elementsmp.items.ItemKeys;
+import net.saturn.elementsmp.items.builder.ItemBuilder;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;

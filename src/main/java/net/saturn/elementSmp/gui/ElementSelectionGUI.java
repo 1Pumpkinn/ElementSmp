@@ -1,8 +1,8 @@
-package net.saturn.elementSmp.gui;
+package net.saturn.elementsmp.gui;
 
-import net.saturn.elementSmp.ElementSmp;
-import net.saturn.elementSmp.elements.ElementType;
-import net.saturn.elementSmp.managers.ElementManager;
+import net.saturn.elementsmp.ElementSmp;
+import net.saturn.elementsmp.elements.core.ElementType;
+import net.saturn.elementsmp.managers.ElementManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -77,7 +77,7 @@ public class ElementSelectionGUI {
         ItemMeta meta = border.getItemMeta();
         if (meta != null) {
             meta.setDisplayName(" ");
-            meta.getPersistentDataContainer().set(net.saturn.elementSmp.items.ItemKeys.guiItem(plugin), org.bukkit.persistence.PersistentDataType.BYTE, (byte)1);
+            meta.getPersistentDataContainer().set(net.saturn.elementsmp.items.ItemKeys.guiItem(plugin), org.bukkit.persistence.PersistentDataType.BYTE, (byte)1);
             border.setItemMeta(meta);
         }
         return border;
@@ -146,7 +146,7 @@ public class ElementSelectionGUI {
             meta.setDisplayName(color + name);
             List<String> lore = new ArrayList<>();
             lore.add(ChatColor.GRAY + "Rolling...");
-            meta.getPersistentDataContainer().set(net.saturn.elementSmp.items.ItemKeys.guiItem(plugin), org.bukkit.persistence.PersistentDataType.BYTE, (byte)1);
+            meta.getPersistentDataContainer().set(net.saturn.elementsmp.items.ItemKeys.guiItem(plugin), org.bukkit.persistence.PersistentDataType.BYTE, (byte)1);
             meta.setLore(lore);
             item.setItemMeta(meta);
         }

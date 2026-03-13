@@ -1,10 +1,10 @@
-package net.saturn.elementSmp.listeners.item;
+package net.saturn.elementsmp.listeners.item;
 
-import net.saturn.elementSmp.ElementSmp;
-import net.saturn.elementSmp.data.PlayerData;
-import net.saturn.elementSmp.elements.ElementType;
-import net.saturn.elementSmp.items.ItemKeys;
-import net.saturn.elementSmp.managers.ElementManager;
+import net.saturn.elementsmp.ElementSmp;
+import net.saturn.elementsmp.data.PlayerData;
+import net.saturn.elementsmp.elements.core.ElementType;
+import net.saturn.elementsmp.items.ItemKeys;
+import net.saturn.elementsmp.managers.ElementManager;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;

@@ -1,12 +1,12 @@
-package net.saturn.elementSmp.elements.impl.fire;
+package net.saturn.elementsmp.elements.impl.fire;
 
-import net.saturn.elementSmp.ElementSmp;
-import net.saturn.elementSmp.elements.BaseElement;
-import net.saturn.elementSmp.elements.ElementContext;
-import net.saturn.elementSmp.elements.ElementType;
-import net.saturn.elementSmp.elements.abilities.Ability;
-import net.saturn.elementSmp.elements.abilities.impl.fire.ScorchAbility;
-import net.saturn.elementSmp.elements.abilities.impl.fire.InfernoBlastAbility;
+import net.saturn.elementsmp.ElementSmp;
+import net.saturn.elementsmp.elements.core.BaseElement;
+import net.saturn.elementsmp.elements.core.ElementContext;
+import net.saturn.elementsmp.elements.core.ElementType;
+import net.saturn.elementsmp.elements.abilities.Ability;
+import net.saturn.elementsmp.elements.abilities.impl.fire.ScorchAbility;
+import net.saturn.elementsmp.elements.abilities.impl.fire.InfernoBlastAbility;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;

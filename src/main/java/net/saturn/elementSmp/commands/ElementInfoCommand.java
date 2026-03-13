@@ -1,10 +1,10 @@
-package net.saturn.elementSmp.commands;
+package net.saturn.elementsmp.commands;
 
-import net.saturn.elementSmp.ElementSmp;
-import net.saturn.elementSmp.config.Constants;
-import net.saturn.elementSmp.elements.ElementInfo;
-import net.saturn.elementSmp.elements.ElementInfoRegistry;
-import net.saturn.elementSmp.elements.ElementType;
+import net.saturn.elementsmp.ElementSmp;
+import net.saturn.elementsmp.config.Constants;
+import net.saturn.elementsmp.elements.info.ElementInfo;
+import net.saturn.elementsmp.elements.registry.ElementInfoRegistry;
+import net.saturn.elementsmp.elements.core.ElementType;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;

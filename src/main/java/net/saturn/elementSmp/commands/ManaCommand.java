@@ -1,7 +1,7 @@
-package net.saturn.elementSmp.commands;
+package net.saturn.elementsmp.commands;
 
-import net.saturn.elementSmp.managers.ConfigManager;
-import net.saturn.elementSmp.managers.ManaManager;
+import net.saturn.elementsmp.managers.ConfigManager;
+import net.saturn.elementsmp.managers.ManaManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;

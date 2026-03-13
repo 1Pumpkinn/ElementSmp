@@ -1,7 +1,7 @@
-package net.saturn.elementSmp.util.bukkit;
+package net.saturn.elementsmp.util.bukkit;
 
-import net.saturn.elementSmp.ElementSmp;
-import net.saturn.elementSmp.util.time.TimeUtils.Expiration;
+import net.saturn.elementsmp.ElementSmp;
+import net.saturn.elementsmp.util.time.TimeUtils.Expiration;
 import org.bukkit.entity.Entity;
 import org.bukkit.metadata.FixedMetadataValue;
 

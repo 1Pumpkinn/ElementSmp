@@ -1,11 +1,11 @@
-package net.saturn.elementSmp.elements.abilities.impl.air;
+package net.saturn.elementsmp.elements.abilities.impl.air;
 
-import net.saturn.elementSmp.config.Constants;
-import net.saturn.elementSmp.elements.ElementContext;
-import net.saturn.elementSmp.elements.abilities.BaseAbility;
-import net.saturn.elementSmp.managers.ManaManager;
-import net.saturn.elementSmp.managers.TrustManager;
-import net.saturn.elementSmp.util.DamageUtil;
+import net.saturn.elementsmp.config.Constants;
+import net.saturn.elementsmp.elements.core.ElementContext;
+import net.saturn.elementsmp.elements.abilities.BaseAbility;
+import net.saturn.elementsmp.managers.ManaManager;
+import net.saturn.elementsmp.managers.TrustManager;
+import net.saturn.elementsmp.util.DamageUtil;
 import org.bukkit.*;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -13,9 +13,9 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 public class AirBlastAbility extends BaseAbility {
-    private final net.saturn.elementSmp.ElementSmp plugin;
+    private final net.saturn.elementsmp.ElementSmp plugin;
 
-    public AirBlastAbility(net.saturn.elementSmp.ElementSmp plugin) {
+    public AirBlastAbility(net.saturn.elementsmp.ElementSmp plugin) {
         super();
         this.plugin = plugin;
     }

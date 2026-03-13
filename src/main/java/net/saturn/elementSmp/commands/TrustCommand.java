@@ -1,7 +1,7 @@
-package net.saturn.elementSmp.commands;
+package net.saturn.elementsmp.commands;
 
-import net.saturn.elementSmp.ElementSmp;
-import net.saturn.elementSmp.managers.TrustManager;
+import net.saturn.elementsmp.ElementSmp;
+import net.saturn.elementsmp.managers.TrustManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.NamedTextColor;

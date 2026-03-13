@@ -1,6 +1,6 @@
-package net.saturn.elementSmp.elements.abilities;
+package net.saturn.elementsmp.elements.abilities;
 
-import net.saturn.elementSmp.elements.ElementContext;
+import net.saturn.elementsmp.elements.core.ElementContext;
 import org.bukkit.entity.Player;
 
 import java.util.HashSet;

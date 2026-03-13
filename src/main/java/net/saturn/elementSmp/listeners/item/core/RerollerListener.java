@@ -1,10 +1,10 @@
-package net.saturn.elementSmp.listeners.item;
+package net.saturn.elementsmp.listeners.item.core;
 
-import net.saturn.elementSmp.ElementSmp;
-import net.saturn.elementSmp.gui.ElementSelectionGUI;
-import net.saturn.elementSmp.data.PlayerData;
-import net.saturn.elementSmp.elements.ElementType;
-import net.saturn.elementSmp.items.ItemKeys;
+import net.saturn.elementsmp.ElementSmp;
+import net.saturn.elementsmp.gui.ElementSelectionGUI;
+import net.saturn.elementsmp.data.PlayerData;
+import net.saturn.elementsmp.elements.core.ElementType;
+import net.saturn.elementsmp.items.ItemKeys;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

@@ -1,9 +1,9 @@
-package net.saturn.elementSmp.listeners.item;
+package net.saturn.elementsmp.listeners.item;
 
-import net.saturn.elementSmp.ElementSmp;
-import net.saturn.elementSmp.data.PlayerData;
-import net.saturn.elementSmp.elements.ElementType;
-import net.saturn.elementSmp.managers.ElementManager;
+import net.saturn.elementsmp.ElementSmp;
+import net.saturn.elementsmp.data.PlayerData;
+import net.saturn.elementsmp.elements.core.ElementType;
+import net.saturn.elementsmp.managers.ElementManager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;

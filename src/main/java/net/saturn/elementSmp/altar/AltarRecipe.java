@@ -1,4 +1,4 @@
-package net.saturn.elementSmp.altar;
+package net.saturn.elementsmp.altar;
 
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;

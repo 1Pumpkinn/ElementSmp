@@ -1,8 +1,8 @@
-package net.saturn.elementSmp.managers;
+package net.saturn.elementsmp.managers;
 
-import net.saturn.elementSmp.ElementSmp;
-import net.saturn.elementSmp.items.util.Upgrader1Item;
-import net.saturn.elementSmp.items.util.Upgrader2Item;
+import net.saturn.elementsmp.ElementSmp;
+import net.saturn.elementsmp.items.util.Upgrader1Item;
+import net.saturn.elementsmp.items.util.Upgrader2Item;
 import org.bukkit.inventory.ItemStack;
 
 public class ItemManager {

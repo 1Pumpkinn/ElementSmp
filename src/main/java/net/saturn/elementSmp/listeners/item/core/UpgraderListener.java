@@ -1,8 +1,8 @@
-package net.saturn.elementSmp.listeners.item;
+package net.saturn.elementsmp.listeners.item.core;
 
-import net.saturn.elementSmp.ElementSmp;
-import net.saturn.elementSmp.items.ItemKeys;
-import net.saturn.elementSmp.managers.ElementManager;
+import net.saturn.elementsmp.ElementSmp;
+import net.saturn.elementsmp.items.ItemKeys;
+import net.saturn.elementsmp.managers.ElementManager;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -10,7 +10,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataContainer;

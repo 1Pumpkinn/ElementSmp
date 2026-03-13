@@ -1,7 +1,7 @@
-package net.saturn.elementSmp.elements.abilities.impl.earth;
+package net.saturn.elementsmp.elements.abilities.impl.earth;
 
-import net.saturn.elementSmp.elements.ElementContext;
-import net.saturn.elementSmp.elements.abilities.BaseAbility;
+import net.saturn.elementsmp.elements.core.ElementContext;
+import net.saturn.elementsmp.elements.abilities.BaseAbility;
 import org.bukkit.ChatColor;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
@@ -15,14 +15,14 @@ import java.util.Collection;
 
 public class EarthquakeAbility extends BaseAbility {
 
-    public EarthquakeAbility(net.saturn.elementSmp.ElementSmp plugin) {
+    public EarthquakeAbility(net.saturn.elementsmp.ElementSmp plugin) {
         super();
     }
 
     @Override
     public boolean execute(ElementContext context) {
         Player player = context.getPlayer();
-        net.saturn.elementSmp.ElementSmp plugin = (net.saturn.elementSmp.ElementSmp) org.bukkit.Bukkit.getPluginManager().getPlugin("ElementSmp");
+        net.saturn.elementsmp.ElementSmp plugin = (net.saturn.elementsmp.ElementSmp) org.bukkit.Bukkit.getPluginManager().getPlugin("ElementSmp");
         
         double maxRadius = 7.0;
         Collection<Entity> nearbyEntities = player.getWorld().getNearbyEntities(player.getLocation(), maxRadius, maxRadius, maxRadius);

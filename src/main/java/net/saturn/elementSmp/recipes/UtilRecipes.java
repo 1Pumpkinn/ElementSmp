@@ -1,10 +1,10 @@
-package net.saturn.elementSmp.recipes;
+package net.saturn.elementsmp.recipes;
 
-import net.saturn.elementSmp.ElementSmp;
-import net.saturn.elementSmp.items.util.AdvancedRerollerItem;
-import net.saturn.elementSmp.items.util.RerollerItem;
-import net.saturn.elementSmp.items.util.Upgrader1Item;
-import net.saturn.elementSmp.items.util.Upgrader2Item;
+import net.saturn.elementsmp.ElementSmp;
+import net.saturn.elementsmp.items.util.AdvancedRerollerItem;
+import net.saturn.elementsmp.items.util.RerollerItem;
+import net.saturn.elementsmp.items.util.Upgrader1Item;
+import net.saturn.elementsmp.items.util.Upgrader2Item;
 
 public class UtilRecipes {
     public static void registerRecipes(ElementSmp plugin) {

@@ -1,16 +1,16 @@
-package net.saturn.elementSmp.elements.abilities.impl.death;
+package net.saturn.elementsmp.elements.abilities.impl.death;
 
-import net.saturn.elementSmp.elements.ElementContext;
-import net.saturn.elementSmp.elements.abilities.BaseAbility;
+import net.saturn.elementsmp.elements.core.ElementContext;
+import net.saturn.elementsmp.elements.abilities.BaseAbility;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 public class ShadowStepAbility extends BaseAbility {
-    private final net.saturn.elementSmp.ElementSmp plugin;
+    private final net.saturn.elementsmp.ElementSmp plugin;
 
-    public ShadowStepAbility(net.saturn.elementSmp.ElementSmp plugin) {
+    public ShadowStepAbility(net.saturn.elementsmp.ElementSmp plugin) {
         super();
         this.plugin = plugin;
     }

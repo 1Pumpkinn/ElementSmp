@@ -1,7 +1,7 @@
-package net.saturn.elementSmp.data;
+package net.saturn.elementsmp.data;
 
-import net.saturn.elementSmp.ElementSmp;
-import net.saturn.elementSmp.elements.ElementType;
+import net.saturn.elementsmp.ElementSmp;
+import net.saturn.elementsmp.elements.core.ElementType;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -13,134 +13,98 @@ import java.util.logging.Level;
 
 public class DataStore {
     private final ElementSmp plugin;
-
     private final File playerFile;
-    private FileConfiguration playerCfg;
+    private final FileConfiguration playerCfg;
     private final File serverFile;
     private final FileConfiguration serverCfg;
+    private final Map<UUID, PlayerData> cache = new HashMap<>();
 
-    private final Map<UUID, PlayerData> playerDataCache = new HashMap<>();
+    public DataStore(ElementSmp plugin) {
+        this.plugin = plugin;
+        File dataDir = new File(plugin.getDataFolder(), "data");
+        ensureDirectoryExists(dataDir);
+
+        this.playerFile = initializeFile(dataDir, "players.yml");
+        this.playerCfg = YamlConfiguration.loadConfiguration(playerFile);
+
+        this.serverFile = initializeFile(dataDir, "server.yml");
+        this.serverCfg = YamlConfiguration.loadConfiguration(serverFile);
+    }
+
+    private void ensureDirectoryExists(File dir) {
+        if (!dir.exists() && !dir.mkdirs()) {
+            throw new RuntimeException("Could not create data directory: " + dir.getAbsolutePath());
+        }
+    }
+
+    private File initializeFile(File dir, String name) {
+        File file = new File(dir, name);
+        if (!file.exists()) {
+            try {
+                if (!file.createNewFile()) {
+                    throw new IOException("Failed to create " + name);
+                }
+            } catch (IOException e) {
+                throw new RuntimeException("Could not initialize file: " + name, e);
+            }
+        }
+        return file;
+    }
 
     public PlayerData getPlayerData(UUID uuid) {
-        // Check cache first
-        if (playerDataCache.containsKey(uuid)) {
-            return playerDataCache.get(uuid);
-        }
-
-        // Load from file if not in cache
-        PlayerData data = loadPlayerDataFromFile(uuid);
-        playerDataCache.put(uuid, data);
-        return data;
+        return cache.computeIfAbsent(uuid, this::loadPlayerDataFromFile);
     }
 
     private PlayerData loadPlayerDataFromFile(UUID uuid) {
         String uuidString = uuid.toString();
-        ConfigurationSection section = null;
-        ConfigurationSection playersSec = playerCfg.getConfigurationSection("players");
-        if (playersSec != null) {
-            for (String key : playersSec.getKeys(false)) {
-                ConfigurationSection s = playersSec.getConfigurationSection(key);
-                if (s == null) continue;
-                String stored = s.getString("uuid");
-                if (uuidString.equalsIgnoreCase(stored)) {
-                    section = s;
-                    break;
-                }
-            }
-        }
-        if (section == null) {
-            section = playerCfg.getConfigurationSection("players." + uuidString);
-        }
-        if (section == null) {
-            section = playerCfg.getConfigurationSection(uuidString);
-        }
+        ConfigurationSection section = findSection(uuidString);
+        
         if (section == null) {
             return new PlayerData(uuid);
         }
 
         PlayerData pd = new PlayerData(uuid, section);
-        ConfigurationSection trustSection = section.getConfigurationSection("trust");
-        if (trustSection != null) {
-            Set<UUID> resolved = new HashSet<>(pd.getTrustedPlayers());
-            for (String key : trustSection.getKeys(false)) {
-                try {
-                    resolved.add(UUID.fromString(key));
-                } catch (IllegalArgumentException ex) {
-                    org.bukkit.OfflinePlayer off = plugin.getServer().getOfflinePlayer(key);
-                    if (off != null && off.getUniqueId() != null) {
-                        resolved.add(off.getUniqueId());
-                    }
-                }
-            }
-            pd.setTrustedPlayers(resolved);
-        }
+        resolveTrustList(pd, section);
         return pd;
     }
 
-    public DataStore(ElementSmp plugin) {
-        this.plugin = plugin;
-        File dataDir = new File(plugin.getDataFolder(), "data");
-        if (!dataDir.exists()) {
-            if (!dataDir.mkdirs()) {
-                plugin.getLogger().severe("Failed to create data directory: " + dataDir.getAbsolutePath());
-                throw new RuntimeException("Could not create data directory");
-            }
-        }
-
-        this.playerFile = new File(dataDir, "players.yml");
-        if (!playerFile.exists()) {
-            try {
-                if (!playerFile.createNewFile()) {
-                    plugin.getLogger().severe("Failed to create players.yml file");
-                    throw new RuntimeException("Could not create players.yml file");
+    private ConfigurationSection findSection(String uuid) {
+        ConfigurationSection playersSec = playerCfg.getConfigurationSection("players");
+        if (playersSec != null) {
+            for (String key : playersSec.getKeys(false)) {
+                ConfigurationSection s = playersSec.getConfigurationSection(key);
+                if (s != null && uuid.equalsIgnoreCase(s.getString("uuid"))) {
+                    return s;
                 }
-            } catch (IOException e) {
-                plugin.getLogger().severe("Error creating players.yml: " + e.getMessage());
-                throw new RuntimeException("Could not create players.yml file", e);
             }
         }
-
-        try {
-            this.playerCfg = YamlConfiguration.loadConfiguration(playerFile);
-        } catch (Exception e) {
-            plugin.getLogger().severe("Failed to load players.yml configuration: " + e.getMessage());
-            throw new RuntimeException("Could not load players.yml configuration", e);
-        }
-
-        this.serverFile = new File(dataDir, "server.yml");
-        if (!serverFile.exists()) {
-            try {
-                if (!serverFile.createNewFile()) {
-                    plugin.getLogger().severe("Failed to create server.yml file");
-                    throw new RuntimeException("Could not create server.yml file");
-                }
-            } catch (IOException e) {
-                plugin.getLogger().severe("Error creating server.yml: " + e.getMessage());
-                throw new RuntimeException("Could not create server.yml file", e);
-            }
-        }
-
-        try {
-            this.serverCfg = YamlConfiguration.loadConfiguration(serverFile);
-        } catch (Exception e) {
-            plugin.getLogger().severe("Failed to load server.yml configuration: " + e.getMessage());
-            throw new RuntimeException("Could not load server.yml configuration", e);
-        }
+        return playerCfg.getConfigurationSection("players." + uuid);
     }
 
-    public synchronized PlayerData load(UUID uuid) {
-        return getPlayerData(uuid);
+    private void resolveTrustList(PlayerData pd, ConfigurationSection section) {
+        ConfigurationSection trustSection = section.getConfigurationSection("trust");
+        if (trustSection == null) return;
+
+        Set<UUID> resolved = new HashSet<>(pd.getTrustedPlayers());
+        for (String key : trustSection.getKeys(false)) {
+            try {
+                resolved.add(UUID.fromString(key));
+            } catch (IllegalArgumentException ex) {
+                var off = plugin.getServer().getOfflinePlayer(key);
+                if (off.getUniqueId() != null) {
+                    resolved.add(off.getUniqueId());
+                }
+            }
+        }
+        pd.setTrustedPlayers(resolved);
     }
 
     public synchronized void save(PlayerData pd) {
         try {
-            String name = null;
-            org.bukkit.OfflinePlayer off = plugin.getServer().getOfflinePlayer(pd.getUuid());
-            if (off != null) {
-                name = off.getName();
-            }
-            String keyName = name != null && !name.isEmpty() ? name : pd.getUuid().toString();
-            String key = "players." + keyName;
+            var off = plugin.getServer().getOfflinePlayer(pd.getUuid());
+            String name = off.getName();
+            String key = "players." + (name != null && !name.isEmpty() ? name : pd.getUuid().toString());
+            
             ConfigurationSection sec = playerCfg.getConfigurationSection(key);
             if (sec == null) sec = playerCfg.createSection(key);
 
@@ -149,118 +113,82 @@ public class DataStore {
             sec.set("mana", pd.getMana());
             sec.set("currentUpgradeLevel", pd.getCurrentElementUpgradeLevel());
 
-            // Save trust list
-            sec.set("trust", null); // Clear existing
-            if (!pd.getTrustedPlayers().isEmpty()) {
-                ConfigurationSection trustSec = sec.createSection("trust");
-                for (UUID trustedUuid : pd.getTrustedPlayers()) {
-                    org.bukkit.OfflinePlayer t = plugin.getServer().getOfflinePlayer(trustedUuid);
-                    String tName = t != null ? t.getName() : null;
-                    String trustKey = tName != null && !tName.isEmpty() ? tName : trustedUuid.toString();
-                    trustSec.set(trustKey, true);
-                }
-            }
-
-            // Update cache
-            playerDataCache.put(pd.getUuid(), pd);
-            
-            // CRITICAL: Flush to disk immediately after saving to config object
+            saveTrustList(pd, sec);
+            cache.put(pd.getUuid(), pd);
             flushPlayerData();
         } catch (Exception e) {
             plugin.getLogger().log(Level.SEVERE, "Failed to save player data for " + pd.getUuid(), e);
         }
     }
 
+    private void saveTrustList(PlayerData pd, ConfigurationSection sec) {
+        sec.set("trust", null);
+        if (pd.getTrustedPlayers().isEmpty()) return;
+
+        ConfigurationSection trustSec = sec.createSection("trust");
+        for (UUID trustedUuid : pd.getTrustedPlayers()) {
+            var t = plugin.getServer().getOfflinePlayer(trustedUuid);
+            String tName = t.getName();
+            String trustKey = (tName != null && !tName.isEmpty()) ? tName : trustedUuid.toString();
+            trustSec.set(trustKey, true);
+        }
+    }
+
     public synchronized void invalidateCache(UUID uuid) {
-        playerDataCache.remove(uuid);
+        cache.remove(uuid);
     }
 
     public synchronized void flushAll() {
         flushPlayerData();
+        flushServerData();
     }
 
     private void flushPlayerData() {
         try {
             playerCfg.save(playerFile);
         } catch (IOException e) {
-            plugin.getLogger().log(Level.SEVERE, "Failed to save players.yml to disk", e);
+            plugin.getLogger().log(Level.SEVERE, "Failed to save players.yml", e);
         }
     }
-
-    // TRUST store - now delegates to PlayerData
-    public synchronized Set<UUID> getTrusted(UUID owner) {
-        PlayerData pd = getPlayerData(owner);
-        return pd.getTrustedPlayers();
-    }
-
-    public synchronized void setTrusted(UUID owner, Set<UUID> trusted) {
-        PlayerData pd = getPlayerData(owner);
-        pd.setTrustedPlayers(trusted);
-        save(pd);
-    }
-
 
     private void flushServerData() {
         try {
             serverCfg.save(serverFile);
         } catch (IOException e) {
-            plugin.getLogger().log(Level.SEVERE, "Failed to save server.yml to disk", e);
+            plugin.getLogger().log(Level.SEVERE, "Failed to save server.yml", e);
         }
     }
 
-    public synchronized boolean getServerBoolean(String path, boolean def) {
-        return serverCfg.getBoolean(path, def);
+    // Server Settings
+    public boolean areAbilitiesEnabled() { return getBoolean("abilities_enabled", true); }
+    public void setAbilitiesEnabled(boolean val) { setBoolean("abilities_enabled", val); }
+    
+    public boolean isElementRollEnabled() { return getBoolean("element_roll_enabled", true); }
+    public void setElementRollEnabled(boolean val) { setBoolean("element_roll_enabled", val); }
+
+    public boolean isElementEnabled(ElementType type) { 
+        return getBoolean("element_" + type.name().toLowerCase(), true); 
+    }
+    public void setElementEnabled(ElementType type, boolean val) { 
+        setBoolean("element_" + type.name().toLowerCase(), val); 
     }
 
-    public synchronized void setServerBoolean(String path, boolean value) {
-        serverCfg.set(path, value);
-        flushServerData();
-    }
+    public boolean isRecipeEnabled(String name) { return getBoolean("recipe_" + name, true); }
+    public void setRecipeEnabled(String name, boolean val) { setBoolean("recipe_" + name, val); }
 
-    public synchronized boolean areAbilitiesEnabled() {
-        return getServerBoolean("abilities_enabled", true);
-    }
-
-    public synchronized void setAbilitiesEnabled(boolean enabled) {
-        setServerBoolean("abilities_enabled", enabled);
-    }
-
-    public synchronized boolean isElementRollEnabled() {
-        return getServerBoolean("element_roll_enabled", true);
-    }
-
-    public synchronized void setElementRollEnabled(boolean enabled) {
-        setServerBoolean("element_roll_enabled", enabled);
-    }
-
-    public synchronized boolean isElementEnabled(net.saturn.elementSmp.elements.ElementType type) {
-        String path = "element_" + type.name().toLowerCase();
-        return getServerBoolean(path, true);
-    }
-
-    public synchronized void setElementEnabled(net.saturn.elementSmp.elements.ElementType type, boolean enabled) {
-        String path = "element_" + type.name().toLowerCase();
-        setServerBoolean(path, enabled);
-    }
-
-    public synchronized boolean isRecipeEnabled(String name) {
-        String path = "recipe_" + name;
-        return getServerBoolean(path, true);
-    }
-
-    public synchronized void setRecipeEnabled(String name, boolean enabled) {
-        String path = "recipe_" + name;
-        setServerBoolean(path, enabled);
-    }
-
-    public synchronized boolean isElementUnlocked(ElementType type) {
+    public boolean isElementUnlocked(ElementType type) {
         if (type == ElementType.LIGHTNING) {
-            return getServerBoolean("element_unlocked_" + type.name().toLowerCase(), false);
+            return getBoolean("element_unlocked_" + type.name().toLowerCase(), false);
         }
-        return true; // Default elements are always unlocked
+        return true;
+    }
+    public void setElementUnlocked(ElementType type, boolean val) { 
+        setBoolean("element_unlocked_" + type.name().toLowerCase(), val); 
     }
 
-    public synchronized void setElementUnlocked(ElementType type, boolean unlocked) {
-        setServerBoolean("element_unlocked_" + type.name().toLowerCase(), unlocked);
+    private boolean getBoolean(String path, boolean def) { return serverCfg.getBoolean(path, def); }
+    private void setBoolean(String path, boolean val) { 
+        serverCfg.set(path, val); 
+        flushServerData();
     }
 }

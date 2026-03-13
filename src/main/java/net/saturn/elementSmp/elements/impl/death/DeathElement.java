@@ -1,18 +1,14 @@
-package net.saturn.elementSmp.elements.impl.death;
+package net.saturn.elementsmp.elements.impl.death;
 
-import net.saturn.elementSmp.ElementSmp;
-import net.saturn.elementSmp.elements.BaseElement;
-import net.saturn.elementSmp.elements.ElementContext;
-import net.saturn.elementSmp.elements.ElementType;
-import net.saturn.elementSmp.elements.abilities.Ability;
-import net.saturn.elementSmp.elements.abilities.impl.death.DeathSummonUndeadAbility;
-import net.saturn.elementSmp.elements.abilities.impl.death.ShadowStepAbility;
-import net.saturn.elementSmp.elements.abilities.impl.death.passives.DeathInvisibilityPassive;
-import org.bukkit.ChatColor;
+import net.saturn.elementsmp.ElementSmp;
+import net.saturn.elementsmp.elements.core.BaseElement;
+import net.saturn.elementsmp.elements.core.ElementContext;
+import net.saturn.elementsmp.elements.core.ElementType;
+import net.saturn.elementsmp.elements.abilities.Ability;
+import net.saturn.elementsmp.elements.abilities.impl.death.DeathSummonUndeadAbility;
+import net.saturn.elementsmp.elements.abilities.impl.death.ShadowStepAbility;
+import net.saturn.elementsmp.elements.passives.death.DeathInvisibilityPassive;
 import org.bukkit.entity.Player;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitRunnable;
 
 public class DeathElement extends BaseElement {
     private final ElementSmp plugin;

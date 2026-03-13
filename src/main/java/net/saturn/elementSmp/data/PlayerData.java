@@ -1,6 +1,6 @@
-package net.saturn.elementSmp.data;
+package net.saturn.elementsmp.data;
 
-import net.saturn.elementSmp.elements.ElementType;
+import net.saturn.elementsmp.elements.core.ElementType;
 import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.*;

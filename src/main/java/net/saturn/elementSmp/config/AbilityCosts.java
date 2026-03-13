@@ -1,6 +1,6 @@
-package net.saturn.elementSmp.config;
+package net.saturn.elementsmp.config;
 
-import net.saturn.elementSmp.elements.ElementType;
+import net.saturn.elementsmp.elements.core.ElementType;
 
 import java.util.EnumMap;
 import java.util.Map;

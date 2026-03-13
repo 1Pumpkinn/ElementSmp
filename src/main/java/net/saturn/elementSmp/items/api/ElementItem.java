@@ -1,9 +1,9 @@
-package net.saturn.elementSmp.items.api;
+package net.saturn.elementsmp.items.api;
 
-import net.saturn.elementSmp.ElementSmp;
-import net.saturn.elementSmp.elements.ElementType;
-import net.saturn.elementSmp.managers.ConfigManager;
-import net.saturn.elementSmp.managers.ManaManager;
+import net.saturn.elementsmp.ElementSmp;
+import net.saturn.elementsmp.elements.core.ElementType;
+import net.saturn.elementsmp.managers.ConfigManager;
+import net.saturn.elementsmp.managers.ManaManager;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.player.PlayerInteractEvent;

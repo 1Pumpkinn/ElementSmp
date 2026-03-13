@@ -1,11 +1,11 @@
-package net.saturn.elementSmp.services;
+package net.saturn.elementsmp.services;
 
-import net.saturn.elementSmp.ElementSmp;
-import net.saturn.elementSmp.config.Constants;
-import net.saturn.elementSmp.data.PlayerData;
-import net.saturn.elementSmp.elements.Element;
-import net.saturn.elementSmp.elements.ElementType;
-import net.saturn.elementSmp.managers.ElementManager;
+import net.saturn.elementsmp.ElementSmp;
+import net.saturn.elementsmp.config.Constants;
+import net.saturn.elementsmp.data.PlayerData;
+import net.saturn.elementsmp.elements.core.Element;
+import net.saturn.elementsmp.elements.core.ElementType;
+import net.saturn.elementsmp.managers.ElementManager;
 import org.bukkit.Bukkit;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
@@ -59,6 +59,11 @@ public class EffectService implements Listener {
 
         requiredEffects.put(ElementType.METAL, new EffectRequirement[] {
                 new EffectRequirement(PotionEffectType.HASTE, 0, false)
+        });
+
+        requiredEffects.put(ElementType.LIGHTNING, new EffectRequirement[] {
+                new EffectRequirement(PotionEffectType.SPEED, 0, false),
+                new EffectRequirement(PotionEffectType.HASTE, 1, true)
         });
     }
 
