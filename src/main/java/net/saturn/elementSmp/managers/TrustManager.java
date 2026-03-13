@@ -2,6 +2,7 @@ package net.saturn.elementsmp.managers;
 
 import net.saturn.elementsmp.ElementSmp;
 import net.saturn.elementsmp.data.DataStore;
+import net.saturn.elementsmp.data.PlayerData;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -10,7 +11,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class TrustManager {
     private final DataStore store;
-    private final Map<UUID, Set<UUID>> trusted = new ConcurrentHashMap<>();
     private final Map<UUID, Set<UUID>> pending = new ConcurrentHashMap<>(); // target -> requestors
 
     public TrustManager(ElementSmp plugin) {
@@ -18,17 +18,17 @@ public class TrustManager {
     }
 
     public Set<UUID> getTrusted(UUID owner) {
-        return trusted.computeIfAbsent(owner, store::getTrusted);
+        return store.getPlayerData(owner).getTrustedPlayers();
     }
 
     public boolean isTrusted(UUID owner, UUID other) {
-        return getTrusted(owner).contains(other);
+        return store.getPlayerData(owner).isTrusted(other);
     }
 
     public void addTrust(UUID owner, UUID other) {
-        Set<UUID> set = getTrusted(owner);
-        set.add(other);
-        store.setTrusted(owner, set);
+        PlayerData pd = store.getPlayerData(owner);
+        pd.addTrustedPlayer(other);
+        store.save(pd);
     }
 
     public void addMutualTrust(UUID a, UUID b) {
@@ -49,9 +49,9 @@ public class TrustManager {
     }
 
     public void removeTrust(UUID owner, UUID other) {
-        Set<UUID> set = getTrusted(owner);
-        set.remove(other);
-        store.setTrusted(owner, set);
+        PlayerData pd = store.getPlayerData(owner);
+        pd.removeTrustedPlayer(other);
+        store.save(pd);
     }
 
     public void removeMutualTrust(UUID a, UUID b) {

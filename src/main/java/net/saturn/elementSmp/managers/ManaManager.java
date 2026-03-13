@@ -9,8 +9,6 @@ import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 public class ManaManager {
@@ -18,8 +16,6 @@ public class ManaManager {
     private final DataStore store;
     private final ConfigManager configManager;
     private BukkitTask task;
-
-    private final Map<UUID, PlayerData> cache = new HashMap<>();
 
     public ManaManager(ElementSmp plugin, DataStore store, ConfigManager configManager) {
         this.plugin = plugin;
@@ -66,11 +62,11 @@ public class ManaManager {
     }
 
     public PlayerData get(UUID uuid) {
-        return cache.computeIfAbsent(uuid, store::load);
+        return store.getPlayerData(uuid);
     }
 
     public void save(UUID uuid) {
-        PlayerData pd = cache.get(uuid);
+        PlayerData pd = store.getPlayerData(uuid);
         if (pd != null) store.save(pd);
     }
 

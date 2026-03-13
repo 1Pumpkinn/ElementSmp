@@ -1,7 +1,8 @@
 package net.saturn.elementsmp.altar;
 
 import net.saturn.elementsmp.ElementSmp;
-import net.saturn.elementsmp.items.altar.LightningElementItem;
+import net.saturn.elementsmp.elements.core.ElementType;
+import net.saturn.elementsmp.items.altar.AltarItem;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -123,7 +124,15 @@ public class AltarManager implements Listener {
         lightningIngredients.put(Material.LIGHTNING_ROD, 1);
         lightningIngredients.put(Material.COPPER_BLOCK, 4);
 
-        recipes.put("lightning_element", new AltarRecipe("LIGHTNING ELEMENT", lightningIngredients, LightningElementItem.make(plugin)));
+        ItemStack result = AltarItem.createSoul(
+                plugin,
+                "lightning",
+                Material.LIGHTNING_ROD,
+                net.kyori.adventure.text.format.NamedTextColor.YELLOW,
+                "A core pulsing with raw electrical energy."
+        );
+
+        recipes.put("lightning_element", new AltarRecipe("LIGHTNING ELEMENT", lightningIngredients, result));
     }
 
     @EventHandler
@@ -136,7 +145,7 @@ public class AltarManager implements Listener {
         String key = toKey(loc);
 
         // Check if Lightning is already unlocked globally
-        if (plugin.getDataStore().isElementUnlocked(net.saturn.elementsmp.elements.ElementType.LIGHTNING)) {
+        if (plugin.getDataStore().isElementUnlocked(ElementType.LIGHTNING)) {
             player.sendMessage(ChatColor.YELLOW + "The Lightning Element has already been unlocked globally! You can now obtain it through the Advanced Reroller.");
             return;
         }
@@ -243,7 +252,7 @@ public class AltarManager implements Listener {
 
         // Unlock Lightning globally
         if (state.getRecipe().name().equalsIgnoreCase("LIGHTNING ELEMENT")) {
-            plugin.getDataStore().setElementUnlocked(net.saturn.elementsmp.elements.ElementType.LIGHTNING, true);
+            plugin.getDataStore().setElementUnlocked(ElementType.LIGHTNING, true);
             plugin.getServer().broadcastMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "The Lightning Element has been globally unlocked!");
         }
 

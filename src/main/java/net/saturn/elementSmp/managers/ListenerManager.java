@@ -1,21 +1,31 @@
 package net.saturn.elementsmp.managers;
 
 import net.saturn.elementsmp.ElementSmp;
-import net.saturn.elementsmp.elements.impl.air.listeners.*;
-import net.saturn.elementsmp.elements.impl.death.listeners.*;
-import net.saturn.elementsmp.elements.impl.earth.listeners.*;
-import net.saturn.elementsmp.elements.impl.fire.listeners.*;
-import net.saturn.elementsmp.elements.impl.frost.listeners.*;
-import net.saturn.elementsmp.elements.impl.life.listeners.*;
-import net.saturn.elementsmp.elements.impl.lightning.listeners.*;
-import net.saturn.elementsmp.elements.impl.metal.listeners.*;
-import net.saturn.elementsmp.elements.impl.water.listeners.*;
+import net.saturn.elementsmp.elements.passives.air.AirFallDamagePassive;
+import net.saturn.elementsmp.elements.passives.air.AirSlowFallingPassive;
+import net.saturn.elementsmp.elements.passives.death.DeathFriendlyMobPassive;
+import net.saturn.elementsmp.elements.passives.death.DeathInvisibilityPassive;
+import net.saturn.elementsmp.elements.passives.death.DeathWitherPassive;
+import net.saturn.elementsmp.elements.passives.earth.EarthCombatPassive;
+import net.saturn.elementsmp.elements.passives.earth.EarthOreDropPassive;
+import net.saturn.elementsmp.elements.passives.fire.FireAutoSmeltPassive;
+import net.saturn.elementsmp.elements.passives.fire.FireCombatPassive;
+import net.saturn.elementsmp.elements.passives.frost.FrostSpeedPassive;
+import net.saturn.elementsmp.elements.passives.frost.FrostWaterFreezePassive;
+import net.saturn.elementsmp.elements.passives.life.LifeCropPassive;
+import net.saturn.elementsmp.elements.passives.life.LifeHeartsPassive;
+import net.saturn.elementsmp.elements.passives.life.LifeListener;
+import net.saturn.elementsmp.elements.passives.lightning.LightningPassive;
+import net.saturn.elementsmp.elements.passives.metal.MetalArrowImmunityPassive;
+import net.saturn.elementsmp.elements.passives.metal.MetalCombatPassive;
+import net.saturn.elementsmp.elements.passives.water.WaterCombatPassive;
+import net.saturn.elementsmp.elements.passives.water.WaterPrisonListener;
 import net.saturn.elementsmp.listeners.core.GUIListener;
 import net.saturn.elementsmp.listeners.core.CombatListener;
 import net.saturn.elementsmp.listeners.item.*;
 import net.saturn.elementsmp.listeners.core.GameModeListener;
 import net.saturn.elementsmp.listeners.core.PlayerLifecycleListener;
-import net.saturn.elementsmp.listeners.item.altar.LightningElementListener;
+import net.saturn.elementsmp.listeners.item.altar.AltarElementItemListener;
 import net.saturn.elementsmp.listeners.item.core.AdvancedRerollerListener;
 import net.saturn.elementsmp.listeners.item.core.RerollerListener;
 import net.saturn.elementsmp.listeners.item.core.UpgraderListener;
@@ -47,7 +57,7 @@ public class ListenerManager {
         pm.registerEvents(new ElementItemDeathListener(plugin, plugin.getElementManager()), plugin);
         pm.registerEvents(new RerollerListener(plugin), plugin);
         pm.registerEvents(new AdvancedRerollerListener(plugin), plugin);
-        pm.registerEvents(new LightningElementListener(plugin), plugin);
+        pm.registerEvents(new AltarElementItemListener(plugin), plugin);
         pm.registerEvents(new UpgraderListener(plugin, plugin.getElementManager()), plugin);
 
         // Element Specific Listeners
