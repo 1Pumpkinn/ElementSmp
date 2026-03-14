@@ -62,8 +62,7 @@ public class EffectService implements Listener {
         });
 
         requiredEffects.put(ElementType.LIGHTNING, new EffectRequirement[] {
-                new EffectRequirement(PotionEffectType.SPEED, 0, false),
-                new EffectRequirement(PotionEffectType.HASTE, 1, true)
+                new EffectRequirement(PotionEffectType.SPEED, 0, false)
         });
     }
 

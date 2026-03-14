@@ -110,10 +110,10 @@ public final class ElementInfoRegistry {
                 ChatColor.YELLOW,
                 List.of(
                         "Permanent Speed boost",
-                        "Permanent Haste II boost (Upgrade II)"
+                        "10% chance to strike lightning on hit (Upgrade II)"
                 ),
                 new ElementInfo.AbilityInfo("Lightning Speed", "Gain Speed II for 10 seconds", 50, 1),
-                new ElementInfo.AbilityInfo("Thunderstorm", "Strike nearby enemies with lightning; 20% chance for one, 5% for a second strike", 75, 2)
+                new ElementInfo.AbilityInfo("Thunderstorm", "Strike nearby enemies with lightning; 30% chance for one (3 hearts), 10% for a second strike (2 hearts)", 75, 2)
         ));
     }
 

@@ -72,18 +72,18 @@ public class ThunderstormAbility extends BaseAbility {
                         // Only strike an entity once per ability cast
                         if (struckEntities.contains(target.getUniqueId())) continue;
 
-                        // 20% chance to be struck
-                        if (random.nextDouble() < 0.20) {
+                        // 30% chance to be struck
+                        if (random.nextDouble() < 0.30) {
                             struckEntities.add(target.getUniqueId());
-                            strikeTarget(target, 4.0); // 2 hearts (4.0 damage)
+                            strikeTarget(target, 6.0); // 3 hearts (6.0 damage)
                             
-                            // 5% chance to be struck a second time immediately
-                            if (random.nextDouble() < 0.05) {
+                            // 10% chance to be struck a second time immediately
+                            if (random.nextDouble() < 0.10) {
                                 new BukkitRunnable() {
                                     @Override
                                     public void run() {
                                         if (target.isValid() && !target.isDead()) {
-                                            strikeTarget(target, 3.0); // 3 damage (1.5 hearts)
+                                            strikeTarget(target, 4.0); // 2 hearts (4.0 damage)
                                         }
                                     }
                                 }.runTaskLater(plugin, 10L); // 0.5 second delay for the second strike

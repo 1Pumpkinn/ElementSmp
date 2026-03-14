@@ -30,17 +30,11 @@ public class LightningElement extends BaseElement {
     public void applyUpsides(Player player, int upgradeLevel) {
         // passive 1 Perm speed (Speed I)
         player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, PotionEffect.INFINITE_DURATION, 0, true, false, false));
-
-        // passive 2 Haste 2 (Upgrade II)
-        if (upgradeLevel >= 2) {
-            player.addPotionEffect(new PotionEffect(PotionEffectType.HASTE, PotionEffect.INFINITE_DURATION, 1, true, false, false));
-        }
     }
 
     @Override
     public void clearEffects(Player player) {
         player.removePotionEffect(PotionEffectType.SPEED);
-        player.removePotionEffect(PotionEffectType.HASTE);
         ability1.setActive(player, false);
         ability2.setActive(player, false);
     }
