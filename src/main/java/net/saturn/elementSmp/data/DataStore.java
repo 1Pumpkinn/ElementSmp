@@ -186,6 +186,14 @@ public class DataStore {
         setBoolean("element_unlocked_" + type.name().toLowerCase(), val); 
     }
 
+    public boolean isAltarGenerated() {
+        return getBoolean("altar_generated", false);
+    }
+
+    public void setAltarGenerated(boolean val) {
+        setBoolean("altar_generated", val);
+    }
+
     private boolean getBoolean(String path, boolean def) { return serverCfg.getBoolean(path, def); }
     private void setBoolean(String path, boolean val) { 
         serverCfg.set(path, val); 

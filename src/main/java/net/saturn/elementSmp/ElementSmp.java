@@ -30,6 +30,7 @@ public final class ElementSmp extends JavaPlugin {
     private AltarManager altarManager;
     private CommandManager commandManager;
     private ListenerManager listenerManager;
+    private StructureGenerationManager structureGenerationManager;
 
     @Override
     public void onEnable() {
@@ -41,6 +42,9 @@ public final class ElementSmp extends JavaPlugin {
             initializeUtilities();
             registerComponents();
             startBackgroundTasks();
+
+            // Attempt to generate the altar if it doesn't exist
+            structureGenerationManager.attemptGeneration();
 
             getLogger().info("ElementSmp v" + getDescription().getVersion() + " enabled successfully!");
         } catch (Exception e) {
@@ -77,6 +81,7 @@ public final class ElementSmp extends JavaPlugin {
         this.altarManager = new AltarManager(this);
         this.commandManager = new CommandManager(this);
         this.listenerManager = new ListenerManager(this);
+        this.structureGenerationManager = new StructureGenerationManager(this);
     }
 
     private void initializeServices() {
@@ -135,4 +140,5 @@ public final class ElementSmp extends JavaPlugin {
     public MetadataHelper getMetadataHelper() { return metadataHelper; }
     public AltarManager getAltarManager() { return altarManager; }
     public AbilityListener getAbilityListener() { return abilityListener; }
+    public StructureGenerationManager getStructureGenerationManager() { return structureGenerationManager; }
 }
