@@ -18,6 +18,9 @@ public final class AbilityCosts {
 
     private static final Map<ElementType, ElementCosts> DEFAULTS = new EnumMap<>(ElementType.class);
 
+    // Specific costs for Altar-obtained elements
+    public static final ElementCosts ALTAR_LIGHTNING = new ElementCosts(25, 50);
+
     static {
         DEFAULTS.put(ElementType.AIR, new ElementCosts(50, 75));
         DEFAULTS.put(ElementType.WATER, new ElementCosts(50, 75));

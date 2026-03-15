@@ -40,7 +40,7 @@ public class LightningPassive implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(priority = org.bukkit.event.EventPriority.MONITOR, ignoreCancelled = true)
     public void onHit(EntityDamageByEntityEvent event) {
         if (!(event.getDamager() instanceof Player attacker)) return;
         if (!(event.getEntity() instanceof LivingEntity victim)) return;
@@ -50,8 +50,11 @@ public class LightningPassive implements Listener {
         var playerData = elementManager.data(attacker.getUniqueId());
         if (playerData.getUpgradeLevel(ElementType.LIGHTNING) < 2) return;
 
-        // 10% chance to strike lightning
-        if (random.nextDouble() < 0.10) {
+        // Use random.nextInt(100) for a clearer 10% chance (0-9 inclusive)
+        // MONITOR priority and ignoreCancelled=true ensures we only strike on successful hits
+        if (random.nextInt(100) < 10) {
+            // strikeLightning strikes and deals damage, strikeLightningEffect is just visual
+            // Using strikeLightning for the actual passive effect
             victim.getWorld().strikeLightning(victim.getLocation());
         }
     }

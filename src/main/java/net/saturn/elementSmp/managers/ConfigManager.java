@@ -64,7 +64,7 @@ public class ConfigManager {
 
     public int getAbility1Cost(ElementType type, net.saturn.elementsmp.data.PlayerData pd) {
         if (type == ElementType.LIGHTNING && pd != null && pd.isAltarElement()) {
-            return 45;
+            return AbilityCosts.ALTAR_LIGHTNING.ability1();
         }
         return getAbility1Cost(type);
     }
@@ -81,31 +81,9 @@ public class ConfigManager {
 
     public int getAbility2Cost(ElementType type, net.saturn.elementsmp.data.PlayerData pd) {
         if (type == ElementType.LIGHTNING && pd != null && pd.isAltarElement()) {
-            return 50;
+            return AbilityCosts.ALTAR_LIGHTNING.ability2();
         }
         return getAbility2Cost(type);
     }
-
-    // Advanced reroller recipe is controlled via server.yml flags now
-
-    // Resource pack settings
-    public boolean isResourcePackEnabled() {
-        return config.getBoolean("resource_pack.enabled", false);
-    }
-
-    public String getResourcePackUrl() {
-        return config.getString("resource_pack.url", "");
-    }
-
-    public String getResourcePackHash() {
-        return config.getString("resource_pack.hash", "");
-    }
-
-    public boolean isResourcePackRequired() {
-        return config.getBoolean("resource_pack.required", false);
-    }
-
-    public String getResourcePackPrompt() {
-        return config.getString("resource_pack.prompt", "This server requires a custom resource pack.");
-    }
 }
+
