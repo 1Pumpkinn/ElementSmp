@@ -13,12 +13,16 @@ public final class PlayerData {
     private ElementType currentElement;
     private int mana;
     private int currentElementUpgradeLevel;
+    private boolean altarElement;
+    private boolean needsReroll;
     private final Set<UUID> trustedPlayers;
 
     public PlayerData(UUID uuid) {
         this.uuid = Objects.requireNonNull(uuid, "UUID cannot be null");
         this.mana = 100;
         this.currentElementUpgradeLevel = 0;
+        this.altarElement = false;
+        this.needsReroll = false;
         this.trustedPlayers = new HashSet<>();
     }
 
@@ -45,6 +49,12 @@ public final class PlayerData {
 
         // Load upgrade level
         this.currentElementUpgradeLevel = section.getInt("currentUpgradeLevel", 0);
+
+        // Load altar element flag
+        this.altarElement = section.getBoolean("altarElement", false);
+
+        // Load needs reroll flag
+        this.needsReroll = section.getBoolean("needsReroll", false);
 
         // Load trust list
         ConfigurationSection trustSection = section.getConfigurationSection("trust");
@@ -77,6 +87,22 @@ public final class PlayerData {
 
     public int getMana() {
         return mana;
+    }
+
+    public boolean isAltarElement() {
+        return altarElement;
+    }
+
+    public void setAltarElement(boolean altarElement) {
+        this.altarElement = altarElement;
+    }
+
+    public boolean needsReroll() {
+        return needsReroll;
+    }
+
+    public void setNeedsReroll(boolean needsReroll) {
+        this.needsReroll = needsReroll;
     }
 
     public Set<UUID> getTrustedPlayers() {

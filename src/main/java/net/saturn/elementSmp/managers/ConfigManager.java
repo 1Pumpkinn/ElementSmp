@@ -62,6 +62,13 @@ public class ConfigManager {
         }
     }
 
+    public int getAbility1Cost(ElementType type, net.saturn.elementsmp.data.PlayerData pd) {
+        if (type == ElementType.LIGHTNING && pd != null && pd.isAltarElement()) {
+            return 45;
+        }
+        return getAbility1Cost(type);
+    }
+
     public int getAbility2Cost(ElementType type) {
         try {
             String path = "costs." + type.name().toLowerCase() + ".ability2";
@@ -70,6 +77,13 @@ public class ConfigManager {
             plugin.getLogger().log(Level.WARNING, "Error reading ability2 cost for " + type + " from config, using default value", e);
             return AbilityCosts.getDefaults(type).ability2();
         }
+    }
+
+    public int getAbility2Cost(ElementType type, net.saturn.elementsmp.data.PlayerData pd) {
+        if (type == ElementType.LIGHTNING && pd != null && pd.isAltarElement()) {
+            return 50;
+        }
+        return getAbility2Cost(type);
     }
 
     // Advanced reroller recipe is controlled via server.yml flags now

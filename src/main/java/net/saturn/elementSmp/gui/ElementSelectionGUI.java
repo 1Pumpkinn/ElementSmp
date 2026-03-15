@@ -246,6 +246,14 @@ public class ElementSelectionGUI {
                 
                 player.closeInventory();
                 
+                // Reset altar element flag if using Advanced Reroller
+                var pd = elementManager.data(player.getUniqueId());
+                if (net.saturn.elementsmp.items.ItemKeys.KEY_ADVANCED_REROLLER.equals(rerollerType)) {
+                    pd.setAltarElement(false);
+                }
+                pd.setNeedsReroll(false);
+                plugin.getDataStore().save(pd);
+
                 if (isReroll) {
                     elementManager.setElement(player, selectedElement);
                     player.sendMessage(ChatColor.GREEN + "Your element has been changed to " + 

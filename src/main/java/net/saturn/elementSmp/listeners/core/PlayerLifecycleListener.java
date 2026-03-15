@@ -43,8 +43,9 @@ public class PlayerLifecycleListener implements Listener {
         PlayerData pd = elementManager.data(player.getUniqueId());
         manaManager.get(player.getUniqueId());
 
-        if (pd.getCurrentElement() == null) {
-            scheduler.runAfterPlayerLoad(player, () -> new ElementSelectionGUI(plugin, player, false).open());
+        if (pd.getCurrentElement() == null || pd.needsReroll()) {
+            boolean isReroll = pd.needsReroll();
+            scheduler.runAfterPlayerLoad(player, () -> new ElementSelectionGUI(plugin, player, isReroll).open());
         } else {
             scheduler.runAfterPlayerLoad(player, () -> {
                 effectService.clearAllElementEffects(player);
@@ -74,11 +75,22 @@ public class PlayerLifecycleListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerRespawn(PlayerRespawnEvent event) {
         Player player = event.getPlayer();
-        scheduler.runLater(() -> {
-            if (player.isOnline()) {
-                effectService.applyPassiveEffects(player);
-            }
-        }, 5L);
+        PlayerData pd = elementManager.data(player.getUniqueId());
+
+        if (pd.getCurrentElement() == null || pd.needsReroll()) {
+            boolean isReroll = pd.needsReroll();
+            scheduler.runLater(() -> {
+                if (player.isOnline()) {
+                    new ElementSelectionGUI(plugin, player, isReroll).open();
+                }
+            }, 5L);
+        } else {
+            scheduler.runLater(() -> {
+                if (player.isOnline()) {
+                    effectService.applyPassiveEffects(player);
+                }
+            }, 5L);
+        }
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

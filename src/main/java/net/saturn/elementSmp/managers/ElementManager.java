@@ -14,6 +14,7 @@ import net.saturn.elementsmp.elements.impl.lightning.LightningElement;
 import net.saturn.elementsmp.elements.impl.metal.MetalElement;
 import net.saturn.elementsmp.elements.impl.water.WaterElement;
 import net.saturn.elementsmp.gui.ElementSelectionGUI;
+import net.saturn.elementsmp.items.altar.AltarItem;
 import net.saturn.elementsmp.items.util.AdvancedRerollerItem;
 import net.saturn.elementsmp.items.ItemKeys;
 import net.saturn.elementsmp.items.util.RerollerItem;
@@ -130,6 +131,8 @@ public class ElementManager {
 
         if (old != null && old != type) {
             handleElementSwitch(player, old);
+            // Reset altar element status on switch
+            pd.setAltarElement(false);
         }
 
         if (resetLevel) {
@@ -147,6 +150,21 @@ public class ElementManager {
 
     private void handleElementSwitch(Player player, ElementType oldElement) {
         effectService.clearAllElementEffects(player);
+        
+        PlayerData pd = data(player.getUniqueId());
+        // Only give back the item if it was an altar element
+        if (oldElement != null && pd.isAltarElement()) {
+            ItemStack item = AltarItem.soulFor(oldElement, plugin);
+            // Try adding to inventory first; any items that don't fit are returned in the map and then dropped
+            Map<Integer, ItemStack> remaining = player.getInventory().addItem(item);
+            if (remaining.isEmpty()) {
+                player.sendMessage(ChatColor.YELLOW + "You received your " + oldElement.name().toLowerCase() + " altar item back!");
+            } else {
+                remaining.values().forEach(dropped -> 
+                    player.getWorld().dropItemNaturally(player.getLocation(), dropped));
+                player.sendMessage(ChatColor.YELLOW + "Your inventory was full, so your " + oldElement.name().toLowerCase() + " altar item dropped in front of you!");
+            }
+        }
     }
 
     public void applyUpsides(Player player) {

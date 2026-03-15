@@ -57,13 +57,30 @@ public final class AltarItem {
                 plugin,
                 elementKey + "_element",
                 material,
-                capitalize(elementKey) + " Element",
+                capitalize(elementKey) + " Altar Item",
                 color,
                 List.of(
                         Component.text(description).color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false),
                         Component.text("Right-click to become the " + capitalize(elementKey) + " Element.").color(color).decoration(TextDecoration.ITALIC, false)
                 )
         ).build();
+    }
+
+    /**
+     * Gets the altar item for a specific element type.
+     */
+    public static ItemStack soulFor(net.saturn.elementsmp.elements.core.ElementType type, ElementSmp plugin) {
+        return switch (type) {
+            case AIR -> createSoul(plugin, "air", Material.FEATHER, NamedTextColor.WHITE, "The essence of the wind itself.");
+            case WATER -> createSoul(plugin, "water", Material.WATER_BUCKET, NamedTextColor.BLUE, "A fluid, ever-changing core.");
+            case FIRE -> createSoul(plugin, "fire", Material.FIRE_CHARGE, NamedTextColor.RED, "A burning, volatile energy.");
+            case EARTH -> createSoul(plugin, "earth", Material.GRASS_BLOCK, NamedTextColor.GREEN, "Solid, unyielding stone.");
+            case LIFE -> createSoul(plugin, "life", Material.APPLE, NamedTextColor.LIGHT_PURPLE, "A vibrant, growing essence.");
+            case DEATH -> createSoul(plugin, "death", Material.WITHER_SKELETON_SKULL, NamedTextColor.DARK_GRAY, "A dark, decaying core.");
+            case METAL -> createSoul(plugin, "metal", Material.IRON_INGOT, NamedTextColor.GRAY, "Hardened, tempered steel.");
+            case FROST -> createSoul(plugin, "frost", Material.SNOWBALL, NamedTextColor.AQUA, "A frozen, chilling core.");
+            case LIGHTNING -> createSoul(plugin, "lightning", Material.LIGHTNING_ROD, NamedTextColor.YELLOW, "A core pulsing with raw electrical energy.");
+        };
     }
 
     private static String capitalize(String str) {

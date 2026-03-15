@@ -112,6 +112,8 @@ public class DataStore {
             sec.set("element", pd.getCurrentElement() == null ? null : pd.getCurrentElement().name());
             sec.set("mana", pd.getMana());
             sec.set("currentUpgradeLevel", pd.getCurrentElementUpgradeLevel());
+            sec.set("altarElement", pd.isAltarElement());
+            sec.set("needsReroll", pd.needsReroll());
 
             saveTrustList(pd, sec);
             cache.put(pd.getUuid(), pd);

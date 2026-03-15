@@ -38,7 +38,8 @@ public abstract class BaseElement implements Element {
         }
 
         // Normal activation flow - check mana only (NO COOLDOWN)
-        int cost = context.getConfigManager().getAbility1Cost(getType());
+        var pd = plugin.getElementManager().data(context.getPlayer().getUniqueId());
+        int cost = context.getConfigManager().getAbility1Cost(getType(), pd);
         if (!hasMana(context.getPlayer(), context.getManaManager(), cost)) return false;
 
         // Execute ability first, only consume mana if successful
@@ -68,7 +69,8 @@ public abstract class BaseElement implements Element {
         }
 
         // Normal activation flow - check mana only (NO COOLDOWN)
-        int cost = context.getConfigManager().getAbility2Cost(getType());
+        var pd = plugin.getElementManager().data(context.getPlayer().getUniqueId());
+        int cost = context.getConfigManager().getAbility2Cost(getType(), pd);
         if (!hasMana(context.getPlayer(), context.getManaManager(), cost)) return false;
 
         // Execute ability first, only consume mana if successful

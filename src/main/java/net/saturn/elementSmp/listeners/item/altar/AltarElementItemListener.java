@@ -65,6 +65,11 @@ public class AltarElementItemListener implements Listener {
         // Change element via ElementManager
         plugin.getElementManager().setElement(player, type);
 
+        // Set altar element flag to true
+        var pd = plugin.getElementManager().data(player.getUniqueId());
+        pd.setAltarElement(true);
+        plugin.getDataStore().save(pd);
+
         // Standard effects for element change
         playEffects(player, type);
         

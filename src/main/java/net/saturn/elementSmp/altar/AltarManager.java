@@ -118,18 +118,17 @@ public class AltarManager implements Listener {
 
     private void registerDefaultRecipes() {
         Map<Material, Integer> lightningIngredients = new HashMap<>();
-        lightningIngredients.put(Material.REDSTONE_TORCH, 4);
-        lightningIngredients.put(Material.TNT, 1);
-        lightningIngredients.put(Material.REDSTONE_LAMP, 2);
-        lightningIngredients.put(Material.LIGHTNING_ROD, 1);
-        lightningIngredients.put(Material.COPPER_BLOCK, 4);
+        lightningIngredients.put(Material.CREEPER_HEAD, 1);
+        lightningIngredients.put(Material.COPPER_BLOCK, 128);
+        lightningIngredients.put(Material.LIGHTNING_ROD, 2);
+
 
         ItemStack result = AltarItem.createSoul(
                 plugin,
                 "lightning",
                 Material.LIGHTNING_ROD,
                 net.kyori.adventure.text.format.NamedTextColor.YELLOW,
-                "A core pulsing with raw electrical energy."
+                "A core pulsing with electric energy."
         );
 
         recipes.put("lightning_element", new AltarRecipe("LIGHTNING ELEMENT", lightningIngredients, result));
@@ -263,7 +262,7 @@ public class AltarManager implements Listener {
                 if (ticks >= 40) {
                     loc.getWorld().strikeLightningEffect(loc);
                     
-                    // Drop the soul item
+                    // Drop the altar item
                     loc.getWorld().dropItemNaturally(loc, state.getRecipe().result());
                     
                     loc.getWorld().playSound(loc, Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f);
