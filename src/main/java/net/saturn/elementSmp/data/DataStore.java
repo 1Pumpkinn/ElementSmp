@@ -2,6 +2,7 @@ package net.saturn.elementsmp.data;
 
 import net.saturn.elementsmp.ElementSmp;
 import net.saturn.elementsmp.elements.core.ElementType;
+import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -199,6 +200,36 @@ public class DataStore {
     private boolean getBoolean(String path, boolean def) { return serverCfg.getBoolean(path, def); }
     private void setBoolean(String path, boolean val) { 
         serverCfg.set(path, val); 
+        flushServerData();
+    }
+
+    public void saveAltarProgress(String key, Map<Material, Integer> deposited) {
+        ConfigurationSection altarSec = serverCfg.getConfigurationSection("altars");
+        if (altarSec == null) altarSec = serverCfg.createSection("altars");
+
+        ConfigurationSection entry = altarSec.createSection(key);
+        for (Map.Entry<Material, Integer> e : deposited.entrySet()) {
+            entry.set(e.getKey().name(), e.getValue());
+        }
+        flushServerData();
+    }
+
+    public Map<Material, Integer> loadAltarProgress(String key) {
+        Map<Material, Integer> deposited = new HashMap<>();
+        ConfigurationSection altarSec = serverCfg.getConfigurationSection("altars." + key);
+        if (altarSec != null) {
+            for (String matName : altarSec.getKeys(false)) {
+                try {
+                    Material mat = Material.valueOf(matName);
+                    deposited.put(mat, altarSec.getInt(matName));
+                } catch (IllegalArgumentException ignored) {}
+            }
+        }
+        return deposited;
+    }
+
+    public void removeAltarProgress(String key) {
+        serverCfg.set("altars." + key, null);
         flushServerData();
     }
 }

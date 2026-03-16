@@ -186,11 +186,15 @@ public class AltarManager implements Listener {
             state.addIngredient(hand.getType(), amount);
             hand.setAmount(hand.getAmount() - amount);
             
+            // Persist the progress
+            state.saveProgress();
+            
             player.getWorld().playSound(loc, Sound.BLOCK_RESPAWN_ANCHOR_CHARGE, 1.0f, 1.5f);
             state.updateHolograms();
 
             if (state.isComplete()) {
                 completeCraft(state);
+                state.clearProgress();
                 activeAltars.remove(key);
             }
         } else {
@@ -216,6 +220,10 @@ public class AltarManager implements Listener {
                     AltarState state = activeAltars.remove(toKey(loc));
                     if (state != null) {
                         state.clearHolograms();
+                        state.clearProgress();
+                    } else {
+                        // Ensure progress is cleared even if state wasn't in cache
+                        plugin.getDataStore().removeAltarProgress(toKey(loc));
                     }
                     
                     // Also clear any lingering holograms by tag just in case
@@ -310,6 +318,21 @@ public class AltarManager implements Listener {
         public AltarState(Location location, AltarRecipe recipe) {
             this.location = location;
             this.recipe = recipe;
+            
+            // Load persistent progress if it exists
+            Map<Material, Integer> saved = plugin.getDataStore().loadAltarProgress(toKey(location));
+            if (!saved.isEmpty()) {
+                deposited.putAll(saved);
+            }
+        }
+
+        public void saveProgress() {
+            if (deposited.isEmpty()) return;
+            plugin.getDataStore().saveAltarProgress(toKey(location), deposited);
+        }
+
+        public void clearProgress() {
+            plugin.getDataStore().removeAltarProgress(toKey(location));
         }
 
         public void setProcessing(boolean processing) {
