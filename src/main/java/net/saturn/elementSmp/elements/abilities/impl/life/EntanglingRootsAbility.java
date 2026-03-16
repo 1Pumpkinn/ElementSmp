@@ -34,6 +34,8 @@ public class EntanglingRootsAbility extends BaseAbility {
 
     private final ElementSmp plugin;
     public static final String META_ENTANGLED = MetadataKeys.Life.ENTANGLED;
+    public static final String META_SINK = MetadataKeys.Life.ENTANGLED_SINK;
+    public static final String META_RELEASE = MetadataKeys.Life.ENTANGLED_RELEASE;
 
     public EntanglingRootsAbility(ElementSmp plugin) {
         super();
@@ -104,41 +106,22 @@ public class EntanglingRootsAbility extends BaseAbility {
         }
 
         Location originalLoc = target.getLocation().clone();
-        Location sinkLoc;
-        Location tmpReleaseLoc = originalLoc.clone();
-        double sinkDepth = Math.max(0.3, Math.min(0.7, target.getHeight() * 0.35));
-        boolean startedInAir = !target.isOnGround();
-        if (startedInAir) {
-            org.bukkit.util.RayTraceResult groundHit = target.getWorld().rayTraceBlocks(
-                    target.getLocation().add(0, 1, 0),
-                    new Vector(0, -1, 0),
-                    256,
-                    FluidCollisionMode.NEVER,
-                    true
-            );
-            if (groundHit != null && groundHit.getHitBlock() != null) {
-                double groundY = groundHit.getHitPosition().getY();
-                sinkLoc = new Location(originalLoc.getWorld(), originalLoc.getX(), groundY - sinkDepth, originalLoc.getZ());
-                tmpReleaseLoc = new Location(originalLoc.getWorld(), originalLoc.getX(), groundY + 0.1, originalLoc.getZ());
-            } else {
-                sinkLoc = originalLoc.clone().subtract(0, sinkDepth, 0);
-                tmpReleaseLoc = originalLoc.clone();
-            }
-        } else {
-            sinkLoc = originalLoc.clone().subtract(0, sinkDepth, 0);
-            tmpReleaseLoc = originalLoc.clone();
-        }
-        final Location releaseLoc = tmpReleaseLoc;
+        Location sinkLoc = originalLoc.clone();
+        Location releaseLoc = originalLoc.clone();
+        
+        // Immobilize on the spot instead of sinking to avoid block interaction/collision bugs
+        target.setMetadata(META_SINK, new FixedMetadataValue(plugin, sinkLoc));
+        target.setMetadata(META_RELEASE, new FixedMetadataValue(plugin, releaseLoc));
         
         originalLoc.getWorld().playSound(originalLoc, Sound.BLOCK_ROOTS_BREAK, 1.5f, 0.5f);
         originalLoc.getWorld().spawnParticle(Particle.BLOCK, originalLoc, 50, 0.5, 0.5, 0.5, 0.1, org.bukkit.Material.MANGROVE_ROOTS.createBlockData());
 
-        // Sink them into the ground
-        target.teleport(sinkLoc);
+        // Keep them on the spot
         target.setVelocity(new Vector(0, 0, 0));
 
         // Apply visual effects
-        target.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, 100, 10, false, false, true));
+        int durationTicks = (int) (durationMs / 50);
+        target.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, durationTicks, 4, false, false, true));
 
         final LivingEntity finalTarget = target;
         final boolean wasAllowFlight = (target instanceof Player p) ? p.getAllowFlight() : false;
@@ -148,21 +131,40 @@ public class EntanglingRootsAbility extends BaseAbility {
 
         new BukkitRunnable() {
             int ticks = 0;
+            final int maxTicks = durationTicks;
+
             @Override
             public void run() {
-                if (!finalTarget.isValid() || ticks >= 100) {
-                    if (finalTarget.isValid()) {
-                        finalTarget.removeMetadata(META_ENTANGLED, plugin);
+                if (!finalTarget.isValid() || finalTarget.isDead() || ticks >= maxTicks) {
+                    finalTarget.removeMetadata(META_ENTANGLED, plugin);
+                    
+                    if (finalTarget.isValid() && !finalTarget.isDead()) {
                         if (finalTarget instanceof Mob mob) {
                             mob.setAware(true);
                         }
-                        // Teleport to safe ground if started in air; otherwise, back to the original spot
-                        finalTarget.teleport(releaseLoc);
-                        if (finalTarget instanceof Player p) {
-                            if (!wasAllowFlight && p.getGameMode() != org.bukkit.GameMode.CREATIVE && p.getGameMode() != org.bukkit.GameMode.SPECTATOR) {
-                                p.setAllowFlight(false);
+                        
+                        // Final teleport to ensure they are at the correct location and synced
+                        if (finalTarget.hasMetadata(META_RELEASE)) {
+                            Location release = (Location) finalTarget.getMetadata(META_RELEASE).get(0).value();
+                            if (release != null) {
+                                // Keep the player's current rotation
+                                Location finalLoc = release.clone();
+                                finalLoc.setYaw(finalTarget.getLocation().getYaw());
+                                finalLoc.setPitch(finalTarget.getLocation().getPitch());
+                                finalTarget.teleport(finalLoc);
                             }
                         }
+                    }
+                    
+                    finalTarget.removeMetadata(META_SINK, plugin);
+                    finalTarget.removeMetadata(META_RELEASE, plugin);
+
+                    if (finalTarget instanceof Player p) {
+                        if (!wasAllowFlight && p.getGameMode() != org.bukkit.GameMode.CREATIVE && p.getGameMode() != org.bukkit.GameMode.SPECTATOR) {
+                            p.setAllowFlight(false);
+                        }
+                        // Force a sync with the client to resolve "ghost blocks" or state corruption
+                        p.updateInventory();
                     }
                     cancel();
                     return;
@@ -170,13 +172,23 @@ public class EntanglingRootsAbility extends BaseAbility {
 
                 // Visual root particles
                 if (ticks % 5 == 0) {
-                    finalTarget.getWorld().spawnParticle(Particle.BLOCK, originalLoc.clone().add(0, 0.1, 0), 5, 0.3, 0.1, 0.3, 0.0, org.bukkit.Material.MANGROVE_ROOTS.createBlockData());
+                    finalTarget.getWorld().spawnParticle(Particle.BLOCK, finalTarget.getLocation().add(0, 0.1, 0), 5, 0.3, 0.1, 0.3, 0.0, org.bukkit.Material.MANGROVE_ROOTS.createBlockData());
                 }
                 
-                // Keep them at the sink location
-                if (ticks % 2 == 0) {
-                    finalTarget.teleport(sinkLoc);
+                // Keep them at the location - only for non-players to avoid desync
+                // Players are handled by PlayerMoveEvent in LifeListener
+                if (!(finalTarget instanceof Player)) {
+                    if (ticks % 2 == 0 && finalTarget.hasMetadata(META_SINK)) {
+                        Location sink = (Location) finalTarget.getMetadata(META_SINK).get(0).value();
+                        if (sink != null) {
+                            Location targetLoc = sink.clone();
+                            targetLoc.setYaw(finalTarget.getLocation().getYaw());
+                            targetLoc.setPitch(finalTarget.getLocation().getPitch());
+                            finalTarget.teleport(targetLoc);
+                        }
+                    }
                 }
+                
                 finalTarget.setVelocity(new Vector(0, 0, 0));
                 
                 ticks++;

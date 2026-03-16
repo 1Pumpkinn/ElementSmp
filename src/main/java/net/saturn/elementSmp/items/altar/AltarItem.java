@@ -46,6 +46,7 @@ public final class AltarItem {
                         .decoration(TextDecoration.BOLD, true))
                 .lore(lore)
                 .data(ItemKeys.namespaced(plugin, key), PersistentDataType.BYTE, (byte) 1)
+                .data(ItemKeys.namespaced(plugin, ItemKeys.KEY_ALTAR_ITEM), PersistentDataType.BYTE, (byte) 1)
                 .build();
     }
 
@@ -55,7 +56,7 @@ public final class AltarItem {
     public static ItemStack createSoul(ElementSmp plugin, String elementKey, Material material, NamedTextColor color, String description) {
         return new AltarItem(
                 plugin,
-                elementKey + "_element",
+                elementKey,
                 material,
                 capitalize(elementKey) + " Altar Item",
                 color,

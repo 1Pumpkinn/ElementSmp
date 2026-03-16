@@ -92,7 +92,7 @@ public class EffectService implements Listener {
 
         // Clear individual element state/tasks
         for (ElementType type : ElementType.values()) {
-            Element element = elementManager.get(type);
+            Element element = elementManager.get(player, type);
             if (element != null) {
                 element.clearEffects(player);
             }
@@ -117,7 +117,7 @@ public class EffectService implements Listener {
 
         if (type == null) return;
 
-        Element element = elementManager.get(type);
+        Element element = elementManager.get(player, type);
         if (element != null) {
             element.applyUpsides(player, pd.getUpgradeLevel(type));
         }

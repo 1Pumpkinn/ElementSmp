@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.util.Vector;
 import io.papermc.paper.event.entity.EntityMoveEvent;
@@ -39,6 +40,14 @@ public class WaterPrisonListener implements Listener {
             } else {
                 player.removeMetadata(WaterPrisonAbility.META_WATER_PRISON, plugin);
             }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onDeath(PlayerDeathEvent event) {
+        Player player = event.getEntity();
+        if (player.hasMetadata(WaterPrisonAbility.META_WATER_PRISON)) {
+            player.removeMetadata(WaterPrisonAbility.META_WATER_PRISON, plugin);
         }
     }
 

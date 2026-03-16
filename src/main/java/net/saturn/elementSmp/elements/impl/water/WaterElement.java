@@ -46,6 +46,7 @@ public class WaterElement extends BaseElement {
     @Override
     public void clearEffects(Player player) {
         player.removePotionEffect(PotionEffectType.CONDUIT_POWER);
+        player.removeMetadata(WaterPrisonAbility.META_WATER_PRISON, plugin);
         ability1.setActive(player, false);
         ability2.setActive(player, false);
     }

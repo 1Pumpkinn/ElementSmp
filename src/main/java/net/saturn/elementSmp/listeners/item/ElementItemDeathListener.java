@@ -18,13 +18,10 @@ public record ElementItemDeathListener(ElementSmp plugin, ElementManager element
         PlayerData pd = elements.data(e.getEntity().getUniqueId());
         ElementType currentElement = pd.getCurrentElement();
 
-        // ONLY trigger element reset and reroll if the player has an altar element
-        if (currentElement != null && pd.isAltarElement()) {
-            // Drop the element altar item
-            e.getDrops().add(AltarItem.soulFor(currentElement, plugin));
-
+        if (currentElement != null) {
             int currentLevel = pd.getUpgradeLevel(currentElement);
 
+            // Always drop upgrades and reset level
             if (currentLevel > 0) {
                 for (int i = 0; i < currentLevel; i++) {
                     if (i == 0) {
@@ -33,14 +30,20 @@ public record ElementItemDeathListener(ElementSmp plugin, ElementManager element
                         e.getDrops().add(plugin.getItemManager().createUpgrader2());
                     }
                 }
+                pd.setUpgradeLevel(currentElement, 0);
             }
 
-            // Reset element and upgrade level
-            pd.setCurrentElement(null);
-            pd.setAltarElement(false);
-            pd.setNeedsReroll(true);
+            // If it's an altar element, also drop the altar item and force a reroll
+            if (pd.isAltarElement()) {
+                e.getDrops().add(AltarItem.soulFor(currentElement, plugin));
+                pd.setCurrentElement(null);
+                pd.setAltarElement(false);
+                pd.setNeedsReroll(true);
+            }
+
             plugin.getDataStore().save(pd);
 
+            // Schedule a task to re-apply any remaining passive effects after death
             new BukkitRunnable() {
                 @Override
                 public void run() {
@@ -52,5 +55,3 @@ public record ElementItemDeathListener(ElementSmp plugin, ElementManager element
         }
     }
 }
-
-

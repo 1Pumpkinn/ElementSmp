@@ -91,8 +91,8 @@ public class WaterPrisonAbility extends BaseAbility {
             @Override
             public void run() {
                 if (!finalTarget.isValid() || finalTarget.isDead() || ticks >= maxTicks) {
+                    finalTarget.removeMetadata(META_WATER_PRISON, plugin);
                     if (finalTarget.isValid()) {
-                        finalTarget.removeMetadata(META_WATER_PRISON, plugin);
                         if (finalTarget instanceof Player p) {
                             if (!wasAllowFlight && p.getGameMode() != org.bukkit.GameMode.CREATIVE && p.getGameMode() != org.bukkit.GameMode.SPECTATOR) {
                                 p.setAllowFlight(false);

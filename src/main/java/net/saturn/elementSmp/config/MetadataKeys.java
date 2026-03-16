@@ -49,6 +49,8 @@ public final class MetadataKeys {
 
     public static final class Life {
         public static final String ENTANGLED = "life_entangled";
+        public static final String ENTANGLED_SINK = "life_entangled_sink";
+        public static final String ENTANGLED_RELEASE = "life_entangled_release";
         private Life() {}
     }
 }

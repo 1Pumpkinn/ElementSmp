@@ -54,6 +54,20 @@ public class AltarElementItemListener implements Listener {
         event.setCancelled(true);
 
         if (plugin.getElementManager().getPlayerElement(player) == type) {
+            if (type == ElementType.LIGHTNING) {
+                var pd = plugin.getElementManager().data(player.getUniqueId());
+                if (pd.isAltarElement()) {
+                    player.sendMessage(ChatColor.RED + "You already possess the Altar Lightning Element!");
+                    return;
+                }
+                pd.setAltarElement(true);
+                plugin.getDataStore().save(pd);
+                plugin.getElementManager().applyUpsides(player);
+                player.sendMessage(ChatColor.YELLOW + "Your Lightning Element has been upgraded to the Altar version!");
+                item.setAmount(item.getAmount() - 1);
+                if (item.getAmount() <= 0) player.getInventory().removeItem(item);
+                return;
+            }
             player.sendMessage(ChatColor.RED + "You already possess the " + capitalize(type.name()) + " Element!");
             return;
         }

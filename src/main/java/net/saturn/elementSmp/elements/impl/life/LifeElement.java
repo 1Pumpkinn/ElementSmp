@@ -55,6 +55,9 @@ public class LifeElement extends BaseElement {
             attr.setBaseValue(20.0);
         }
 
+        player.removeMetadata(EntanglingRootsAbility.META_ENTANGLED, plugin);
+        player.removeMetadata(EntanglingRootsAbility.META_SINK, plugin);
+        player.removeMetadata(EntanglingRootsAbility.META_RELEASE, plugin);
         ability1.setActive(player, false);
         ability2.setActive(player, false);
     }

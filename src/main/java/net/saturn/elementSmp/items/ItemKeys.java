@@ -7,6 +7,7 @@ public final class ItemKeys {
     private ItemKeys() {}
 
     public static final String KEY_UPGRADER_LEVEL = "upgrader_level";
+    public static final String KEY_ALTAR_ITEM = "is_altar_item";
 
     public static final String KEY_REROLLER = "element_reroller";
     public static final String KEY_ADVANCED_REROLLER = "advanced_reroller";

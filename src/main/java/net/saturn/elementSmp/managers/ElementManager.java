@@ -10,6 +10,7 @@ import net.saturn.elementsmp.elements.impl.earth.EarthElement;
 import net.saturn.elementsmp.elements.impl.fire.FireElement;
 import net.saturn.elementsmp.elements.impl.frost.FrostElement;
 import net.saturn.elementsmp.elements.impl.life.LifeElement;
+import net.saturn.elementsmp.elements.impl.lightning.AltarLightningElement;
 import net.saturn.elementsmp.elements.impl.lightning.LightningElement;
 import net.saturn.elementsmp.elements.impl.metal.MetalElement;
 import net.saturn.elementsmp.elements.impl.water.WaterElement;
@@ -37,6 +38,7 @@ public class ElementManager {
     private final EffectService effectService;
     private final TaskScheduler scheduler;
     private final Map<ElementType, Element> registry = new EnumMap<>(ElementType.class);
+    private final Element altarLightning;
     private final Random random = new Random();
 
     public ElementManager(ElementSmp plugin, DataStore store, ManaManager manaManager,
@@ -48,6 +50,7 @@ public class ElementManager {
         this.configManager = configManager;
         this.effectService = new EffectService(plugin, this);
         this.scheduler = new TaskScheduler(plugin);
+        this.altarLightning = new AltarLightningElement(plugin);
         
         initializeRegistry();
     }
@@ -73,6 +76,14 @@ public class ElementManager {
 
     public PlayerData data(UUID uuid) {
         return store.getPlayerData(uuid);
+    }
+
+    public Element get(Player player, ElementType type) {
+        PlayerData pd = data(player.getUniqueId());
+        if (type == ElementType.LIGHTNING && pd.isAltarElement()) {
+            return altarLightning;
+        }
+        return registry.get(type);
     }
 
     public Element get(ElementType type) {
@@ -192,7 +203,7 @@ public class ElementManager {
             player.sendMessage(ChatColor.RED + "Your element " + type.name().toLowerCase() + " is disabled by the server.");
             return false;
         }
-        Element element = registry.get(type);
+        Element element = get(player, type);
 
         if (element == null) return false;
 
