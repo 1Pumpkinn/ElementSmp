@@ -193,7 +193,7 @@ public class AltarManager implements Listener {
             state.updateHolograms();
 
             if (state.isComplete()) {
-                completeCraft(state);
+                completeCraft(state, player);
                 state.clearProgress();
                 activeAltars.remove(key);
             }
@@ -243,7 +243,7 @@ public class AltarManager implements Listener {
         }
     }
 
-    private void completeCraft(AltarState state) {
+    private void completeCraft(AltarState state, Player player) {
         if (state.isProcessing()) return;
         
         Location loc = state.getLocation().clone().add(0.5, 1.5, 0.5);
@@ -260,7 +260,10 @@ public class AltarManager implements Listener {
         // Unlock Lightning globally
         if (state.getRecipe().name().equalsIgnoreCase("LIGHTNING ELEMENT")) {
             plugin.getDataStore().setElementUnlocked(ElementType.LIGHTNING, true);
-            plugin.getServer().broadcastMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "The Lightning Element has been globally unlocked!");
+            plugin.getServer().broadcastMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "Altar Lighting Has Been Crafted! by " + player.getName());
+            
+            // New broadcast for crafting completion
+            plugin.getServer().broadcastMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "⚡ LIGHTNING ⚡ " + ChatColor.YELLOW + "is now available in Advance Reroller!");
         }
 
         new BukkitRunnable() {
