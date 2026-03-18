@@ -67,28 +67,15 @@ public class EffectService implements Listener {
     }
 
     /**
-     * Clear ALL element effects from a player.
-     * Used when switching elements or logging out.
+     * Clear element effects from a player.
+     * Only removes infinite/passive versions to avoid clearing normal potions.
      */
     public void clearAllElementEffects(Player player) {
         PlayerData pd = elementManager.data(player.getUniqueId());
         ElementType currentElement = pd.getCurrentElement();
 
-        // Hardcoded removal of element-granted effects
-        player.removePotionEffect(PotionEffectType.CONDUIT_POWER);
-        player.removePotionEffect(PotionEffectType.HERO_OF_THE_VILLAGE);
-        player.removePotionEffect(PotionEffectType.HASTE);
-        player.removePotionEffect(PotionEffectType.INVISIBILITY);
-        player.removePotionEffect(PotionEffectType.SLOW_FALLING);
-        player.removePotionEffect(PotionEffectType.FIRE_RESISTANCE);
-        player.removePotionEffect(PotionEffectType.DOLPHINS_GRACE);
-        player.removePotionEffect(PotionEffectType.WATER_BREATHING);
-        player.removePotionEffect(PotionEffectType.NIGHT_VISION);
-        player.removePotionEffect(PotionEffectType.RESISTANCE);
-        player.removePotionEffect(PotionEffectType.REGENERATION);
-        player.removePotionEffect(PotionEffectType.SPEED);
-        player.removePotionEffect(PotionEffectType.STRENGTH);
-        player.removePotionEffect(PotionEffectType.JUMP_BOOST);
+        // Clear only infinite/passive potion effects
+        clearInfiniteEffects(player);
 
         // Clear individual element state/tasks
         for (ElementType type : ElementType.values()) {
@@ -100,6 +87,18 @@ public class EffectService implements Listener {
 
         // Reset health if not Life element
         resetHealthIfNeeded(player, currentElement);
+    }
+
+    /**
+     * Clear only infinite/passive element effects from a player.
+     * Used on quit to prevent bugs without clearing normal potions.
+     */
+    public void clearInfiniteEffects(Player player) {
+        for (PotionEffect effect : player.getActivePotionEffects()) {
+            if (isElementEffect(effect)) {
+                player.removePotionEffect(effect.getType());
+            }
+        }
     }
 
     private boolean isElementEffect(PotionEffect effect) {
@@ -202,8 +201,15 @@ public class EffectService implements Listener {
         var attr = player.getAttribute(Attribute.MAX_HEALTH);
         if (attr == null) return;
 
-        double targetHealth = currentElement == ElementType.LIFE ?
-                Constants.Health.LIFE_MAX : Constants.Health.NORMAL_MAX;
+        double targetHealth = Constants.Health.NORMAL_MAX;
+        
+        // If they are Life element, they might have increased health
+        if (currentElement == ElementType.LIFE) {
+            PlayerData pd = elementManager.data(player.getUniqueId());
+            if (pd != null && pd.getUpgradeLevel(ElementType.LIFE) >= 2) {
+                targetHealth = Constants.Health.LIFE_MAX;
+            }
+        }
 
         if (attr.getBaseValue() != targetHealth) {
             attr.setBaseValue(targetHealth);

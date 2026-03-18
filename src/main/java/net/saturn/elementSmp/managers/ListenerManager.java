@@ -27,6 +27,7 @@ import net.saturn.elementsmp.listeners.core.GameModeListener;
 import net.saturn.elementsmp.listeners.core.PlayerLifecycleListener;
 import net.saturn.elementsmp.listeners.item.altar.AltarElementItemListener;
 import net.saturn.elementsmp.listeners.item.core.AdvancedRerollerListener;
+import net.saturn.elementsmp.listeners.item.core.BundleListener;
 import net.saturn.elementsmp.listeners.item.core.ItemGlowListener;
 import net.saturn.elementsmp.listeners.item.core.RerollerListener;
 import net.saturn.elementsmp.listeners.item.core.UpgraderListener;
@@ -61,6 +62,7 @@ public class ListenerManager {
         pm.registerEvents(new AltarElementItemListener(plugin), plugin);
         pm.registerEvents(new UpgraderListener(plugin, plugin.getElementManager()), plugin);
         pm.registerEvents(new ItemGlowListener(plugin), plugin);
+        pm.registerEvents(new BundleListener(plugin), plugin);
 
         // Element Specific Listeners
         registerElementListeners(pm);

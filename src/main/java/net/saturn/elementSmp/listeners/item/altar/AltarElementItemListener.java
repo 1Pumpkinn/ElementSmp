@@ -38,8 +38,11 @@ public class AltarElementItemListener implements Listener {
         // Check all element types to see if this item matches one
         Optional<ElementType> matchedType = Optional.empty();
         for (ElementType type : ElementType.values()) {
-            String key = type.name().toLowerCase() + "_element";
-            if (container.has(ItemKeys.namespaced(plugin, key), PersistentDataType.BYTE)) {
+            String newKey = type.name().toLowerCase();
+            String oldKey = newKey + "_element";
+            
+            if (container.has(ItemKeys.namespaced(plugin, newKey), PersistentDataType.BYTE) || 
+                container.has(ItemKeys.namespaced(plugin, oldKey), PersistentDataType.BYTE)) {
                 matchedType = Optional.of(type);
                 break;
             }

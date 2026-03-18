@@ -12,6 +12,7 @@ public class AltarLightningElement extends LightningElement {
 
     @Override
     public void applyUpsides(Player player, int upgradeLevel) {
-        player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, PotionEffect.INFINITE_DURATION, 1, true, false, false));
+        // Altar Lightning also gets Speed I (amplifier 0)
+        player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, PotionEffect.INFINITE_DURATION, 0, true, false, false));
     }
 }
