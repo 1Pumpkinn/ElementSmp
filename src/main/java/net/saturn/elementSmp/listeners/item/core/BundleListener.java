@@ -14,6 +14,7 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -101,15 +102,62 @@ public class BundleListener implements Listener {
                 event.getWhoClicked().sendMessage(ChatColor.RED + "You cannot shift-click bundles into storage!");
                 return;
             }
+
+            // Real-time saving to prevent duplication bugs
+            Bukkit.getScheduler().runTask(plugin, () -> {
+                Player player = (Player) event.getWhoClicked();
+                ItemStack bundle = openBundles.get(player.getUniqueId());
+                if (isBundle(bundle)) {
+                    saveBundleInventory(bundle, event.getInventory());
+                }
+            });
             return;
         }
 
-        // Open bundle from inventory
-        if (event.getClick() == ClickType.RIGHT && isBundle(event.getCurrentItem())) {
-            event.setCancelled(true);
-            Player player = (Player) event.getWhoClicked();
-            openBundleInventory(player, event.getCurrentItem());
-            player.playSound(player.getLocation(), Sound.ITEM_BUNDLE_DROP_CONTENTS, 1.0f, 1.0f);
+        // --- OUTSIDE CUSTOM GUI ---
+        ItemStack currentItem = event.getCurrentItem();
+        ItemStack cursorItem = event.getCursor();
+
+        // Check if any item involved is a bundle
+        boolean isCurrentBundle = isBundle(currentItem);
+        boolean isCursorBundle = isBundle(cursorItem);
+
+        if (isCurrentBundle || isCursorBundle) {
+            // Block ALL vanilla bundle interactions (insert/extract)
+            // If both cursor and slot have items, cancel to prevent vanilla bundle logic
+            if (currentItem != null && currentItem.getType() != Material.AIR &&
+                cursorItem != null && cursorItem.getType() != Material.AIR) {
+                event.setCancelled(true);
+                event.getWhoClicked().sendMessage(ChatColor.RED + "You can only move bundles into empty slots! Use Right-Click to open storage.");
+                return;
+            }
+
+            // Right-click to open GUI
+            if (event.getClick() == ClickType.RIGHT) {
+                event.setCancelled(true);
+                
+                // Block opening from non-player inventories (Crafter, Chest, etc.) or special slots
+                // We check if the clicked inventory is the player's bottom inventory
+                if (event.getClickedInventory() == null || event.getClickedInventory().getType() != InventoryType.PLAYER) {
+                    event.getWhoClicked().sendMessage(ChatColor.RED + "You can only open bundles while they are in your inventory!");
+                    return;
+                }
+                
+                if (event.getSlotType() == InventoryType.SlotType.CRAFTING || 
+                    event.getSlotType() == InventoryType.SlotType.RESULT ||
+                    event.getSlotType() == InventoryType.SlotType.ARMOR) {
+                    event.getWhoClicked().sendMessage(ChatColor.RED + "You cannot open bundles from this slot!");
+                    return;
+                }
+
+                // Only open GUI if right-clicking a bundle with an empty cursor
+                if (isCurrentBundle && (cursorItem == null || cursorItem.getType() == Material.AIR)) {
+                    Player player = (Player) event.getWhoClicked();
+                    openBundleInventory(player, currentItem);
+                    player.playSound(player.getLocation(), Sound.ITEM_BUNDLE_DROP_CONTENTS, 1.0f, 1.0f);
+                }
+            }
+            // Left click, shift-click, etc. will still allow moving the bundle as a normal item if the other slot is empty
         }
     }
 
